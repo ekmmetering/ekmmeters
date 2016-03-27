@@ -10,7 +10,7 @@ enum, to encapsulate and describe the full set of required values.
    :maxdepth: 1
 
 Settings
-^^^^^^^^
+********
 
 Values used primarily (but not exclusively) for serial settings parameters.
 
@@ -35,7 +35,7 @@ Values used primarily (but not exclusively) for serial settings parameters.
 .. autoclass:: RelayInterval
 
 Serial Block
-^^^^^^^^^^^^
+************
 
 Values established when a SerialBlock is initialized.
 
@@ -48,7 +48,7 @@ Values established when a SerialBlock is initialized.
 .. autoclass:: FieldType
 
 Meter
-^^^^^
+*****
 
 Values used to select meter object buffers to operate on.
 
@@ -57,7 +57,7 @@ Values used to select meter object buffers to operate on.
 .. autoclass:: ReadMonths
 
 Data
-^^^^
+****
 
 Values which only appear in a read.
 
@@ -65,10 +65,12 @@ Values which only appear in a read.
 
 .. autoclass:: ScaleKWH
 
-Traversal
-^^^^^^^^^
+.. autoclass:: StateInput
 
-Values primarily (but not exclusively) used for extract, assign and traversal.
+Traversal
+*********
+
+Values primarily (but not exclusively) used for extraction from or assignment to serial buffers.
 
 .. autoclass:: Extents
 
