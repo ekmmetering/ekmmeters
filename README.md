@@ -2,7 +2,7 @@
 
 Python API for the EKM Omnimeter Serial Interface
 
-The goal of this library is to provide a reliable and flexible interface to version 3 and version 4 EKM Omnnimeters.  The library is written to be compatible with existing EKM field naming conventions and to be accessible to both the casual and experienced user.  You should not need to have more than a few hours of Python 2.x experience to write a script for any Omnimeter command or a short program to store your reads in a database.
+The goal of this library is to provide a reliable and flexible interface to version 3 and version 4 EKM Omnnimeters.  The library is written to be compatible with existing EKM field naming conventions and to be accessible to both the casual and experienced user.  You should not need to have more than a few hours of Python 2.x experience to write a script for any Omnimeter command or create a short program to store your reads in a database.
 
 More experienced Python users will find appropriate methods for writing agents to store data, manage meter settings, and act as the client in publish/subscribe systems.  The library  supports standard Python serialization with Python 2.x multiprocessing and queueing, all ingoing and outgoing buffers are avaliable in JSON-friendly dictionary objects, and a smalll automated unit test framework provides simplest-possible coverage of all supported commands.  
 
