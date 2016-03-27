@@ -1,8 +1,12 @@
 '''
 Simple unit tests for the ekmmeters library.  While it should work
 under any python unittest caller,  it requires attached, named meters,
-and the serial port name to use.  The included sample values are as
-employed in Windows, Linux and OS X release tests.
+and the serial port name to use.  
+
+Every serial command is touched once.  There are no acceptible 
+or less important tests which can fail.  If a test is added,
+it becomes part of the definition of the working API.
+
 (c) 2015, 2016 EKM Metering.
 This software is provided under an MIT license:
     https://opensource.org/licenses/MIT
