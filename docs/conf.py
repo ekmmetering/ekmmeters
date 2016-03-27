@@ -37,7 +37,6 @@ else:
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
-              'sphinxcontrib.plantuml',
               'sphinx.ext.autosummary',
               'sphinx.ext.napoleon']
 
@@ -226,7 +225,3 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
-try:
-    __import__('readability_theme_support')
-except ImportError, e:
-    pygments_style = 'sphinx'
