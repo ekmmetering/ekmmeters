@@ -6,7 +6,9 @@ The goal of this library is to provide a reliable and flexible interface to vers
 
 More experienced Python users will find appropriate methods for writing agents to store data, manage meter settings, and act as the client for publish/subscribe models.  The library  supports standard Python serialization with queue and multiprocessing modules, all ingoing and outgoing buffers are avaliable in JSON-friendly dictionary objects, and a smalll automated unit test framework provides simplest-possible coverage of all supported commands.  
 
-The API was written and tested using Python 2.6 under CentOS 6.x, and using Python 2.7x, including Iron Python on .NET.  The library is a single file and pure Python.  You can install with "pip ekmmeters" or download place ekmmeters.py in your project directory.  There are no external dependencies beyond the pypi packages json, collections, and pyserial.
+The API was written and tested using Python 2.6 under CentOS 6.x, and using Python 2.7x, including Iron Python on .NET.  The library is a single file and pure Python.  You can install with "pip ekmmeters" or download place ekmmeters.py in your project directory.  There are no external dependencies (for most Pythons) beyond the pypi packages json, collections, and pyserial.
+
+Unit tests require the unittests2 pypi package.  The documentation for readthedocs.org was built with the readthedocs Sphinx format.
 
 There is no required third party tool set for editing the library.  However, Pycharm 5.04 was used for development and the project xml is included as a convenience in the .idea directory.
 
