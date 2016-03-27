@@ -14,30 +14,21 @@
 
 import sys
 import os
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'                           
-                                                                                 
-if not on_rtd:  # only import and set the theme if we're building docs locally   
-    import sphinx_rtd_theme                                                      
-    html_theme = 'sphinx_rtd_theme'                                              
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]                   
-    # Override default css to get a larger width for local build                 
-    def setup(app):                                                              
-        #app.add_javascript("custom.js")                                         
-        app.add_stylesheet('custom.css')                                
-else:                                                                            
-    # Override default css to get a larger width for ReadTheDoc build            
-    html_context = {                                                             
-        'css_files': [                                                           
-            'https://media.readthedocs.org/css/sphinx_rtd_theme.css',            
-            'https://media.readthedocs.org/css/readthedocs-doc-embed.css',       
-            '_static/theme_overrides.css',                                       
-        ],                                                                       
-    }
+#on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+#if not on_rtd:  # only import and set the theme if we're building docs locally
+import sphinxtheme
+readability_path = os.path.dirname(os.path.abspath(sphinxtheme.__file__))
+relative_path = os.path.relpath(readability_path, os.path.abspath('.'))
+html_theme = 'readability'
+html_theme_path = [relative_path]
 
 
-extensions = ['sphinx.ext.autodoc', 
-              'sphinx.ext.intersphinx', 
-              'sphinx.ext.autosummary', 
+
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.intersphinx',
+              'sphinxcontrib.plantuml',
+              'sphinx.ext.autosummary',
               'sphinx.ext.napoleon']
 
 
@@ -71,9 +62,9 @@ author = u'EKM Metering'
 # built documents.
 #
 # The short X.Y version.
-version = u'0.10'
+version = u'0.1.0'
 # The full version, including alpha/beta/rc tags.
-release = u'0.10'
+release = u'0.1.0'
 
 language = None
 exclude_patterns = ['_build']
@@ -92,11 +83,11 @@ divparams_enable_postprocessing = False
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
@@ -224,3 +215,8 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+try:
+    __import__('readability_theme_support')
+except ImportError, e:
+    pygments_style = 'sphinx'
