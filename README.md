@@ -10,7 +10,7 @@ The API was written and tested using Python 2.6 under CentOS 6.x, and using Pyth
 
 Unit tests require the unittests2 pypi package, along with random and ConfigParser.  The documentation for readthedocs.org was built under Sphinx 1.35. Google style docstrings are used exclusively, and read via the Sphinx napoleon extension.  Docs can be built locally with the sphinx_rtd_theme pypi package installed.
 
-There are three specific and chosen PEP 8 violations.  Constant and static names which refer to Omnimeter entities, in keeping with EKM naming in other systems, are in StudlyCase. Method names preserve the same naming convention in camelCase.  And -- while every attempt was made to keep column length under 80 columns, in cases where WYSIWYG naming conflicted, descriptive names won.  However, the PyCharm PEP lint setting of 120 columns is observed in every case.
+There are three specific and chosen PEP 8 violations.  Constant and static names which refer to Omnimeter entities, in keeping with EKM naming in other systems, are in StudlyCase. Method names preserve the same naming convention in camelCase.  And -- while every attempt was made to keep column length under 80 columns, in the few cases where WYSIWYG naming conflicted, descriptive names won.  However, the PyCharm PEP lint setting of 120 columns is observed in every case.
 
 There is no required third party tool set for editing the library.  However, Pycharm 5.04 was used for development and the project xml is included as a convenience in the .idea directory.  The library is designed to encapsulate all meter constants, limits, and field names. An editor with intellisense style drop downs (any such editor) may be helpful. 
 
