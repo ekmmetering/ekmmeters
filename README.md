@@ -10,7 +10,7 @@ The API was written and tested using Python 2.6 under CentOS 6.x, and using Pyth
 
 Unit tests require the unittests2 pypi package.  The documentation for readthedocs.org was built under Sphinx 1.35.  It can be built locally with the sphinx_rtd_theme pypi package installed.
 
-There is no required third party tool set for editing the library.  However, Pycharm 5.04 was used for development and the project xml is included as a convenience in the .idea directory.
+There is no required third party tool set for editing the library.  However, Pycharm 5.04 was used for development and the project xml is included as a convenience in the .idea directory.  Naming conventions and idioms are designed to support intellisense-style drop-downs, and using an editor with the feature can be a good learning tool and and convenience with this  library.
 
 The software is provided under an MIT License.  The MIT license allows you to use this library for any personal or commercial project, without an obligation to release any of your work as open source.   
 
