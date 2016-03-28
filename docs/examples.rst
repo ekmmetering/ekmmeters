@@ -609,10 +609,40 @@ weekend schedule.
     print "Holiday schedule = " + holiday_weekend_schedules.Holiday
     print "Weekend schedule = " + holiday_weekend_schedules.Weekend
 
+Without the print statements -- assuming you are just pulling the meter data
+out into your own storage or display, and write my_save_tariff(),
+my_save_month(), my_save_holidays() and my_save_holiday_weekend() function --
+the extraction traversal is much shorter.  (Please not that unlike every
+other example on this page, it isn't runnable --- the my_save functions
+are just placeholders for your own database writes or display calls.
 
-An approach requiring far fewer lines of code to extract the data (but probably
-much more code to parse and handle it) is to simply return the SerialBlocks for each
-read.  It is the recommended approach for passing the data up the wire via JSON.
+.. code-block:: python
+   :linenos:
+
+    for schedule in range(Extents.Schedules):
+        for tariff in range(Extents.Tariffs):
+            my_tariff_tuple = my_meter.extractScheduleTariff(schedule, tariff)
+            my_save_tariff(my_tariff_tuple)  # handle the tupe printed above
+
+    for month in range(Extents.Months):
+        my_months_tuple = my_meter.extractMonthTariff(month)
+        my_save_month(my_months_tuple) # handle the tuple printed above
+
+   for holiday in range(Extents.Holidays):
+        holidaydate = my_meter.extractHolidayDate(holiday)
+        my_save_holidays(holidaydate.Month, holidaydate.Day)
+
+    holiday_weekend_schedules = my_meter.extractHolidayWeekendSchedules()
+    my_save_holiday_weekend(holiday_weekend_schedules.Holiday,
+                            holiday_weekend_schedules.Weekend)
+
+
+By writing four functions to bridge your own storage or display, you can put away
+all the non-request meter data quite simply.  Getting the bufffers directly
+as dictionaries requires individual handling of all repeating fields, and appropriate
+handling of schedule blocks and both month blocks in tandem.  The following
+example will print all the fields handled by the traversal above.
+
 
 .. code-block:: python
    :linenos:
@@ -631,9 +661,6 @@ read.  It is the recommended approach for passing the data up the wire via JSON.
        print my_meter.jsonRender(sched_2)
        print my_meter.jsonRender(holiday_blk)
 
-This looks wonderfully simple.  Unfortunately, unless you are just sending the data over the net,
-it is much more work to traverse and extract the data.  Do note that weekend and holiday schedules
-are at the very end of the holiday block: these calls get the same set of data described above.
 
 The readSettings() function breaks out to :func:`~ekmmeters.Meter.readScheduleTariffs`,
 :func:`~ekmmeters.Meter.readMonthTariffs` and  :func:`~ekmmeters.Meter.readHolidayDates`.
@@ -654,22 +681,14 @@ Each meter object has a chain of 0 to n observer objects.  When a request is iss
 method of every observer object registered in its chain.  All observer objects descend from MeterObserver, and require
 an override of the Update method and constructor.
 
-Given that most applications will poll tightly on Meter::request(), why would you do it this way?  An observer
-pattern here can have several advantages:
+Given that most applications will poll tightly on Meter::request(), why would you do it this way? An observer pattern
+might be appropriate if you are planning on doing a lot of work with the data for each read over an array of meters,
+and want to keep the initial and read handling results in a single class  If you are familiar with the idiom, subclassing
+MeterObserver can be a fast way to create utilities.
 
-- the information you must keep between reads and the operation after a read is
-  organzed in one place out of the loop logic.
-- because it is organized in a single purpose-built class, if the algorithm sprawls --
-  if you are handling 60 fields instead of the one value in the examples --
-  all those related variables are kept in one place.
-- It is easy to parametrize the event handler, so the important value stands out.
-  In the examples directory set_summarize.py example, you can simply pass in the
-  interval seconds.
-- Update() is only ever called if the read is successful.
+All of that said, the right way is the course the way which is simplest and clearest for your project.
 
-And of course, it isn't appropriate to every need.
-
-Using set_notify.py an set_summarize.py is the fastest and easiest way to explore these examples.  Both examples
+Using set_notify.py an set_summarize.py is the most approachable way to explore these examples.  Both examples
 require a request loop at the *bottom* of the file, before closing the serial port.  It is a simple count limited
 request loop, and is useful when building software against this library.
 
@@ -743,7 +762,8 @@ the pulse input, we fire our event.
    my_meter.setPulseInputRatio(Pulse.Ln1, 1)
 
 
-set_summarize.py, in the examples directory of the source distribution, provides a MeterObserver which keeps a voltage
+This example is found in full in the github examples directory for ekmmeters, as set_notifypy.
+A second example, set_summarize.py,  provides a MeterObserver which keeps a voltage
 summary over an arbitrary number of seconds, passed in the constructor.  While slightly longer than the example above,
 it does not require wiring the meter pulse inputs.
 
