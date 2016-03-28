@@ -16,7 +16,7 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
     ],
-    py_modules=['ekmmeters'],
+    py_modules=['ekmmeters/ekmmeters'],
     install_requires=[
           'importlib==1.0.3',
           'OrderedDict==1.1',
