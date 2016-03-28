@@ -33,7 +33,7 @@ class ASummaryObserver(MeterObserver):
         self.m_15s_interval = int((time.time() * 1000)/(self.m_summary_interval * 1000))
         self.m_last_15s_interval = self.m_15s_interval
 
-    def Update(self, def_buf):
+    def update(self, def_buf):
         time_now = time.time()
         self.m_last_interval = time_now - self.m_last_time
         self.m_last_time = time_now
