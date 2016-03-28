@@ -46,7 +46,7 @@ class EKMSample(Form):
      def buttonPressed(self, sender, args):
         try:
             port = SerialPort(self.m_testport, 9600)
-            meterV4 = v4Meter(self.m_test_meter)
+            meterV4 = V4Meter(self.m_test_meter)
             meterV4.attachPort(port)
             if port.initPort() == True:
                 if meterV4.request() == True:
