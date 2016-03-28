@@ -8,11 +8,11 @@ Introduction
 Getting Started
 ^^^^^^^^^^^^^^^
 
-The best way to get started with the library is to hooking up your meter and working 
+The best way to get started with this library is hooking up your Omnimeter and working 
 through the examples section!  Most of what this API does is very straightforward, 
 and the examples are written to easily adapt.
 
-Users writing device agents may wish to read through the unit test code as well.
+Users writing device agents may wish to read through the unit test code (on github) as well.
 
 It is generally quite difficult to come to terms with a new library (and perhaps
 a new language) while wrestling with serial connectivity issues.  The trial
