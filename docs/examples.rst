@@ -530,14 +530,15 @@ kWh and reverse kWh for each tariff period is returned with every read, and can 
 requested for the last six recorded months.
 
 The simplest way get the data is all at once, with :func:`~ekmmeters.VMeter.readSettings`, which
-returns True or False.  This call can take some time (it makes 15 seperate serial calls, all necessary).
+returns True or False.  As it combines 5 read commands, :func:`~ekmmeters.VMeter.readSettings` takes
+longer than most other API calls.
 
 The data is easy to get but harder to walk.  If you do not want to manage offsets and position,
 you can use the "for <item> in range(Extents.<items>" iteration style, below.  Since the lists on
 the meter are always the same length, you can use the code below as it is, and put your own
 storage or send function at the bottom of each loop.
 
-We start by reading all the settings tables into the meter buffers.
+We start by reading all the settings tables out the meter object buffers.
 
 .. code-block:: python
    :emphasize-lines: 12, 14, 16
