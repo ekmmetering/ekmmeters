@@ -47,7 +47,7 @@ def main():
             print "Cannot open port"
             return
 
-        meterV4 = v4Meter("300001162")
+        meterV4 = V4Meter("300001162")
         meterV4.attachPort(port)
         meterDB = SqlServerMeterDB()
         meterDB.setConnectString("Data Source=DESKTOP-0DI9R4D\SQLEXPRESS;Initial Catalog=my_reads;Integrated Security=True;")
