@@ -43,7 +43,7 @@ it is clear that the port is not talking to a meter.  Generally failing calls wi
 timeout.
 
 
-As an important note, every method making a serial call accepts a second password parameter (eight
+Every method making a serial call accepts an optional password parameter (eight
 numeric characters in a string).  The default, shipped with the meter, is "00000000".  Most systems
 urge setting passwords immediately.  We don't recommend that unless it is a feature on a mature
 system with a real level of security risk.  EKM has no back door into your meter.  If you reset and
@@ -53,14 +53,12 @@ default.
 Read
 ****
 
-Meters are read with :func:`~ekmmeters.Meter.request`, which always returns a True or False.  Request takes a
-termination flag which forces a "end this conversation" string to be sent to the meter.  This is only
-used inside other serial calls: you can always ignore it and leave it to the default value of True.
+Meters are read with :func:`~ekmmeters.Meter.request`, which always returns a True or False.  Request takes 
+an optional termination flag which forces a "end this conversation" string to be sent to the meter. This is only
+used inside other serial calls: you can just ignore it and leave the default value of True.
 
-The full set off measurements for your Omnimeter are returned with :func:`~ekmmeters.Meter.request` on both V3 and V4 Omnimeters.
-Omnimeters return data in 255 byte chunks.  The supported V3 meter fields come back in one chunk (referred to in
-the EKM documentation as an A read), and the V4 Omnimeter uses two chunks (referred to as an AB read).  The
-request method is the same on both meter versions.
+The full set off measurements for your Omnimeter are returned with :func:`~ekmmeters.Meter.request` on 
+both V3 and V4 Omnimeters. Omnimeters return data in 255 byte chunks.  The supported V3 meter fields come back in one chunk (referred to in the EKM documentation as an A read), and the V4 Omnimeter uses two chunks (referred to as an AB read).  The request method is the same on both meter versions.
 
 .. code-block:: python
    :emphasize-lines: 2, 7
@@ -78,9 +76,7 @@ request method is the same on both meter versions.
 Save to Database
 ****************
 
-A simple wrapper for Sqlite is included in the library.  The
-example below, if a way to end the loop and exception handling were added,
-is perfectly suitable to a simple storage utility.
+A simple wrapper for Sqlite is included in the library.  
 
 If you already have an ORM in place, such as SQLAlchemy, you should define an
 appropriate object and load it by traversing the read buffer.  But for most
@@ -89,9 +85,9 @@ simple cases, the following will suffice.
 The method :func:`~ekmmeters.Meter.insert` tells the meter object to put the data away in an
 instantiated MeterDB.
 
-The default behavior of a MeterDB object is built around portable-as-possible SQL: one create statement,
-which should only be called once, two index creates, an insert, and a drop.  In this example we
-delete the Sqlite database entirely and call create each time.
+The default behavior of a MeterDB object is built around portable-as-possible SQL: 
+one create statement, which should only be called once, two index creates, an insert, 
+and a drop.  In this example we delete the Sqlite database entirely and call create each time.
 
 .. code-block:: python
    :emphasize-lines: 1,3,4,9,10
@@ -114,7 +110,7 @@ CT Ratio
 The CT ratio tells the meter how to scale the input from an inductive pickup.
 Allowed values are shown under :class:`~ekmmeters.CTRatio`.
 
-The CT ration is set with the method The method :func:`~ekmmeters.Meter.setCTRatio`.
+The CT ration is set with the method :func:`~ekmmeters.Meter.setCTRatio`.
 The field CT_Ratio is returned in every read request.
 
 
@@ -131,8 +127,8 @@ The field CT_Ratio is returned in every read request.
 Max Demand Period
 *****************
 
-The max demand period is set to a value in :class:`~ekmmeters.MaxDemandPeriod`.
-It is set with the method :func:`~ekmmeters.Meter.setMaxDemandPeriod`. The field
+The max demand period is a value in the set :class:`~ekmmeters.MaxDemandPeriod`.
+It is written with the method :func:`~ekmmeters.Meter.setMaxDemandPeriod`. The field
 Max_Demand_Period is returned in every read request.
 
 .. code-block:: python
@@ -152,10 +148,11 @@ Max_Demand_Period is returned in every read request.
 Max Demand Interval
 *******************
 
-Max demand interval is set using :func:`~ekmmeters.Meter.setMaxDemandPeriod`, which
+Max demand interval is written using :func:`~ekmmeters.Meter.setMaxDemandInterval`, which
 can return True or False. It accepts values in the set :class:`~ekmmeters.MaxDemandInterval`.
 
 .. code-block:: python
+   :emphasize-lines: 1
    :linenos:
 
    if my_meter.setMaxDemandInterval(MaxDemandInterval.Daily):
@@ -183,8 +180,8 @@ Pulse Input Ratio
 The pulse input ratios is set using :func:`~ekmmeters.V4Meter.setPulseInputRatio`, which
 can return True or False.
 
-Each of the three pulse lines has an integer input ration (how many times you
-must close the pulse input to register one pulse).  The fields Pulse_Ratio_1, Pulse_Ratio_2 and
+Each of the three pulse lines has an integer input ratio (how many times you
+must close the pulse circuit to register one pulse).  The fields Pulse_Ratio_1, Pulse_Ratio_2 and
 Pulse_Ratio_3 are returned with every read request.  The example below shows line one being set.
 
 .. code-block:: python
@@ -202,7 +199,7 @@ Set Relay
 The relay is toggled using the method :func:`~ekmmeters.V4Meter.setRelay`, which
 can return True or False.
 
-The V4 Omnimeter has 2 relays, which can hold permanently or switch for a requested
+The V4 Omnimeter has 2 relays, which can hold permanently or for a requested
 duration.  The interval limits are in :class:`~ekmmeters.RelayInterval`, the relay to
 select in :class:`~ekmmeters.Relay`, and the requested state in :class:`~ekmmeters.RelayState`.
 
@@ -210,9 +207,13 @@ If hold-and-stay value is the zero interval.  Using the hold constant, Min or 0
 will switch the default state on or off (:class:`~ekmmeters.RelayState`).
 
 .. code-block:: python
+   :emphasize-lines: 1, 2, 3, 5
    :linenos:
 
-   if my_meter.setRelay(RelayInterval.Hold, Relay.Relay1, RelayState.RelayOpen):
+   if my_meter.setRelay(RelayInterval.Hold, 
+                        Relay.Relay1, 
+                        RelayState.RelayOpen):
+                        
        if my_meter.setRelay(2, Relay.Relay1, RelayState.RelayClose):
            print "Complete"
 
@@ -220,13 +221,12 @@ Set Meter Time
 **************
 
 The meter time, which is used by the meter to calculate and store time of use tariffs,
-is set using the method :func:`~ekmmeters.VMeter.setTime`, returning True or False.
-It is returned with every read request in the Meter_Time field.  The
-method :func:`~ekmmeters.VMeter.splitEkmDate` (which takes an integer) will break
-the date out into constituent parts.
+is set using the method :func:`~ekmmeters.VMeter.setTime`, and returns True or False.
+The Meter_Time field is returned with every request.  The method :func:`~ekmmeters.VMeter.splitEkmDate` 
+(which takes an integer) will break the date out into constituent parts.
 
 In practice, it is quite difficult to corrupt the meter time, but if it becomes invalid,
-it can return a '?' in one of the field positions.    In that case your cast to int
+a request can return a '?' in one of the field positions.    In that case your cast to int
 will throw a ValueException.
 
 EKM meter time is stored in a proprietary year-first format requiring day of week.
@@ -234,9 +234,9 @@ The API will strip off the century and calculate day of week for you.
 
 Note the meter time is not the same as the timestamp at read, which every agent should
 capture.  Your computer clock, which is calibrated to a time service, is more accurate. The
-API does not make any assumptions about how you will useMeter_Time, what time
-zone is set, or do periodic corrections (though you can use these functions to do all
-those things).
+API does not make any assumptions about how you will use Meter_Time, what time
+zones to employ, or the desirability of periodic corrections (though you can use this library
+to do all those things).
 
 .. code-block:: python
    :emphasize-lines: 8,10,11
@@ -295,6 +295,7 @@ While you can pass an int, using :class:`~ekmmeters.Seasons` and :class:`~ekmmet
 for the parameters is strongly recommended.
 
 .. code-block:: python
+   :emphasize-lines: 1, 2, 3, 4, 6
    :linenos:
 
    my_meter.assignSeasonSchedule(Seasons.Season_1, 1, 1, Schedules.Schedule_1)
@@ -305,7 +306,7 @@ for the parameters is strongly recommended.
    if my_meter.setSeasonSchedules():
        print "Success"
 
-:func:`~ekmmeters.Meter.assignSeasonSchedule` will return False if the values are
+The method :func:`~ekmmeters.Meter.assignSeasonSchedule` will return False if the values are
 out of bounds (though this was omitted from the example above for simplicity).
 
 You can also populate the season schedule using a dictionary, which simplifies
@@ -313,7 +314,6 @@ loading a meter from passed JSON.
 
 .. code-block:: python
    :emphasize-lines: 1, 15
-
    :linenos:
 
    param_buf = OrderedDict()
@@ -336,13 +336,13 @@ loading a meter from passed JSON.
 Set Schedule Tariffs
 ********************
 
-A schedule is defined by up to for tariff periods, each with a start hour
+A schedule is defined by up to four tariff periods, each with a start hour
 and minute.  The meter will manage up to eight schedules.
 
-Schedules are set one at a time via `~ekmmeters.Meter.setScheduleTariffs`, which
-returns True or False.   The simplest way to set up and make the call is with
+Schedules are set one at a time via :func:`~ekmmeters.Meter.setScheduleTariffs`, 
+returning True or False.   The simplest way to set up the call is with
 :func:`~ekmmeters.Meter.assignSeasonSchedule`, which writes to the meter object
-internal buffer. :class:`~ekmmeters.Schedules` and  :class:`~ekmmeters.Tariffs` are
+internal buffer.  The sets :class:`~ekmmeters.Schedules` and  :class:`~ekmmeters.Tariffs` are
 provided for readability and convenience.
 
 The following example creates one schedule with tariffs beginning at
@@ -350,6 +350,7 @@ midnight (rate = 1), 5:30 am (rate = 2), noon (rate = 3), and 5:30 pm (rate 1).
 
 
 .. code-block:: python
+   :emphasize-lines: 1, 2, 3, 4, 6
    :linenos:
 
    my_meter.assignScheduleTariff(Schedules.Schedule_1, Tariffs.Tariff_1, 0,0,1)
@@ -363,10 +364,11 @@ midnight (rate = 1), 5:30 am (rate = 2), noon (rate = 3), and 5:30 pm (rate 1).
 Note that :func:`~ekmmeters.Meter.assignSeasonSchedule` should be tested for False in
 a production deployment.
 
-You can also use the range(Extents.<name>) idiom to set all the schedules at once. The test
+You can also use the range(Extents.<name>) idiom to define all the schedules at once. The test
 below sets the first tariff and then steps hour and minute for the next three.
 
 .. code-block:: python
+   :emphasize-lines: 1, 7
    :linenos:
 
    for schedule in range(Extents.Schedules):
@@ -386,6 +388,7 @@ below sets the first tariff and then steps hour and minute for the next three.
 If you are defining a schedule via JSON or XML, you can set the tariffs with a dictionary:
 
 .. code-block:: python
+   :emphasize-lines: 1, 16
    :linenos:
 
    param_buf = OrderedDict()
@@ -409,9 +412,9 @@ If you are defining a schedule via JSON or XML, you can set the tariffs with a d
 Holiday Dates
 *************
 
-A list of holidays can be set to use a single schedule (which applies the relevant
-time of use tariffs to your holidays).  The list of holiday dates is set with
-:func:`~ekmmeters.Meter.setHolidayDates`, which returns True or False.
+A list of up to 20 holidays can be set to use a single schedule (which applies 
+the relevant time of use tariffs to your holidays).  The list of holiday dates is 
+written with :func:`~ekmmeters.Meter.setHolidayDates`, which returns True or False.
 
 Because the holiday list is relatively long, it is the only block without a set of
 helper constants: if you use :func:`~ekmmeters.Meter.assignHolidayDate` directly,
@@ -421,6 +424,7 @@ A more common use case will see all holidays stored and set at once. The
 range(Extents.Holidays) idiom can be used to fill the holiday table:
 
 .. code-block:: python
+   :emphasize-lines: 1, 43
    :linenos:
 
    for holiday in range(Extents.Holidays):
@@ -434,6 +438,7 @@ As with the other settings commands, a dictionary can be passed to :func:`~ekmme
 for JSON and XML support.
 
 .. code-block:: python
+   :emphasize-lines: 1, 43
    :linenos:
 
    param_buf = OrderedDict()
@@ -492,6 +497,7 @@ which takes a list of :class:`~ekmmeters.LCDItems` and returns True or False.
 
 
 .. code-block:: python
+   :emphasize-lines: 1, 2
    :linenos:
 
    lcd_items = [LCDItems.RMS_Volts_Ln_1, LCDItems.Line_Freq]
@@ -505,6 +511,7 @@ can translate the name of any value in :class:`~ekmmeters.LCDItems` to a
 corresponding integer with :func:`~ekmmeters.V4Meter.lcdString`.
 
 .. code-block:: python
+   :emphasize-lines: 1, 2, 4
    :linenos:
 
    lcd_items = [my_meter.lcdString("RMS_Volts_Ln_1"),
@@ -516,7 +523,7 @@ corresponding integer with :func:`~ekmmeters.V4Meter.lcdString`.
 Read Settings
 *************
 
-The tariff data collected by the Omnimeter amounts to a small relational database, compressed
+The tariff data used by the Omnimeter amounts to a small relational database, compressed
 into fixed length lists.  There are up to eight schedules, each schedule can track up to
 four tariff periods, and schedules can be assigned to holidays, weekends, and seasons.  The running
 kWh and reverse kWh for each tariff period is returned with every read, and can be
@@ -525,14 +532,15 @@ requested for over the last six recorded months.
 The simplest way get the data is all at once, with :func:`~ekmmeters.VMeter.readSettings`, which
 returns True or False.  It can take 4-6 seconds to complete.
 
-The data is easy to get but harder to list.  If you do not want to manage offsets and position,
-you can use the "for <item> in range(Extents.<items>" idiom, below.  Since the list on
-the meter is always the same length, you can use the code below as it is, and put your own
+The data is easy to get but harder to walk.  If you do not want to manage offsets and position,
+you can use the "for <item> in range(Extents.<items>" idiom, below.  Since the lists on
+the meter are always the same length, you can use the code below as it is, and put your own
 storage or send function at the bottom of each loop.
 
 We start by reading all the settings tables into the meter buffers.
 
 .. code-block:: python
+   :emphasize-lines: 12, 14, 16
    :linenos:
 
    if my_meter.readSettings():
@@ -562,6 +570,7 @@ We start by reading all the settings tables into the meter buffers.
 Continuing the traversal of data returned from readSettings(), we get per month data:
 
 .. code-block:: python
+   :emphasize-lines: 9, 12
    :linenos:
 
    # print header line
@@ -589,6 +598,7 @@ And continue to list the 20 holidays and their assigned schedule, plus the assig
 weekend schedule.
 
 .. code-block:: python
+   :emphasize-lines: 5, 8, 15
    :linenos:
 
    # print the header
@@ -610,13 +620,14 @@ weekend schedule.
     print "Weekend schedule = " + holiday_weekend_schedules.Weekend
 
 Without the print statements -- assuming you are just pulling the meter data
-out into your own storage or display, and write my_save_tariff(),
-my_save_month(), my_save_holidays() and my_save_holiday_weekend() function --
-the extraction traversal is much shorter.  (Please not that unlike every
+out into your own storage or display, and you can write my_save_tariff(),
+my_save_month(), my_save_holidays() and my_save_holiday_weekend() functions --
+the extraction traversal is much shorter.  (Please note that unlike every
 other example on this page, it isn't runnable --- the my_save functions
-are just placeholders for your own database writes or display calls.
+are just placeholders for your own database writes or display calls).
 
 .. code-block:: python
+   :emphasize-lines: 4, 8, 12, 15, 16
    :linenos:
 
     for schedule in range(Extents.Schedules):
@@ -637,14 +648,15 @@ are just placeholders for your own database writes or display calls.
                             holiday_weekend_schedules.Weekend)
 
 
-By writing four functions to bridge your own storage or display, you can put away
+By writing four functions to bridge to your own storage or display, you can put away
 all the non-request meter data quite simply.  Getting the bufffers directly
 as dictionaries requires individual handling of all repeating fields, and appropriate
 handling of schedule blocks and both month blocks in tandem.  The following
-example will print all the fields handled by the traversal above.
-
+example will print all the fields handled by the traversal above, using directly 
+requested buffers.
 
 .. code-block:: python
+   :emphasize-lines: 3, 4, 5, 6, 7
    :linenos:
 
    if my_meter.readSettings():
@@ -664,8 +676,8 @@ example will print all the fields handled by the traversal above.
 
 The readSettings() function breaks out to :func:`~ekmmeters.Meter.readScheduleTariffs`,
 :func:`~ekmmeters.Meter.readMonthTariffs` and  :func:`~ekmmeters.Meter.readHolidayDates`.
-If you take this approach you will need to call readMonthTariffs() twice, with ReadMonths.kWh
-and ReadMonths.kWhReverse, and call readScheduleTariffs() twice as well,
+If you take this approach you will need to call :func:`~ekmmeters.Meter.readMonthTariffs` twice, with ReadMonths.kWh
+and ReadMonths.kWhReverse, and call :func:`~ekmmeters.Meter.readScheduleTariffs` twice as well,
 with parameters ReadSchedules.Schedules_1_To_4 and ReadSchedules.Schedules_5_To_8.
 
 
@@ -677,20 +689,17 @@ notifications can do so simply in the main polling loop.  However, sometimes onl
 This is a very simple implementation and easily learned, but nothing in this example is necessary for mastery of
 the API.
 
-Each meter object has a chain of 0 to n observer objects.  When a request is issued, the meter calls the Update()
-method of every observer object registered in its chain.  All observer objects descend from MeterObserver, and require
-an override of the Update method and constructor.
+Each meter object has a chain of 0 to n observer objects.  When a request is issued, the meter calls the subclassed update() method of every observer object registered in its chain.  All observer objects descend from MeterObserver, and require an override of the Update method and constructor.
 
 Given that most applications will poll tightly on Meter::request(), why would you do it this way? An observer pattern
 might be appropriate if you are planning on doing a lot of work with the data for each read over an array of meters,
-and want to keep the initial and read handling results in a single class  If you are familiar with the idiom, subclassing
-MeterObserver can be a fast way to create utilities.
+and want to keep the initial and read handling results in a single class  If you are familiar with the idiom, subclassing MeterObserver can be a fast way to create utilities.  The update method is exception wrapped: a failure in your override will not block the next read.
 
 All of that said, the right way is the course the way which is simplest and clearest for your project.
 
-Using set_notify.py an set_summarize.py is the most approachable way to explore these examples.  Both examples
-require a request loop at the *bottom* of the file, before closing the serial port.  It is a simple count limited
-request loop, and is useful when building software against this library.
+Using set_notify.py an set_summarize.py is the most approachable way to explore the pattern.  All the required code is below, but it may be more rewarding to run from and modify the examples.  
+
+We start by moddifying the skeleton we set up at the beginning of this page. with a request loop at the *bottom* of the file, right before closing the serial port.  It is a simple count limited request loop, and is useful when building software against this library.
 
 .. code-block:: python
    :linenos:
@@ -713,15 +722,10 @@ request loop, and is useful when building software against this library.
 
 
 The notification observer example requires that your meter have pulse input line one hooked up, if only as two wires
-you can close.  To create a notification observer, start by subclassing MeterObserver immediately before the snippet above.  The
-constructor sets a startup test condition and initializes the last pulse count used for comparison.
-
-Note that our Update() override gets the native (float) value directly, using MeterData.NativeValue.  It could as easily
-return MeterData.StringValue, and cast.  The first Update() sets the initial comparison value.  Subsequent Update()
-calls compare the pulse count and check to see if there is a change.  The doNotify() method is our triggered event, and
-can of course do anything Python can.
+you can close.  To create a notification observer, start by subclassing MeterObserver immediately before the snippet above.  The constructor sets a startup test condition and initializes the last pulse count used for comparison.
 
 .. code-block:: python
+   :emphasize-lines: 9
    :linenos:
 
    class ANotifyObserver(MeterObserver):
@@ -747,12 +751,15 @@ can of course do anything Python can.
     def doNotify(self):
         print "Bells!  Alarms!  Do that again!"
 
+Note that our Update() override gets the native (float) value directly, using MeterData.NativeValue.  It could as easily return MeterData.StringValue, and cast.  The first update() sets the initial comparison value.  Subsequent update() calls compare the pulse count and check to see if there is a change.  The doNotify() method is our triggered event, and can of course do anything Python can.
+
 And finally -- right before dropping into our poll loop, we instantiate our subclassed MeterObserver, and register it in the
 meter's observer chain.  We also put the pulse count on the LCD, and set the input ratio to one so every time we close
 the pulse input, we fire our event.
 
 
 .. code-block:: python
+   :emphasize-lines: 1, 2
    :linenos:
 
    my_observer = ANotifyObserver()
