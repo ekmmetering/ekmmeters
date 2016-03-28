@@ -364,7 +364,7 @@ midnight (rate = 1), 5:30 am (rate = 2), noon (rate = 3), and 5:30 pm (rate 1).
 Note that :func:`~ekmmeters.Meter.assignSeasonSchedule` should be tested for False in
 a production deployment.
 
-You can also use the range(Extents.<name>) idiom to define all the schedules at once. The test
+You can also use the range(Extents.<name>) iterator to define all the schedules at once. The test
 below sets the first tariff and then steps hour and minute for the next three.
 
 .. code-block:: python
@@ -527,13 +527,13 @@ The tariff data used by the Omnimeter amounts to a small relational database, co
 into fixed length lists.  There are up to eight schedules, each schedule can track up to
 four tariff periods, and schedules can be assigned to holidays, weekends, and seasons.  The running
 kWh and reverse kWh for each tariff period is returned with every read, and can be
-requested for over the last six recorded months.
+requested for the last six recorded months.
 
 The simplest way get the data is all at once, with :func:`~ekmmeters.VMeter.readSettings`, which
-returns True or False.  It can take 4-6 seconds to complete.
+returns True or False.  This call can take some time (it makes 15 seperate serial calls, all necessary).
 
 The data is easy to get but harder to walk.  If you do not want to manage offsets and position,
-you can use the "for <item> in range(Extents.<items>" idiom, below.  Since the lists on
+you can use the "for <item> in range(Extents.<items>" iteration style, below.  Since the lists on
 the meter are always the same length, you can use the code below as it is, and put your own
 storage or send function at the bottom of each loop.
 
@@ -623,7 +623,7 @@ Without the print statements -- assuming you are just pulling the meter data
 out into your own storage or display, and you can write my_save_tariff(),
 my_save_month(), my_save_holidays() and my_save_holiday_weekend() functions --
 the extraction traversal is much shorter.  (Please note that unlike every
-other example on this page, it isn't runnable --- the my_save functions
+other example on this page, the code below isn't runnable --- the my_save functions
 are just placeholders for your own database writes or display calls).
 
 .. code-block:: python
@@ -651,8 +651,8 @@ are just placeholders for your own database writes or display calls).
 By writing four functions to bridge to your own storage or display, you can put away
 all the non-request meter data quite simply.  Getting the bufffers directly
 as dictionaries requires individual handling of all repeating fields, and appropriate
-handling of schedule blocks and both month blocks in tandem.  The following
-example will print all the fields handled by the traversal above, using directly 
+handling of both schedule blocks and both month blocks stored on the meter.  The following
+example will print all the fields handled by the traversals above, using directly 
 requested buffers.
 
 .. code-block:: python
