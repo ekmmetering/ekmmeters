@@ -525,9 +525,9 @@ Read Settings
 
 The tariff data used by the Omnimeter amounts to a small relational database, compressed
 into fixed length lists.  There are up to eight schedules, each schedule can track up to
-four tariff periods, and schedules can be assigned to holidays, weekends, and seasons.  The running
-kWh and reverse kWh for each tariff period is returned with every read, and can be
-requested for the last six recorded months.
+four tariff periods in each day, and schedules can be assigned to holidays, weekends, and 
+seasons.  The running kWh and reverse kWh for each tariff period is returned with every read, 
+and can be requested for each of the last six recorded months.
 
 The simplest way get the data is all at once, with :func:`~ekmmeters.VMeter.readSettings`, which
 returns True or False.  As it combines 5 read commands, :func:`~ekmmeters.VMeter.readSettings` takes
@@ -650,7 +650,7 @@ are just placeholders for your own database writes or display calls).
 
 
 By writing four functions to bridge to your own storage or display, you can put away
-all the non-request meter data quite simply.  Getting the bufffers directly
+all the non-request meter data fairly simply.  Getting the bufffers directly
 as dictionaries requires individual handling of all repeating fields, and appropriate
 handling of both schedule blocks and both month blocks stored on the meter.  The following
 example will print all the fields handled by the traversals above, using directly 
@@ -674,8 +674,8 @@ requested buffers.
        print my_meter.jsonRender(sched_2)
        print my_meter.jsonRender(holiday_blk)
 
-
-The readSettings() function breaks out to :func:`~ekmmeters.Meter.readScheduleTariffs`,
+ 
+The readSettings() function itself breaks out to :func:`~ekmmeters.Meter.readScheduleTariffs`,
 :func:`~ekmmeters.Meter.readMonthTariffs` and  :func:`~ekmmeters.Meter.readHolidayDates`.
 If you take this approach you will need to call :func:`~ekmmeters.Meter.readMonthTariffs` twice, with ReadMonths.kWh
 and ReadMonths.kWhReverse, and call :func:`~ekmmeters.Meter.readScheduleTariffs` twice as well,
@@ -694,11 +694,12 @@ Each meter object has a chain of 0 to n observer objects.  When a request is iss
 
 Given that most applications will poll tightly on Meter::request(), why would you do it this way? An observer pattern
 might be appropriate if you are planning on doing a lot of work with the data for each read over an array of meters,
-and want to keep the initial and read handling results in a single class  If you are familiar with the idiom, subclassing MeterObserver can be a fast way to create utilities.  The update method is exception wrapped: a failure in your override will not block the next read.
+and want to keep the initial and read handling results in a single class  If you are writing a set of utilities, 
+subclassing MeterObserver can be convenient.  The update method is exception wrapped: a failure in your override will not block the next read.
 
 All of that said, the right way is the course the way which is simplest and clearest for your project.
 
-Using set_notify.py an set_summarize.py is the most approachable way to explore the pattern.  All the required code is below, but it may be more rewarding to run from and modify the examples.  
+Using the examples set_notify.py and set_summarize.py (from the github source) is the most approachable way to explore the pattern.  All the required code is below, but it may be more rewarding to run from and modify the already typed examples.  
 
 We start by moddifying the skeleton we set up at the beginning of this page. with a request loop at the *bottom* of the file, right before closing the serial port.  It is a simple count limited request loop, and is useful when building software against this library.
 
@@ -752,7 +753,7 @@ you can close.  To create a notification observer, start by subclassing MeterObs
     def doNotify(self):
         print "Bells!  Alarms!  Do that again!"
 
-Note that our Update() override gets the native (float) value directly, using MeterData.NativeValue.  It could as easily return MeterData.StringValue, and cast.  The first update() sets the initial comparison value.  Subsequent update() calls compare the pulse count and check to see if there is a change.  The doNotify() method is our triggered event, and can of course do anything Python can.
+Note that our Update() override gets the numeric value directly, using MeterData.NativeValue.  It could as easily return MeterData.StringValue, and cast.  The first update() sets the initial comparison value.  Subsequent update() calls compare the pulse count and check to see if there is a change.  The doNotify() method is our triggered event, and can of course do anything Python can.
 
 And finally -- right before dropping into our poll loop, we instantiate our subclassed MeterObserver, and register it in the
 meter's observer chain.  We also put the pulse count on the LCD, and set the input ratio to one so every time we close
@@ -770,7 +771,7 @@ the pulse input, we fire our event.
    my_meter.setPulseInputRatio(Pulse.Ln1, 1)
 
 
-This example is found in full in the github examples directory for ekmmeters, as set_notifypy.
+This example is found in full in the github examples directory for ekmmeters, as set_notify.py.
 A second example, set_summarize.py,  provides a MeterObserver which keeps a voltage
 summary over an arbitrary number of seconds, passed in the constructor.  While slightly longer than the example above,
 it does not require wiring the meter pulse inputs.
