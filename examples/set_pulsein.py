@@ -16,7 +16,7 @@ else:
     print "Cannot open port"
     exit()
 
-if my_meter.setPulseRatio(Pulse.Ln1, 55):
+if my_meter.setPulseInputRatio(Pulse.Ln1, 55):
     if my_meter.request():
         pr_str = my_meter.getField(Field.Pulse_Ratio_1)
         print pr_str
