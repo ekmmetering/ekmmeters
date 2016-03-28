@@ -16,7 +16,7 @@ More experienced Python users will find appropriate methods to support agents ag
 
 #Fine Print
 
-The API was written and tested using Python 2.6 under CentOS 6.x, and using Python 2.7x on OSX, Windows, and Linux, including Iron Python on .NET.  The library is a single file and pure Python.  You can install with "pip ekmmeters" or download ekmmeters.py and place it in your project directory.  There are no external dependencies for ekmmeters.py beyond the pypi packages json, collections, importlib and pyserial.
+The library is a single file and pure Python.  You can install with "pip ekmmeters" or download ekmmeters.py and place it in your project directory.  There are no external dependencies for ekmmeters.py beyond the pypi packages json, collections, importlib and pyserial.  
 
 Unit tests require the unittests2 pypi package, along with random and ConfigParser.  The unit tests are not included
 in the pypi release, and additional packages may be required for unit tests in the future.  The documentation for readthedocs.org was built under Sphinx 1.35. Google style docstrings are used exclusively, and read via the Sphinx napoleon extension.  Docs can be built locally with the sphinx_rtd_theme pypi package installed.
