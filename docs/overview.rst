@@ -8,7 +8,7 @@ Introduction
 Getting Started
 ^^^^^^^^^^^^^^^
 
-For most users, the most effective way to get started is working through the 
+For most users, the most effective way to get started is by working through the 
 examples with a live Omnimeter. Most of what this API does is very straightforward, 
 and the examples are written to easily adapt.
 
