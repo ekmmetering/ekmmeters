@@ -300,16 +300,16 @@ class Field():
     Amps_Ln_1                 Current line 1
     Amps_Ln_2                 Current line 2
     Amps_Ln_3                 Current line 3
-    RMS_Watts_Ln_1            Instantaneous watts line 1(20
-    RMS_Watts_Ln_2            Instantaneous watts line 2(2)
-    RMS_Watts_Ln_3            Instantaneous watts line 3(2)
-    RMS_Watts_Tot             Instantaneous watts all (2)
-    Cos_Theta_Ln_1            Original meter value
-    Cos_Theta_Ln_2            Original meter value
-    Cos_Theta_Ln_3            Original meter value
-    Max_Demand                Max demand value
-    Max_Demand_Period         User set period
-    Meter_Time                :func:`~ekmmeters.Meter.setZeroResettableKWH`
+    RMS_Watts_Ln_1            Instantaneous watts line 1
+    RMS_Watts_Ln_2            Instantaneous watts line 2
+    RMS_Watts_Ln_3            Instantaneous watts line 3
+    RMS_Watts_Tot             Instantaneous watts 1 + 2 + 3
+    Cos_Theta_Ln_1            Prefix in :class:`~ekmmeters.CosTheta`
+    Cos_Theta_Ln_2            Prefix in :class:`~ekmmeters.CosTheta`
+    Cos_Theta_Ln_3            Prefix in :class:`~ekmmeters.CosTheta`
+    Max_Demand                :class:`~ekmmeters.MaxDemandPeriod`
+    Max_Demand_Period         :class:`~ekmmeters.Meter.setCTRatio`
+    Meter_Time                :func:`~ekmmeters.Meter.setTime`
     CT_Ratio                  :class:`~ekmmeters.Meter.setCTRatio`
     Pulse_Cnt_1               Pulse Count Line 1
     Pulse_Cnt_2               Pulse Count Line 2
@@ -317,7 +317,7 @@ class Field():
     Pulse_Ratio_1             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
     Pulse_Ratio_2             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
     Pulse_Ratio_3             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
-    State_Inputs'             ---
+    State_Inputs'             :class:`~ekmmeters.StateInput`
     Power_Factor_Ln_1         EKM Power Factor
     Power_Factor_Ln_2         EKM Power Factor
     Power_Factor_Ln_3         EKM Power Factor
@@ -328,16 +328,16 @@ class Field():
     Rev_kWh_Ln_1              Line 1 reverse power
     Rev_kWh_Ln_2              Line 2 reverse power
     Rev_kWh_Ln_3              Line 3 revers power
-    Resettable_kWh_Tot        func:`~ekmmeters.Meter.setZeroResettableKWH`
-    Resettable_Rev_kWh_Tot    func:`~ekmmeters.Meter.setZeroResettableKWH`
+    Resettable_kWh_Tot        func:`~ekmmeters.V4Meter.setZeroResettableKWH`
+    Resettable_Rev_kWh_Tot    func:`~ekmmeters.V4Meter.setZeroResettableKWH`
     Reactive_Pwr_Ln_1         VAR Line 1
     Reactive_Pwr_Ln_2         VAR Line 2
     Reactive_Pwr_Ln_3         VAR Line 3
     Reactive_Pwr_Tot          VAR Total
     Line_Freq                 Freq. Hz.
-    State_Watts_Dir           Direction for RMS_Watts
+    State_Watts_Dir           :class:`~ekmmeters.DirectionFlag`
     State_Out                 --
-    kWh_Scale                 Scale for kWh Fields
+    kWh_Scale                 :class:`~ekmmeters.ScaleKWH`
     RMS_Watts_Max_Demand      Power peak in period
     Pulse_Output_Ratio        Meter::setPulseOutputRatio()
     Net_Calc_Watts_Ln_1       RMS_Watts with Direction
@@ -898,8 +898,10 @@ class SerialPort(object):
                     next_chunk = str(self.m_ser.read(bytes_to_read)).encode('ascii', 'ignore')
                     response_str += next_chunk
                     if (len(response_str) == 255):
+                        time.sleep(0.2)
                         return response_str
                     if (len(response_str) == 1) and (response_str.encode('hex') == '06'):
+                        time.sleep(0.2)
                         return response_str
                 else:  # hang out -- half shortest expected interval (50 ms)
                     waits += 1
@@ -1306,6 +1308,7 @@ class Meter(object):
 
     def getReadBuffer(self):
         """ Required override to fetch the read serial block.
+
         Returns:
             SerialBlock: Every supported field (A or A+B, includes all fields)
         """
@@ -1405,7 +1408,7 @@ class Meter(object):
         """ Serial call to set max demand period.
 
         Args:
-            period (MaxDemandPeriod): MaxDemandPeriod as int.
+            period (int): : as int.
             password (str): Optional password.
 
         Returns:
@@ -1744,7 +1747,7 @@ class Meter(object):
         return self.m_meter_address
 
     def registerObserver(self, observer):
-        """ Place an observer in the meter Update() chain.
+        """ Place an observer in the meter update() chain.
 
         Args:
             observer (MeterObserver): Subclassed MeterObserver.
@@ -1753,7 +1756,7 @@ class Meter(object):
         pass
 
     def unregisterObserver(self, observer):
-        """ Remove an observer from the meter Update() chain.
+        """ Remove an observer from the meter update() chain.
 
         Args:
             observer (MeterObserver): Subclassed MeterObserver.
@@ -2860,13 +2863,13 @@ class Meter(object):
 class MeterObserver(object):
     """ Unenforced abstract base class for implementations of the observer pattern.
 
-    To use, you must override the constructor and Update().
+    To use, you must override the constructor and update().
     """
 
     def __init__(self):
         pass
 
-    def Update(self, definition_buffer):
+    def update(self, definition_buffer):
         """ Called by attached :class:`~ekmmeters.Meter` on every :func:`~ekmmeters.Meter.request`.
 
         Args:
@@ -2889,15 +2892,15 @@ class IntervalObserver(MeterObserver):
         self.m_summary = SerialBlock()
         pass
 
-    def Update(self, def_buf):
-        """ Required override of Update method called by meter.
+    def update(self, def_buf):
+        """ Required override of update method called by meter.
 
         No op in this example subclass.
 
         Args:
             def_buf (SerialBlock): Buffer from last read.
         """
-        ekm_log("Example Update() in IntervalObserver called.")
+        ekm_log("Example update() in IntervalObserver called.")
         pass
 
 
@@ -3049,7 +3052,7 @@ class V3Meter(Meter):
         """ Fire update method in all attached observers in order of attachment. """
         for observer in self.m_observers:
             try:
-                observer.Update(self.m_req)
+                observer.update(self.m_req)
             except:
                 ekm_log(traceback.format_exc(sys.exc_info()))
 
@@ -3489,12 +3492,12 @@ class V4Meter(Meter):
         pass
 
     def updateObservers(self):
-        """ Call the Update() method in all attached  observers in order of attachment.
+        """ Call the update() method in all attached  observers in order of attachment.
 
         Called internally after request().
         """
         for observer in self.m_observers:
-            observer.Update(self.m_req)
+            observer.update(self.m_req)
 
     def insert(self, meter_db):
         """ Insert to :class:`~ekmmeters.MeterDB`  subclass.
