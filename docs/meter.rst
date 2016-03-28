@@ -13,10 +13,14 @@ the next data to send, the last data read, and all of the possible serial comman
                 setWeekendHolidaySchedules, request, readSettings, readHolidayDates, readMonthTariffs,
                 readScheduleTariffs, registerObserver, unregisterObserver, readCmdMsg, splitEkmDate,
                 jsonRender, getReadBuffer, getHolidayDatesBuffer, getMonthsBuffer, getSchedulesBuffer,
-                serialPostEnd, clearCmdMsg, serialCmdPwdAuth, calc_crc16, initParamLists,
-                initSchd_1_to_4, initSchd_5_to_8, initHldyDates, initMons, initRevMons, assignScheduleTariff,
+                serialPostEnd, clearCmdMsg, initParamLists,assignScheduleTariff,
                 setScheduleTariffs, assignSeasonSchedule, assignHolidayDate, extractScheduleTariff,
                 extractMonthTariff, extractHolidayDate, extractHolidayWeekendSchedules
+
+SerialBlock Class
+*****************
+
+Serial block is a simple subclass of OrderedDictionary.  The subclassing is primarily cautionary.
 
 .. autoclass:: SerialBlock
 
