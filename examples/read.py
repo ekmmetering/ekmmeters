@@ -3,7 +3,7 @@
 """
 from ekmmeters import *
 
-my_port_name = "/dev/ttyS0"
+my_port_name = "COM3"
 my_meter_address = "300001162"
 
 ekm_set_log(ekm_print_log)
