@@ -24,7 +24,7 @@ class ANotifyObserver(MeterObserver):
         self.m_startup = True
         self.m_last_pulse_cnt = 0
 
-    def Update(self, def_buf):
+    def update(self, def_buf):
 
         pulse_cnt = def_buf[Field.Pulse_Cnt_1][MeterData.NativeValue]
         #print str(pulse_cnt)
