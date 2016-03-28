@@ -14,6 +14,8 @@ The library is written to be compatible with existing EKM field naming conventio
 
 More experienced Python users will find appropriate methods to support agents agents which store data locally or in the cloud, manage meter settings, and act as the client in publish/subscribe systems.  The library  supports standard Python serialization with Python 2.x multiprocessing and queueing, all ingoing and outgoing buffers are avaliable in JSON-friendly dictionary objects, and a smalll automated unit test framework provides simplest-possible coverage of all supported commands.  
 
+#Fine Print
+
 The API was written and tested using Python 2.6 under CentOS 6.x, and using Python 2.7x on OSX, Windows, and Linux, including Iron Python on .NET.  The library is a single file and pure Python.  You can install with "pip ekmmeters" or download ekmmeters.py and place it in your project directory.  There are no external dependencies for ekmmeters.py beyond the pypi packages json, collections, importlib and pyserial.
 
 Unit tests require the unittests2 pypi package, along with random and ConfigParser.  The unit tests are not included
