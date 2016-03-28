@@ -40,26 +40,3 @@ trap exceptions broadly, return False, and log the result.  Most other methods
 will simply allow exceptions to percolate up, for best handling by the
 caller without reinterpretation.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
