@@ -57,7 +57,7 @@ Meters are read with :func:`~ekmmeters.Meter.request`, which always returns a Tr
 an optional termination flag which forces a "end this conversation" string to be sent to the meter. This is only
 used inside other serial calls: you can just ignore it and leave the default value of True.
 
-The full set off measurements for your Omnimeter are returned with :func:`~ekmmeters.Meter.request` on 
+The full set of measurements for your Omnimeter are returned with :func:`~ekmmeters.Meter.request` on 
 both V3 and V4 Omnimeters. Omnimeters return data in 255 byte chunks.  The supported V3 meter fields come back in one chunk (referred to in the EKM documentation as an A read), and the V4 Omnimeter uses two chunks (referred to as an AB read).  The request method is the same on both meter versions.
 
 .. code-block:: python
