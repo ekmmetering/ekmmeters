@@ -487,7 +487,7 @@ class Tariffs():
 class Extents():
     """ Traversal extents to use with for range(Extent) idiom.
 
-    Use of range(Extent.Entity) as in iterator insures safe
+    Use of range(Extent.Entity) as an iterator insures safe
     assignnment without off by one errors.
 
     ========== ==
@@ -670,7 +670,7 @@ class ScaleType():
     as described in ScaleKWH.
 
     ======  ==============================
-    KWH     Use Field.kWhScale as ScaleKWH
+    KWH     :class:`~ekmmeters.ScaleKWH`
     No      Do not scale
     Div10   Scale 10^-1
     Div100  Scale 10^2
@@ -798,8 +798,7 @@ class SerialBlock(OrderedDict):
 class SerialPort(object):
     """ Wrapper for serial port commands.
 
-    It should only be necessary to create on SerialPort per real port,
-    unless you are closing and opening the port with each command.
+    It should only be necessary to create one SerialPort per real port.
 
     Object construction sets the class variables.  The port is opened with
     initPort(), and any serial exceptions will thrown at that point.
