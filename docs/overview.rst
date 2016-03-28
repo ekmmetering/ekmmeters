@@ -8,7 +8,9 @@ Introduction
 Getting Started
 ^^^^^^^^^^^^^^^
 
-The best way to get started with the library is by trying the provided examples section.
+The best way to get started with the library is to hook up your meter and work through the examples
+section!  Most of what this API does is very straightforward, and the examples are
+written to easily adapt.
 
 Users writing device agents may wish to read through the unit test code as well.
 
@@ -23,12 +25,12 @@ which must handle JSON or XML, the assign and extract methods are strongly
 recommended, both for ease of use and readability.
 
 Goals
-^^^^^
+*****
 
 The purpose of this library is to provide a reliable and flexible interface
 to EKM v3 and v4 Omnnimeters.  It is written to be compatible with existing
-EKM field naming conventions and to be accessible to both the casual user
-who may not know Python well and simply wishes to script his or her meter,
+EKM field naming conventions and to be accessible to both the casual user --
+who may not know Python well and simply wishes to script his or her meter --
 and the experienced user who is creating a device agent to manage an
 attached meter.
 
@@ -37,34 +39,13 @@ enumerations for meter control, in a form which is friendly to intellisense
 style editors and Sphinx documentation.  The adopted idiom is simple
 classes with static members for each categorically unique value.
 
-An implication of the use of EKM naming is that camelCase and StudlyCase,
-used widely in existing EKM products, are used in preference to all lower
-case function names in PEP 8.
+PEP 8 Note
+**********
 
-To support users who may only be using Python for one meter-related script,
-and for readability, assign* and extract* functions are provided for safe
-and simple iteration and setting of serial call parameters.  Users creating
-device agents which must push data over the wire can set and recall every
-required buffer as a python dictionary.
-
-Background
-^^^^^^^^^^
-
-This library began life as reference implementation for a new EKM device agent.
-As such, the original code underwent many thousands of hours of test.  The changes
-made to open source the library include simplified buffer access and what we hope
-is enough documentation to use the API effectively.  While there are many more things
-which might be desirabe -- from full PEP 8 compliance to object decorators -- we've
-chosen to put test depth first.
-
-While we expect (and welcome) bug reports, this is the terminal release unless the
-2.x branch of Python increments.  The V4 and V3 Omnimeter protocols share a great deal,
-and future products may or may not have their DNA.  There are no significant ommitted
-serial calls, and we work in Python across OS X, Windows (including Iron Python),
-and Linux.  So while small features may be added, and bugs will certainly be fixed,
-this interface should remain largely unchanged.
-
-
-
-
-
+An implication of the use of EKM naming is that StudlyCase,
+used widely in existing EKM products, is used in preference to all lower
+case function names in PEP 8.  Function names keep, the vocabulary intact
+in camelCase.  And in the case of some long names, clarity won over
+abbreviation, so the library uses the PyCharm/IntelliJ 120 column lint default.
+These were implementation choices for an application-domain library,
+and no changes are planned at this time.
