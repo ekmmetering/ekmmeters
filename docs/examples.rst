@@ -57,7 +57,7 @@ Meters are read with :func:`~ekmmeters.Meter.request`, which always returns a Tr
 an optional termination flag which forces a "end this conversation" string to be sent to the meter. This is only
 used inside other serial calls: you can just ignore it and leave the default value of True.
 
-The full set of measurements for your Omnimeter are returned with :func:`~ekmmeters.Meter.request` on 
+The reads from your Omnimeter are returned with :func:`~ekmmeters.Meter.request` on 
 both V3 and V4 Omnimeters. Omnimeters return data in 255 byte chunks.  The supported V3 meter fields come back in one chunk (referred to in the EKM documentation as an A read), and the V4 Omnimeter uses two chunks (referred to as an AB read).  The request method is the same on both meter versions.
 
 .. code-block:: python
@@ -110,7 +110,7 @@ CT Ratio
 The CT ratio tells the meter how to scale the input from an inductive pickup.
 Allowed values are shown under :class:`~ekmmeters.CTRatio`.
 
-The CT ration is set with the method :func:`~ekmmeters.Meter.setCTRatio`.
+The CT ratio is set with the method :func:`~ekmmeters.Meter.setCTRatio`.
 The field CT_Ratio is returned in every read request.
 
 
