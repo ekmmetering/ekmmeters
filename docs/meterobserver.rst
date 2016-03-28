@@ -5,3 +5,4 @@ MeterObserver Class
 .. toctree::
    :maxdepth: 1
 .. autoclass:: MeterObserver
+    :members:   update
