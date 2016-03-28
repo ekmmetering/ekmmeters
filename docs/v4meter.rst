@@ -5,4 +5,5 @@ V4Meter Class
 .. toctree::
    :maxdepth: 1
 .. autoclass:: V4Meter
-    :members:
+    :members: attachPort, request, requestA, getReadBuffer, getField, lcdString, setLCDCmd, setRelay, 
+              setPulseInputRatio, setZeroResettableKWH, setPulseOutputRatio
