@@ -328,8 +328,8 @@ class Field():
     Rev_kWh_Ln_1              Line 1 reverse power
     Rev_kWh_Ln_2              Line 2 reverse power
     Rev_kWh_Ln_3              Line 3 revers power
-    Resettable_kWh_Tot        func:`~ekmmeters.V4Meter.setZeroResettableKWH`
-    Resettable_Rev_kWh_Tot    func:`~ekmmeters.V4Meter.setZeroResettableKWH`
+    Resettable_kWh_Tot        :func:`~ekmmeters.V4Meter.setZeroResettableKWH`
+    Resettable_Rev_kWh_Tot    :func:`~ekmmeters.V4Meter.setZeroResettableKWH`
     Reactive_Pwr_Ln_1         VAR Line 1
     Reactive_Pwr_Ln_2         VAR Line 2
     Reactive_Pwr_Ln_3         VAR Line 3
