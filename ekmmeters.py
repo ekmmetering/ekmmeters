@@ -317,7 +317,7 @@ class Field():
     Pulse_Ratio_1             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
     Pulse_Ratio_2             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
     Pulse_Ratio_3             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
-    State_Inputs'             :class:`~ekmmeters.StateInput`
+    State_Inputs'             :class:`~ekmmeters.StateIn`
     Power_Factor_Ln_1         EKM Power Factor
     Power_Factor_Ln_2         EKM Power Factor
     Power_Factor_Ln_3         EKM Power Factor
@@ -336,7 +336,7 @@ class Field():
     Reactive_Pwr_Tot          VAR Total
     Line_Freq                 Freq. Hz.
     State_Watts_Dir           :class:`~ekmmeters.DirectionFlag`
-    State_Out                 --
+    State_Out                 :class:`~ekmmeters.StateOut`
     kWh_Scale                 :class:`~ekmmeters.ScaleKWH`
     RMS_Watts_Max_Demand      Power peak in period
     Pulse_Output_Ratio        :class:`~ekmmeters.PulseOutput`
@@ -748,15 +748,15 @@ class RelayInterval():
     Min = 0     #: Lowest legal value
     Hold = Min  #: Hold is just zero
 
-class StateInput():
-    """ State input byte.
+class StateOut():
+    """ Pulse output state at time of read.
 
-    =======  =====================
+    =======  =
     OffOff   1
     OffOn    2
     OnOff    3
     OnOn     4
-    =======  =====================
+    =======  =
 
     """
     OffOff = 1
@@ -764,6 +764,29 @@ class StateInput():
     OnOff = 3
     OnOn = 4
 
+class StateIn():
+    """ State of each pulse line at time of read.
+
+    ================= =
+    HighHighHigh      0
+    HighHighLow       1
+    HighLowHigh       2
+    HighLowLow        3
+    LowHighHigh       4
+    LowHighLow        5
+    LowLowHigh        6
+    LowLowLow         7
+    ================= =
+
+    """
+    HighHighHigh = 0
+    HighHighLow = 1
+    HighLowHigh = 2
+    HighLowLow = 3
+    LowHighHigh = 4
+    LowHighLow = 5
+    LowLowHigh = 6
+    LowLowLow = 7
 
 class CosTheta():
     """ Prefix characters returned in power factor. Note a cos of zero has one space"""
