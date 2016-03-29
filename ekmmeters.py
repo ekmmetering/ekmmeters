@@ -339,7 +339,7 @@ class Field():
     State_Out                 --
     kWh_Scale                 :class:`~ekmmeters.ScaleKWH`
     RMS_Watts_Max_Demand      Power peak in period
-    Pulse_Output_Ratio        :class:`~ekmmeters.PulseOutput``
+    Pulse_Output_Ratio        :class:`~ekmmeters.PulseOutput`
     Net_Calc_Watts_Ln_1       RMS_Watts with Direction
     Net_Calc_Watts_Ln_2       RMS_Watts with Direction
     Net_Calc_Watts_Ln_3       RMS_Watts with Direction
