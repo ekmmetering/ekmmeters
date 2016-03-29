@@ -307,9 +307,9 @@ class Field():
     Cos_Theta_Ln_1            Prefix in :class:`~ekmmeters.CosTheta`
     Cos_Theta_Ln_2            Prefix in :class:`~ekmmeters.CosTheta`
     Cos_Theta_Ln_3            Prefix in :class:`~ekmmeters.CosTheta`
-    Max_Demand                :class:`~ekmmeters.MaxDemandPeriod`
-    Max_Demand_Period         :class:`~ekmmeters.Meter.setCTRatio`
-    Meter_Time                :func:`~ekmmeters.Meter.setTime`
+    Max_Demand                Demand in period
+    Max_Demand_Period         :class:`~ekmmeters.Meter.MaxDemandPeriod`
+    Meter_Time                :func:`~ekmmeters.Meter.setTime` and :func:`~ekmmeters.Meter.splitEkmDate`
     CT_Ratio                  :class:`~ekmmeters.Meter.setCTRatio`
     Pulse_Cnt_1               Pulse Count Line 1
     Pulse_Cnt_2               Pulse Count Line 2
@@ -339,7 +339,7 @@ class Field():
     State_Out                 --
     kWh_Scale                 :class:`~ekmmeters.ScaleKWH`
     RMS_Watts_Max_Demand      Power peak in period
-    Pulse_Output_Ratio        Meter::setPulseOutputRatio()
+    Pulse_Output_Ratio        :class:`~ekmmeters.PulseOutput``
     Net_Calc_Watts_Ln_1       RMS_Watts with Direction
     Net_Calc_Watts_Ln_2       RMS_Watts with Direction
     Net_Calc_Watts_Ln_3       RMS_Watts with Direction
