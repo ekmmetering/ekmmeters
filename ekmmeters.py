@@ -308,7 +308,7 @@ class Field():
     Cos_Theta_Ln_2            Prefix in :class:`~ekmmeters.CosTheta`
     Cos_Theta_Ln_3            Prefix in :class:`~ekmmeters.CosTheta`
     Max_Demand                Demand in period
-    Max_Demand_Period         :class:`~ekmmeters.Meter.MaxDemandPeriod`
+    Max_Demand_Period         :class:`~ekmmeters.MaxDemandPeriod`
     Meter_Time                :func:`~ekmmeters.Meter.setTime` and :func:`~ekmmeters.Meter.splitEkmDate`
     CT_Ratio                  :class:`~ekmmeters.Meter.setCTRatio`
     Pulse_Cnt_1               Pulse Count Line 1
