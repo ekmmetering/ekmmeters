@@ -5,7 +5,7 @@ Tested with SQL Server 2014
 '''
 
 from ekmmeters import *
-
+import importlib
 import sys
 import clr
 clr.AddReference('System.Data')

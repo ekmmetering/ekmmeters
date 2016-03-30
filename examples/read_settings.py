@@ -3,18 +3,25 @@
 """
 from ekmmeters import *
 
-my_port_name = "/dev/ttyS0"
+#port and meter
+my_port_name = "COM3"
 my_meter_address = "300001162"
 
+#logging to console
 ekm_set_log(ekm_print_log)
-port = SerialPort(my_port_name)
 
+#open port and init
+port = SerialPort(my_port_name)
 if (port.initPort() == True):
     my_meter = V4Meter(my_meter_address)
     my_meter.attachPort(port)
 else:
+    # no port no meter
     print "Cannot open port"
     exit()
+
+
+# First readthedocs example, complete.
 
 if my_meter.readSettings():
 
@@ -49,6 +56,7 @@ if my_meter.readSettings():
     print "Holiday schedule = " + holiday_weekend_schedules.Holiday
     print "Weekend schedule = " + holiday_weekend_schedules.Weekend
 
+# readthedocs individual example, complete.
 if my_meter.readSettings():
     months_fwd_blk = my_meter.getMonthsBuffer(ReadMonths.kWh)
     months_rev_blk = my_meter.getMonthsBuffer(ReadMonths.kWhReverse)

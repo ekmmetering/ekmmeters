@@ -2,7 +2,7 @@
 Example for IronPython 2.7 and ekmmeters
 (c) 2016 EKM Metering
 '''
-
+import importlib
 from ekmmeters import *
 
 import sys

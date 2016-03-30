@@ -449,7 +449,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
             meterV4.attachPort(port)
-            self.assertEqual(meterV4.setMaxDemandInterval(MaxDemandInterval.Hourly), True)
+            self.assertEqual(meterV4.setMaxDemandResetInterval(MaxDemandResetInterval.Hourly), True)
             self.assertEqual(True, True)
         except:
             failed = True
@@ -667,9 +667,9 @@ class AcceptanceTest(unittest.TestCase):
             p1new = 34
             p2new = 93
             p3new = 87
-            self.assertEqual(meterV4.setPulseInputRatio(Pulse.Ln1, p1new), True)
-            self.assertEqual(meterV4.setPulseInputRatio(Pulse.Ln2, p2new), True)
-            self.assertEqual(meterV4.setPulseInputRatio(Pulse.Ln3, p3new), True)
+            self.assertEqual(meterV4.setPulseInputRatio(Pulse.In1, p1new), True)
+            self.assertEqual(meterV4.setPulseInputRatio(Pulse.In2, p2new), True)
+            self.assertEqual(meterV4.setPulseInputRatio(Pulse.In3, p3new), True)
             self.assertEqual(meterV4.request(), True)
             str_pulse_1 = meterV4.getField(Field.Pulse_Ratio_1)
             str_pulse_2 = meterV4.getField(Field.Pulse_Ratio_2)
@@ -680,9 +680,9 @@ class AcceptanceTest(unittest.TestCase):
             p1new = 121
             p2new = 343
             p3new = 454
-            self.assertEqual(meterV4.setPulseInputRatio(Pulse.Ln1, p1new), True)
-            self.assertEqual(meterV4.setPulseInputRatio(Pulse.Ln2, p2new), True)
-            self.assertEqual(meterV4.setPulseInputRatio(Pulse.Ln3, p3new), True)
+            self.assertEqual(meterV4.setPulseInputRatio(Pulse.In1, p1new), True)
+            self.assertEqual(meterV4.setPulseInputRatio(Pulse.In2, p2new), True)
+            self.assertEqual(meterV4.setPulseInputRatio(Pulse.In3, p3new), True)
             self.assertEqual(meterV4.request(), True)
             str_pulse_1 = meterV4.getField(Field.Pulse_Ratio_1)
             str_pulse_2 = meterV4.getField(Field.Pulse_Ratio_2)

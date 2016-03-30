@@ -8,8 +8,8 @@ the next data to send, the last data read, and all of the possible serial comman
 .. toctree::
    :maxdepth: 2
 .. autoclass:: Meter
-    :members:   getMeterAddress, setMaxDemandPeriod, setMaxDemandInterval, setMeterPassword,
-                setSeasonSchedules, setMaxDemandReset, setTime, setCTRatio, setHolidayDates,
+    :members:   getMeterAddress, setMaxDemandPeriod, setMaxDemandResetInterval, setMeterPassword,
+                setSeasonSchedules, setMaxDemandResetNow, setTime, setCTRatio, setHolidayDates,
                 setWeekendHolidaySchedules, request, readSettings, readHolidayDates, readMonthTariffs,
                 readScheduleTariffs, registerObserver, unregisterObserver, readCmdMsg, splitEkmDate,
                 jsonRender, getReadBuffer, getHolidayDatesBuffer, getMonthsBuffer, getSchedulesBuffer,

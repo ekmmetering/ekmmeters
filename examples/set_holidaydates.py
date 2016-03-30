@@ -4,12 +4,15 @@
 import random
 from ekmmeters import *
 
-my_port_name = "/dev/ttyS0"
+#port setup
+my_port_name = "COM3"
 my_meter_address = "300001162"
 
+#log to console
 ekm_set_log(ekm_print_log)
-port = SerialPort(my_port_name)
 
+# init port and meter
+port = SerialPort(my_port_name)
 if (port.initPort() == True):
     my_meter = V4Meter(my_meter_address)
     my_meter.attachPort(port)
@@ -17,12 +20,14 @@ else:
     print "Cannot open port"
     exit()
 
+# input over range(Extents.Holidays)
 for holiday in range(Extents.Holidays):
     day = random.randint(1,28)
     mon = random.randint(1,12)
     my_meter.assignHolidayDate(holiday, mon, day)
 my_meter.setHolidayDates()
 
+# input directly
 param_buf = OrderedDict()
 param_buf["Holiday_1_Month"] = 1
 param_buf["Holiday_1_Day"] = 1
@@ -64,6 +69,7 @@ param_buf["Holiday_19_Month"] = 0
 param_buf["Holiday_19_Day"] = 0
 param_buf["Holiday_20_Month"] = 1
 param_buf["Holiday_20_Day"] = 9
+
 if my_meter.setHolidayDates(param_buf):
     print "Set holiday dates success."
 
