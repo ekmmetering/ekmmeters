@@ -2,7 +2,7 @@ from setuptools import setup, find_packages, Extension
 
 setup(
     name = "ekmmeters",
-    version = "0.1.3",
+    version = "0.1.4",
     license='MIT',
     description='Python API for V3 and V4 EKM Omnimeters',
     author = 'EKM Metering',
