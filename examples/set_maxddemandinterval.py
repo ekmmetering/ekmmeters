@@ -21,4 +21,7 @@ else:
 
 my_meter.setMaxDemandResetInterval(MaxDemandResetInterval.Daily)
 
+my_meter.setMaxDemandResetNow()
+
+
 port.closePort()
