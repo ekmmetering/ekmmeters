@@ -1,4 +1,4 @@
-#ekmmeters 0.1.3
+#ekmmeters 0.1.4
 
 Python API for the EKM Omnimeter Serial Interface
 
