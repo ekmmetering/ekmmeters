@@ -834,11 +834,12 @@ class SerialPort(object):
     be changed.
     """
 
-    def __init__(self, ttyport, baudrate=9600):
+    def __init__(self, ttyport, baudrate=9600, force_wait = 0.1):
         """
         Args:
             ttyport (str): port name, ex 'COM3' '/dev/ttyUSB0'
             baudrate (int): optional, 9600 default and recommended
+            force_wait(float) : optional post commnd sleep, if required
         """
         self.m_ttyport = ttyport
         self.m_baudrate = baudrate
@@ -846,6 +847,8 @@ class SerialPort(object):
         self.m_fd = None
         self.m_max_waits = 60
         self.m_wait_sleep = 0.05
+        self.m_force_wait = force_wait
+        self.m_init_wait = 0.2
         pass
 
     def initPort(self):
@@ -861,7 +864,7 @@ class SerialPort(object):
             ekm_log("Pyserial version = " + serial.VERSION)
             ekm_log("Port = " + self.m_ttyport)
             ekm_log("Rate = " + str(self.m_baudrate))
-            time.sleep(0.2)
+            time.sleep(self.m_init_wait)
             return True
         except:
             ekm_log(traceback.format_exc(sys.exc_info()))
@@ -891,7 +894,7 @@ class SerialPort(object):
         if (len(view_str) > 0):
             self.m_ser.write(view_str)
             self.m_ser.flush()
-            time.sleep(0.2)
+            time.sleep(self.m_force_wait)
         pass
 
     def setPollingValues(self, max_waits, wait_sleep):
@@ -922,14 +925,14 @@ class SerialPort(object):
                     next_chunk = str(self.m_ser.read(bytes_to_read)).encode('ascii', 'ignore')
                     response_str += next_chunk
                     if (len(response_str) == 255):
-                        time.sleep(0.1)
+                        time.sleep(self.m_force_wait)
                         return response_str
                     if (len(response_str) == 1) and (response_str.encode('hex') == '06'):
-                        time.sleep(0.1)
+                        time.sleep(self.m_force_wait)
                         return response_str
                 else:  # hang out -- half shortest expected interval (50 ms)
                     waits += 1
-                    time.sleep(self.m_wait_sleep)
+                    time.sleep(self.m_force_wait)
             response_str = ""
 
         except:
@@ -3280,9 +3283,9 @@ class V4Meter(Meter):
         self.m_blk_b["reserved_6"] = [1, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_b[Field.Pulse_Output_Ratio] = [4, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_blk_b["reserved_7"] = [53, FieldType.Hex, ScaleType.No, "", 0, False, False]
-        self.m_blk_b[Field.Status_A] = [1, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_blk_b[Field.Status_B] = [1, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_blk_b[Field.Status_C] = [1, FieldType.Hex, ScaleType.No, "", 0, False, True]
+        self.m_blk_b[Field.Status_A] = [1, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_blk_b[Field.Status_B] = [1, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_blk_b[Field.Status_C] = [1, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_blk_b[Field.Meter_Time] = [14, FieldType.String, ScaleType.No, "", 0, False, False]
         self.m_blk_b["reserved_8"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_b["reserved_9"] = [4, FieldType.Hex, ScaleType.No, "", 0, False, False]
