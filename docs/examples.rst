@@ -145,11 +145,16 @@ Max_Demand_Period is returned in every read request.
            if mdp_str == str(MaxDemandPeriod.At_60_Minutes):
                print "60 Minutes"
 
-Max Demand Interval
-*******************
+Max Demand Reset
+****************
+In addition to setting the period for max demand, on V4 you can set an interval to
+force a reset, or force a reset immediately.
 
 Max demand interval is written using :func:`~ekmmeters.Meter.setMaxDemandResetInterval`, which
 can return True or False. It accepts values in the set :class:`~ekmmeters.MaxDemandResetInterval`.
+
+You can force an immediate reset with :func:`~ekmmeters.Meter.setMaxDemandResetNow()`.
+
 
 .. code-block:: python
    :emphasize-lines: 1
@@ -157,6 +162,10 @@ can return True or False. It accepts values in the set :class:`~ekmmeters.MaxDem
 
    if my_meter.setMaxDemandResetInterval(MaxDemandResetInterval.Daily):
         print "Success"
+
+   # or just force reset
+   my_meter.setMaxDemandResetNow()
+
 
 Pulse Output Ratio
 ******************
