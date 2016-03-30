@@ -148,14 +148,14 @@ Max_Demand_Period is returned in every read request.
 Max Demand Interval
 *******************
 
-Max demand interval is written using :func:`~ekmmeters.Meter.setMaxDemandInterval`, which
-can return True or False. It accepts values in the set :class:`~ekmmeters.MaxDemandInterval`.
+Max demand interval is written using :func:`~ekmmeters.Meter.setMaxDemandResetInterval`, which
+can return True or False. It accepts values in the set :class:`~ekmmeters.MaxDemandResetInterval`.
 
 .. code-block:: python
    :emphasize-lines: 1
    :linenos:
 
-   if my_meter.setMaxDemandInterval(MaxDemandInterval.Daily):
+   if my_meter.setMaxDemandResetInterval(MaxDemandResetInterval.Daily):
         print "Success"
 
 Pulse Output Ratio

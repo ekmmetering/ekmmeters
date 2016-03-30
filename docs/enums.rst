@@ -14,7 +14,7 @@ Settings
 
 Values used primarily (but not exclusively) for serial settings parameters.
 
-.. autoclass:: MaxDemandInterval
+.. autoclass:: MaxDemandResetInterval
 
 .. autoclass:: MaxDemandPeriod
 
