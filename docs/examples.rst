@@ -145,11 +145,11 @@ Max_Demand_Period is returned in every read request.
            if mdp_str == str(MaxDemandPeriod.At_60_Minutes):
                print "60 Minutes"
 
-Max Demand Interval
-*******************
+Max Demand Reset
+****************
 
-Max demand interval is written using :func:`~ekmmeters.Meter.setMaxDemandResetInterval`, which
-can return True or False. It accepts values in the set :class:`~ekmmeters.MaxDemandResetInterval`.
+Max demand reset interval is written using :func:`~ekmmeters.Meter.setMaxDemandResetInterval`, which
+can return True or False. It accepts values in the set :class:`~ekmmeters.MaxDemandResetInterval`. 
 
 .. code-block:: python
    :emphasize-lines: 1
