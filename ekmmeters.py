@@ -110,10 +110,10 @@ class MeterData():
     EventFlag = 6
 
 
-class MaxDemandInterval():
+class MaxDemandResetInterval():
     """
 
-    As passed in :func:`~ekmmeters.Meter.setMaxDemandInterval`.
+    As passed in :func:`~ekmmeters.Meter.setMaxDemandResetInterval`.
 
     ======= =
     Off     0
@@ -353,9 +353,7 @@ class Field():
     upstring EKM products.  The original Cos Theta value
     is provided as an API-only feature.
 
-
     """
-
     Meter_Address = 'Meter_Address'
     Time_Stamp = 'Time_Stamp'
     Model = 'Model'
@@ -467,7 +465,6 @@ class Months():
     Month_6 = 5
 
 
-
 class Tariffs():
     """ As passed to :func:`~ekmmeters.Meter.assignScheduleTariff`
 
@@ -483,6 +480,7 @@ class Tariffs():
     Tariff_2 = 1
     Tariff_3 = 2
     Tariff_4 = 3
+
 
 class Extents():
     """ Traversal extents to use with for range(Extent) idiom.
@@ -505,18 +503,20 @@ class Extents():
     Schedules = 8
     Months = 6
 
+
 class PulseOutput():
-    """ As passed to :func:`~ekmmeters.V4Meter.setPulseOutputRatio`
+    """ As passed to :func:`~ekmmeters.V4Meter.setPulseOutputRatio`.
 
     ========== ==========
-    Ratio_1    Ratio_25
-    Ratio_2    Ratio_40
-    Ratio_4    Ratio_50
-    Ratio_5    Ratio_80
-    Ratio_8    Ratio_100
-    Ratio_10   Ratio_200
-    Ratio_16   Ratio_400
-    Ratio_20
+    Ratio_1    Ratio_40
+    Ratio_2    Ratio_50
+    Ratio_4    Ratio_80
+    Ratio_5    Ratio_100
+    Ratio_8    Ratio_200
+    Ratio_10   Ratio_400
+    Ratio_16   Ratio_800
+    Ratio_20   Ratio_1600
+    Ratio_25
     ========== ==========
 
     """
@@ -535,6 +535,8 @@ class PulseOutput():
     Ratio_100 = 100
     Ratio_200 = 200
     Ratio_400 = 400
+    Ratio_800 = 800
+    Ratio_1600 = 1600
 
 
 class Pulse():
@@ -543,15 +545,15 @@ class Pulse():
     Simple constant to clarify call.
 
     === =
-    Ln1 1
-    Ln2 2
-    Ln3 3
+    In1 1
+    In2 2
+    In3 3
     === =
 
     """
-    Ln1 = 1
-    Ln2 = 2
-    Ln3 = 3
+    In1 = 1
+    In2 = 2
+    In3 = 3
 
 
 class Schedules():
@@ -673,7 +675,7 @@ class ScaleType():
     KWH     :class:`~ekmmeters.ScaleKWH`
     No      Do not scale
     Div10   Scale 10^-1
-    Div100  Scale 10^2
+    Div100  Scale 10^-2
     ======  ==============================
 
     """
@@ -920,10 +922,10 @@ class SerialPort(object):
                     next_chunk = str(self.m_ser.read(bytes_to_read)).encode('ascii', 'ignore')
                     response_str += next_chunk
                     if (len(response_str) == 255):
-                        time.sleep(0.2)
+                        time.sleep(0.1)
                         return response_str
                     if (len(response_str) == 1) and (response_str.encode('hex') == '06'):
-                        time.sleep(0.2)
+                        time.sleep(0.1)
                         return response_str
                 else:  # hang out -- half shortest expected interval (50 ms)
                     waits += 1
@@ -998,7 +1000,7 @@ class MeterDB(object):
         elif fld_type == FieldType.Hex:
             return "VARCHAR(" + str(fld_len * 2) + ")"
         elif fld_type == FieldType.PowerFactor:
-            return "FLOAT"
+            return "VARCHAR(" + str(fld_len) + ")"
         else:
             ekm_log("Type " + str(type) + " not handled by mapTypeToSql, returned VARCHAR(255)")
             return "VARCHAR(255)"
@@ -1066,7 +1068,9 @@ class MeterDB(object):
             fld_type = def_buf[fld][MeterData.TypeValue]
             fld_str_content = def_buf[fld][MeterData.StringValue]
             delim = ""
-            if (fld_type == FieldType.Hex) or (fld_type == FieldType.String):
+            if (fld_type == FieldType.Hex) or \
+                    (fld_type == FieldType.String) or \
+                    (fld_type == FieldType.PowerFactor):
                 delim = "'"
             qry_str = qry_str + delim + fld_str_content + delim
             count += 1
@@ -1463,18 +1467,18 @@ class Meter(object):
         self.setContext("")
         return result
 
-    def setMaxDemandInterval(self, interval, password="00000000"):
+    def setMaxDemandResetInterval(self, interval, password="00000000"):
         """ Serial call to set max demand interval.
 
         Args:
-            interval (int): :class:`~ekmmeters.MaxDemandInterval` as int.
+            interval (int): :class:`~ekmmeters.MaxDemandResetInterval` as int.
             password (str): Optional password.
 
         Returns:
             bool: True on completion with ACK.
         """
         result = False
-        self.setContext("setMaxDemandInterval")
+        self.setContext("setMaxDemandResetInterval")
         try:
             if interval < 0 or interval > 4:
                 self.writeCmdMsg("Correct parameter: 0 = off, 1 = monthly, 2 = weekly, 3 = daily, 4 = hourly")
@@ -1491,7 +1495,7 @@ class Meter(object):
                     req_str += self.calc_crc16(req_str[2:].decode("hex"))
                     self.m_serial_port.write(req_str.decode("hex"))
                     if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
-                        self.writeCmdMsg("Success (setMaxDemandInterval): 06 returned.")
+                        self.writeCmdMsg("Success (setMaxDemandResetInterval): 06 returned.")
                         result = True
             self.serialPostEnd()
         except:
@@ -1634,7 +1638,7 @@ class Meter(object):
 
                 elif fld_type == FieldType.PowerFactor:
                     def_buf[fld][MeterData.StringValue] = str(raw_data)
-                    def_buf[fld][MeterData.StringValue] = str(raw_data)
+                    def_buf[fld][MeterData.NativeValue] = str(raw_data)
 
                 else:
                     ekm_log("Unrecognized field type")
@@ -2063,8 +2067,8 @@ class Meter(object):
         # default direction == ReadMonths.kWh
         return self.m_mons
 
-    def setMaxDemandReset(self, password="00000000"):
-        """ Serial call to zero resettable max demand values.
+    def setMaxDemandResetNow(self, password="00000000"):
+        """ Serial call zero max demand (Dash Now button)
 
         Args:
             password (str): Optional password
@@ -2073,7 +2077,7 @@ class Meter(object):
             bool: True on completion with ACK.
         """
         result = False
-        self.setContext("setMaxDemandReset")
+        self.setContext("setMaxDemandResetNow")
         try:
             if len(password) != 8:
                 self.writeCmdMsg("Invalid password length.")
@@ -2090,7 +2094,7 @@ class Meter(object):
                     req_str += self.calc_crc16(req_str[2:].decode("hex"))
                     self.m_serial_port.write(req_str.decode("hex"))
                     if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
-                        self.writeCmdMsg("Success(setMaxDemandReset): 06 returned.")
+                        self.writeCmdMsg("Success(setMaxDemandResetNow): 06 returned.")
                         result = True
             self.serialPostEnd()
         except:
@@ -3109,18 +3113,24 @@ class V3Meter(Meter):
         pf1_original = pf2_original = pf3_original = 0
         if pf1_y == CosTheta.InductiveLag:
             pf1_original = int(pf1_x) + 100
-        else:
+        elif pf1_y == CosTheta.CapacitiveLead:
             pf1_original = int(pf1_x)
+        else:
+            pf1_original = 100
 
         if pf2_y == CosTheta.InductiveLag:
             pf2_original = int(pf2_x) + 100
-        else:
+        elif pf2_y == CosTheta.CapacitiveLead:
             pf2_original = int(pf2_x)
+        else:
+            pf2_original = 100
 
         if pf3_y == CosTheta.InductiveLag:
             pf3_original = int(pf3_x) + 100
-        else:
+        elif pf3_y == CosTheta.CapacitiveLead:
             pf3_original = int(pf3_x)
+        else:
+            pf3_original = 100
 
         self.m_blk_a[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_original)
         self.m_blk_a[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_original)
@@ -3209,9 +3219,9 @@ class V4Meter(Meter):
         self.m_blk_a[Field.RMS_Watts_Ln_2] = [7, FieldType.Int, ScaleType.No, "", 0, False, False]
         self.m_blk_a[Field.RMS_Watts_Ln_3] = [7, FieldType.Int, ScaleType.No, "", 0, False, False]
         self.m_blk_a[Field.RMS_Watts_Tot] = [7, FieldType.Int, ScaleType.No, "", 0, False, False]
-        self.m_blk_a[Field.Power_Factor_Ln_1] = [4, FieldType.PowerFactor, ScaleType.No, "", 0, False, False]
-        self.m_blk_a[Field.Power_Factor_Ln_2] = [4, FieldType.PowerFactor, ScaleType.No, "", 0, False, False]
-        self.m_blk_a[Field.Power_Factor_Ln_3] = [4, FieldType.PowerFactor, ScaleType.No, "", 0, False, False]
+        self.m_blk_a[Field.Cos_Theta_Ln_1] = [4, FieldType.PowerFactor, ScaleType.No, "", 0, False, False]
+        self.m_blk_a[Field.Cos_Theta_Ln_2] = [4, FieldType.PowerFactor, ScaleType.No, "", 0, False, False]
+        self.m_blk_a[Field.Cos_Theta_Ln_3] = [4, FieldType.PowerFactor, ScaleType.No, "", 0, False, False]
         self.m_blk_a[Field.Reactive_Pwr_Ln_1] = [7, FieldType.Int, ScaleType.No, "", 0, False, False]
         self.m_blk_a[Field.Reactive_Pwr_Ln_2] = [7, FieldType.Int, ScaleType.No, "", 0, False, False]
         self.m_blk_a[Field.Reactive_Pwr_Ln_3] = [7, FieldType.Int, ScaleType.No, "", 0, False, False]
@@ -3229,6 +3239,9 @@ class V4Meter(Meter):
         self.m_blk_a["reserved_3"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_a["reserved_4"] = [4, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_a["crc16"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
+        self.m_blk_a[Field.Power_Factor_Ln_1] = [4, FieldType.Int, ScaleType.No, "0", 0, True, False]
+        self.m_blk_a[Field.Power_Factor_Ln_2] = [4, FieldType.Int, ScaleType.No, "0", 0, True, False]
+        self.m_blk_a[Field.Power_Factor_Ln_3] = [4, FieldType.Int, ScaleType.No, "0", 0, True, False]
         pass
 
     def initFormatB(self):
@@ -3266,13 +3279,13 @@ class V4Meter(Meter):
         self.m_blk_b[Field.CT_Ratio] = [4, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_blk_b["reserved_6"] = [1, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_b[Field.Pulse_Output_Ratio] = [4, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_blk_b["reserved_7"] = [56, FieldType.Hex, ScaleType.No, "", 0, False, False]
-        self.m_blk_b[Field.Meter_Time] = [14, FieldType.String, ScaleType.No, "", 0, False, False]
-        self.m_blk_b["reserved_8"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
-        self.m_blk_b["reserved_9"] = [1, FieldType.Hex, ScaleType.No, "", 0, False, False]
+        self.m_blk_b["reserved_7"] = [53, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_b[Field.Status_A] = [1, FieldType.Hex, ScaleType.No, "", 0, False, True]
         self.m_blk_b[Field.Status_B] = [1, FieldType.Hex, ScaleType.No, "", 0, False, True]
         self.m_blk_b[Field.Status_C] = [1, FieldType.Hex, ScaleType.No, "", 0, False, True]
+        self.m_blk_b[Field.Meter_Time] = [14, FieldType.String, ScaleType.No, "", 0, False, False]
+        self.m_blk_b["reserved_8"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
+        self.m_blk_b["reserved_9"] = [4, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_b["crc16"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_b[Field.Net_Calc_Watts_Ln_1] = [7, FieldType.Int, ScaleType.No, "0", 0, True, False]
         self.m_blk_b[Field.Net_Calc_Watts_Ln_2] = [7, FieldType.Int, ScaleType.No, "0", 0, True, False]
@@ -3435,26 +3448,61 @@ class V4Meter(Meter):
         pf1_original = pf2_original = pf3_original = 0
         if pf1_y == CosTheta.InductiveLag:
             pf1_original = int(pf1_x) + 100
+        elif pf1_y == CosTheta.CapacitiveLead:
+            if int(pf1_x) == 0:
+                pf1_original = 100
+            else:
+                pf1_original = int(pf1_x)
         else:
-            pf1_original = int(pf1_x)
+            pf1_original = 100
 
         if pf2_y == CosTheta.InductiveLag:
             pf2_original = int(pf2_x) + 100
+        elif pf2_y == CosTheta.CapacitiveLead:
+            if int(pf2_x) == 0:
+                pf2_original = 100
+            else:
+                pf2_original = int(pf2_x)
         else:
-            pf2_original = int(pf2_x)
+            pf2_original = 100
 
         if pf3_y == CosTheta.InductiveLag:
             pf3_original = int(pf3_x) + 100
+        elif pf3_y == CosTheta.CapacitiveLead:
+            if int(pf3_x) == 0:
+                pf3_original = 100
+            else:
+                pf3_original = int(pf3_x)
         else:
-            pf3_original = int(pf3_x)
+            pf3_original = 100
 
-        self.m_blk_a[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_original)
-        self.m_blk_a[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_original)
-        self.m_blk_a[Field.Power_Factor_Ln_3][MeterData.StringValue] = str(pf3_original)
+        if pf2_y == CosTheta.InductiveLag:
+            pf2_original = int(pf2_x) + 100
+        elif pf2_y == CosTheta.CapacitiveLead:
+            if int(pf2_x) == 0:
+                pf2_original = 100
+            else:
+                pf2_original = int(pf2_x)
+        else:
+            pf2_original = 100
 
-        self.m_blk_a[Field.Power_Factor_Ln_1][MeterData.NativeValue] = pf1_original
-        self.m_blk_a[Field.Power_Factor_Ln_2][MeterData.NativeValue] = pf2_original
-        self.m_blk_a[Field.Power_Factor_Ln_3][MeterData.NativeValue] = pf3_original
+        if pf3_y == CosTheta.InductiveLag:
+            pf3_original = int(pf3_x) + 100
+        elif pf3_y == CosTheta.CapacitiveLead:
+            if int(pf3_x) == 0:
+                pf3_original = 100
+            else:
+                pf3_original = int(pf3_x)
+        else:
+            pf3_original = 100
+
+        self.m_blk_b[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_original)
+        self.m_blk_b[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_original)
+        self.m_blk_b[Field.Power_Factor_Ln_3][MeterData.StringValue] = str(pf3_original)
+
+        self.m_blk_b[Field.Power_Factor_Ln_1][MeterData.NativeValue] = pf1_original
+        self.m_blk_b[Field.Power_Factor_Ln_2][MeterData.NativeValue] = pf2_original
+        self.m_blk_b[Field.Power_Factor_Ln_3][MeterData.NativeValue] = pf3_original
 
         rms_watts_1 = self.m_blk_b[Field.RMS_Watts_Ln_1][MeterData.NativeValue]
         rms_watts_2 = self.m_blk_b[Field.RMS_Watts_Ln_2][MeterData.NativeValue]

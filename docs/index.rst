@@ -8,6 +8,7 @@ EKM Serial Push API
 
    overview.rst
    examples.rst
+   unittests.rst
    meter.rst
    v3meter.rst
    v4meter.rst
