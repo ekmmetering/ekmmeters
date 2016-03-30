@@ -51,7 +51,8 @@ def loadparams():
     v4_addr = test_ini.get("PARAMS", 'v4_addr')
     dbpath = test_ini.get("PARAMS", 'dbpath')
     user_prompts = test_ini.getboolean("PARAMS", "user_prompts")
-    return (test_port, v3_addr, v4_addr, dbpath, user_prompts)
+    wait = test_ini.getfloat("PARAMS", "force_wait")
+    return (wait, test_port, v3_addr, v4_addr, dbpath, user_prompts)
 
 
 class AcceptanceTest(unittest.TestCase):
@@ -83,9 +84,9 @@ class AcceptanceTest(unittest.TestCase):
         super(AcceptanceTest, cls).setUpClass()
 
     def testReadAndDb(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         print v4_addr
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         print "*****  Read and database tests"
         print "Manually remove test database to force recreate"
         failed = False
@@ -169,8 +170,8 @@ class AcceptanceTest(unittest.TestCase):
 
     def testSetPasswordV3(self):
         failed = False
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print "***** password V3 test"
             print "If this test fails, the meter password may be stuck at 00000001"
@@ -189,8 +190,8 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, False)
 
     def testSetPasswordV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print "***** password V3 test"
@@ -209,8 +210,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** read  V4 Test"
@@ -227,8 +228,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadScheduleTariffsV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** read  periods and times V4 Test"
@@ -250,9 +251,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadScheduleTariffsV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print"***** read  periods and times V3 Test"
             ekm_set_log(ekm_print_log)
@@ -273,9 +274,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadMonthsTariffsV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print"***** read  months V4 Test"
             ekm_set_log(ekm_print_log)
@@ -296,8 +297,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadHolidayDatesV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** read  holidays V4 Test"
@@ -316,8 +317,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadHolidayDatesV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** read  holidays V3 Test"
@@ -336,8 +337,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadMonthTariffsV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** read  months V3 Test"
@@ -359,8 +360,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** read  V3 Test"
@@ -377,9 +378,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetCtV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print"***** CT V4 Test"
             ekm_set_log(ekm_print_log)
@@ -404,9 +405,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetHoldayWeekendV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print"***** Holiday weekend V4 Test"
             ekm_set_log(ekm_print_log)
@@ -422,8 +423,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetHolidayWeekendV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Holiday weekend V3 Test"
@@ -440,8 +441,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetMaxDemandIntervalV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"*****  Max Demand Interval Test"
@@ -458,8 +459,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetPulseOuputRatioV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Pulse output V4 Test"
@@ -483,8 +484,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetCtV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             ekm_set_log(ekm_print_log)
@@ -512,8 +513,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetTimeV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print "*****  Set Meter Time V4"
@@ -569,9 +570,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetTimeV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print "*****  Set Meter Time V3"
             ekm_set_log(ekm_print_log)
@@ -625,8 +626,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetMaxDemandPeriodV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Max Demand Period V4 Test"
@@ -653,8 +654,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetPulseInputRatioV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Pulse ratio V4 Test"
@@ -698,8 +699,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetZeroResetV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Test  resettable kwh v4"
@@ -725,9 +726,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetScheduleTariffsV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print"***** Test  set period times v4"
             ekm_set_log(ekm_print_log)
@@ -757,8 +758,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetScheduleTariffsV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Test  set period times v3"
@@ -789,9 +790,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetSeasonSchedulesV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print"***** Test  seasons v4"
             ekm_set_log(ekm_print_log)
@@ -820,8 +821,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetHolidayDatesV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Test  holidays v4"
@@ -879,8 +880,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetHolidayDatesV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Test  holidays v3"
@@ -938,8 +939,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetSeasonSchedulesV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Test  seasons v3"
@@ -969,8 +970,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetMaxDemandPeriodV3(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print"***** Max Demand Period V3 Test"
@@ -996,8 +997,8 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetLcdV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        port = SerialPort(test_port, 9600)
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
             print "*****  Set LCD display V4  (manual check only)"
@@ -1029,9 +1030,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetRelayV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         try:
             print "*****  Set Relay V4"
             ekm_set_log(ekm_print_log)
@@ -1055,9 +1056,9 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadWriteSettingsV4(self):
-        test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
-        port = SerialPort(test_port, 9600)
+        port = SerialPort(test_port, force_wait=wait)
         ekm_set_log(ekm_print_log)
         self.assertEqual(port.initPort(), True)
         try:

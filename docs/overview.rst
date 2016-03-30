@@ -12,8 +12,6 @@ For most users, the most effective way to get started is by working through the
 examples with a live Omnimeter. Most of what this API does is very straightforward, 
 and the examples are written to easily adapt.
 
-Users writing device agents may wish to read through the unit test code (on github) as well.
-
 It is generally quite difficult to come to terms with a new library (and perhaps
 a new language) while wrestling with serial connectivity issues.  The trial
 version of EKM Dash is recommended as a way to easily insure your meters are
