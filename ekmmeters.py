@@ -3117,23 +3117,33 @@ class V3Meter(Meter):
         if pf1_y == CosTheta.InductiveLag:
             pf1_original = int(pf1_x) + 100
         elif pf1_y == CosTheta.CapacitiveLead:
-            pf1_original = int(pf1_x)
+            if int(pf1_x) == 0:
+                pf1_original = 100
+            else:
+                pf1_original = int(pf1_x)
         else:
             pf1_original = 100
 
         if pf2_y == CosTheta.InductiveLag:
             pf2_original = int(pf2_x) + 100
         elif pf2_y == CosTheta.CapacitiveLead:
-            pf2_original = int(pf2_x)
+            if int(pf2_x) == 0:
+                pf2_original = 100
+            else:
+                pf2_original = int(pf2_x)
         else:
             pf2_original = 100
 
         if pf3_y == CosTheta.InductiveLag:
             pf3_original = int(pf3_x) + 100
         elif pf3_y == CosTheta.CapacitiveLead:
-            pf3_original = int(pf3_x)
+            if int(pf3_x) == 0:
+                pf3_original = 100
+            else:
+                pf3_original = int(pf3_x)
         else:
             pf3_original = 100
+
 
         self.m_blk_a[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_original)
         self.m_blk_a[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_original)
@@ -3479,25 +3489,7 @@ class V4Meter(Meter):
         else:
             pf3_original = 100
 
-        if pf2_y == CosTheta.InductiveLag:
-            pf2_original = int(pf2_x) + 100
-        elif pf2_y == CosTheta.CapacitiveLead:
-            if int(pf2_x) == 0:
-                pf2_original = 100
-            else:
-                pf2_original = int(pf2_x)
-        else:
-            pf2_original = 100
 
-        if pf3_y == CosTheta.InductiveLag:
-            pf3_original = int(pf3_x) + 100
-        elif pf3_y == CosTheta.CapacitiveLead:
-            if int(pf3_x) == 0:
-                pf3_original = 100
-            else:
-                pf3_original = int(pf3_x)
-        else:
-            pf3_original = 100
 
         self.m_blk_b[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_original)
         self.m_blk_b[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_original)
