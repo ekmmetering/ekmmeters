@@ -11,7 +11,7 @@ import ConfigParser
 import random
 import unittest
 
-from ekmmeters.ekmmeters import *
+from ekmmeters import *
 
 
 class TestObserver(MeterObserver):
@@ -1039,14 +1039,14 @@ class AcceptanceTest(unittest.TestCase):
             meterV4 = V4Meter(v4_addr)
             meterV4.attachPort(port)
             self.assertEqual(meterV4.request(), True)
-            self.assertEqual(meterV4.setRelay(RelayInterval.Max, Relay.Relay2, RelayState.RelayClose), True)
-            self.assertEqual(meterV4.setRelay(RelayInterval.Max, Relay.Relay1, RelayState.RelayClose), True)
+            self.assertEqual(meterV4.setRelay(RelayInterval.Hold, Relay.Relay2, RelayState.RelayClose), True)
+            self.assertEqual(meterV4.setRelay(RelayInterval.Hold, Relay.Relay1, RelayState.RelayClose), True)
             time.sleep(3)
             self.assertEqual(meterV4.setRelay(1, Relay.Relay1, RelayState.RelayOpen), True)
             self.assertEqual(meterV4.setRelay(1, Relay.Relay2, RelayState.RelayClose), True)
             time.sleep(3)
-            self.assertEqual(meterV4.setRelay(RelayInterval.Max, Relay.Relay2, RelayState.RelayOpen), True)
-            self.assertEqual(meterV4.setRelay(RelayInterval.Max, Relay.Relay1, RelayState.RelayOpen), True)
+            self.assertEqual(meterV4.setRelay(RelayInterval.Hold, Relay.Relay2, RelayState.RelayOpen), True)
+            self.assertEqual(meterV4.setRelay(RelayInterval.Hold, Relay.Relay1, RelayState.RelayOpen), True)
             self.assertEqual(True, True)
         except:
             failed = True
