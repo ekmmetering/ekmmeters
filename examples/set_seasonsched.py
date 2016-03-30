@@ -3,18 +3,23 @@
 """
 from ekmmeters import *
 
-my_port_name = "/dev/ttyS0"
+#port and meter
+my_port_name = "COM3"
 my_meter_address = "300001162"
 
+#logging to console
 ekm_set_log(ekm_print_log)
-port = SerialPort(my_port_name)
 
+#open port and init
+port = SerialPort(my_port_name)
 if (port.initPort() == True):
     my_meter = V4Meter(my_meter_address)
     my_meter.attachPort(port)
 else:
+    # no port no meter
     print "Cannot open port"
     exit()
+
 
 my_meter.assignSeasonSchedule(Seasons.Season_1, 1, 1, Schedules.Schedule_1)
 my_meter.assignSeasonSchedule(Seasons.Season_2, 3, 21, Schedules.Schedule_2)
