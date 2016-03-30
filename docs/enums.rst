@@ -65,7 +65,9 @@ Values which only appear in a read.
 
 .. autoclass:: ScaleKWH
 
-.. autoclass:: StateInput
+.. autoclass:: StateIn
+
+.. autoclass:: StateOut
 
 Traversal
 *********
