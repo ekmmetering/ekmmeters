@@ -15,7 +15,9 @@ drop, and 2 index creates) is more approachable than setting up or learning an O
 .. currentmodule:: ekmmeters
 .. toctree::
    :maxdepth: 1
+
 .. autoclass:: MeterDB
     :members:  setConnectString, mapTypeToSql, fillCreate, sqlCreate, sqlInsert, sqlIdxMeterTime,sqlIdxMeter,sqlDrop,dbInsert,dbCreate,dbDropReads,dbExec
+
 .. autoclass:: SqliteMeterDB
     :members:  dbExec, renderJsonReadsSince, renderRawJsonReadsSince

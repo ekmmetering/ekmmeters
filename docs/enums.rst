@@ -26,8 +26,6 @@ Values used primarily (but not exclusively) for serial settings parameters.
 
 .. autoclass:: PulseOutput
 
-.. autoclass:: PulseOutput
-
 .. autoclass:: Relay
 
 .. autoclass:: RelayState
