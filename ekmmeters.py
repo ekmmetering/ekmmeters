@@ -1433,6 +1433,25 @@ class Meter(object):
 
         return "%04x" % crc
 
+    def calcPF(self, pf):
+        """ Simple wrap to calc legacy PF value
+
+        Args:
+            pf: meter power factor reading
+
+        Returns:
+            int: legacy push pf
+        """
+        pf_y = pf[:1]
+        pf_x = pf[1:]
+        result = 100
+        if pf_y == CosTheta.CapacitiveLead:
+            result = 200 - int(pf_x)
+        elif pf_y == CosTheta.InductiveLag:
+            result = int(pf_x)
+
+        return result
+
     def setMaxDemandPeriod(self, period, password="00000000"):
         """ Serial call to set max demand period.
 
@@ -1582,7 +1601,9 @@ class Meter(object):
         log_str = ""
         count = 0
         if kwh_scale == ScaleKWH.EmptyScale:
-            kwh_scale = ScaleKWH.NoScale
+            if self.m_kwh_precision <= 0 :
+                scale_offset = int(def_buf.keys().index(Field.kWh_Scale))
+                self.m_kwh_precision = kwh_scale = int(contents[scale_offset])
 
         for fld in def_buf:
 
@@ -3103,55 +3124,23 @@ class V3Meter(Meter):
         return result
 
     def calculateFields(self):
+
         pf1 = self.m_blk_a[Field.Cos_Theta_Ln_1][MeterData.StringValue]
         pf2 = self.m_blk_a[Field.Cos_Theta_Ln_2][MeterData.StringValue]
         pf3 = self.m_blk_a[Field.Cos_Theta_Ln_3][MeterData.StringValue]
-        pf1_y = pf1[:1]
-        pf2_y = pf2[:1]
-        pf3_y = pf3[:1]
-        pf1_x = pf1[1:]
-        pf2_x = pf2[1:]
-        pf3_x = pf3[1:]
 
-        pf1_original = pf2_original = pf3_original = 0
-        if pf1_y == CosTheta.InductiveLag:
-            pf1_original = int(pf1_x) + 100
-        elif pf1_y == CosTheta.CapacitiveLead:
-            if int(pf1_x) == 0:
-                pf1_original = 100
-            else:
-                pf1_original = int(pf1_x)
-        else:
-            pf1_original = 100
+        pf1_int = self.calcPF(pf1)
+        pf2_int = self.calcPF(pf2)
+        pf3_int = self.calcPF(pf3)
 
-        if pf2_y == CosTheta.InductiveLag:
-            pf2_original = int(pf2_x) + 100
-        elif pf2_y == CosTheta.CapacitiveLead:
-            if int(pf2_x) == 0:
-                pf2_original = 100
-            else:
-                pf2_original = int(pf2_x)
-        else:
-            pf2_original = 100
+        self.m_blk_a[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_int)
+        self.m_blk_a[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_int)
+        self.m_blk_a[Field.Power_Factor_Ln_3][MeterData.StringValue] = str(pf3_int)
 
-        if pf3_y == CosTheta.InductiveLag:
-            pf3_original = int(pf3_x) + 100
-        elif pf3_y == CosTheta.CapacitiveLead:
-            if int(pf3_x) == 0:
-                pf3_original = 100
-            else:
-                pf3_original = int(pf3_x)
-        else:
-            pf3_original = 100
+        self.m_blk_a[Field.Power_Factor_Ln_1][MeterData.NativeValue] = pf1_int
+        self.m_blk_a[Field.Power_Factor_Ln_2][MeterData.NativeValue] = pf2_int
+        self.m_blk_a[Field.Power_Factor_Ln_3][MeterData.NativeValue] = pf3_int
 
-
-        self.m_blk_a[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_original)
-        self.m_blk_a[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_original)
-        self.m_blk_a[Field.Power_Factor_Ln_3][MeterData.StringValue] = str(pf3_original)
-
-        self.m_blk_a[Field.Power_Factor_Ln_1][MeterData.NativeValue] = pf1_original
-        self.m_blk_a[Field.Power_Factor_Ln_2][MeterData.NativeValue] = pf2_original
-        self.m_blk_a[Field.Power_Factor_Ln_3][MeterData.NativeValue] = pf3_original
         pass
 
     def serialPostEnd(self):
@@ -3211,7 +3200,7 @@ class V4Meter(Meter):
         self.m_blk_a[Field.Model] = [2, FieldType.Hex, ScaleType.No, "", 0, False, True]
         self.m_blk_a[Field.Firmware] = [1, FieldType.Hex, ScaleType.No, "", 0, False, True]
         self.m_blk_a[Field.Meter_Address] = [12, FieldType.String, ScaleType.No, "", 0, False, True]
-        self.m_blk_a[Field.kWh_Tot] = [8, FieldType.Float, ScaleType.KWH, ScaleType.No, 0, False, False]
+        self.m_blk_a[Field.kWh_Tot] = [8, FieldType.Float, ScaleType.KWH, "", 0, False, False]
         self.m_blk_a[Field.Reactive_Energy_Tot] = [8, FieldType.Float, ScaleType.KWH, "", 0, False, False]
         self.m_blk_a[Field.Rev_kWh_Tot] = [8, FieldType.Float, ScaleType.KWH, "", 0, False, False]
         self.m_blk_a[Field.kWh_Ln_1] = [8, FieldType.Float, ScaleType.KWH, "", 0, False, False]
@@ -3446,58 +3435,24 @@ class V4Meter(Meter):
 
         return result
 
+
     def calculateFields(self):
         """Write calculated fields for read buffer."""
         pf1 = self.m_blk_b[Field.Cos_Theta_Ln_1][MeterData.StringValue]
         pf2 = self.m_blk_b[Field.Cos_Theta_Ln_2][MeterData.StringValue]
         pf3 = self.m_blk_b[Field.Cos_Theta_Ln_3][MeterData.StringValue]
-        pf1_y = pf1[:1]
-        pf2_y = pf2[:1]
-        pf3_y = pf3[:1]
-        pf1_x = pf1[1:]
-        pf2_x = pf2[1:]
-        pf3_x = pf3[1:]
 
-        pf1_original = pf2_original = pf3_original = 0
-        if pf1_y == CosTheta.InductiveLag:
-            pf1_original = int(pf1_x) + 100
-        elif pf1_y == CosTheta.CapacitiveLead:
-            if int(pf1_x) == 0:
-                pf1_original = 100
-            else:
-                pf1_original = int(pf1_x)
-        else:
-            pf1_original = 100
+        pf1_int = self.calcPF(pf1)
+        pf2_int = self.calcPF(pf2)
+        pf3_int = self.calcPF(pf3)
 
-        if pf2_y == CosTheta.InductiveLag:
-            pf2_original = int(pf2_x) + 100
-        elif pf2_y == CosTheta.CapacitiveLead:
-            if int(pf2_x) == 0:
-                pf2_original = 100
-            else:
-                pf2_original = int(pf2_x)
-        else:
-            pf2_original = 100
+        self.m_blk_b[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_int)
+        self.m_blk_b[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_int)
+        self.m_blk_b[Field.Power_Factor_Ln_3][MeterData.StringValue] = str(pf3_int)
 
-        if pf3_y == CosTheta.InductiveLag:
-            pf3_original = int(pf3_x) + 100
-        elif pf3_y == CosTheta.CapacitiveLead:
-            if int(pf3_x) == 0:
-                pf3_original = 100
-            else:
-                pf3_original = int(pf3_x)
-        else:
-            pf3_original = 100
-
-
-
-        self.m_blk_b[Field.Power_Factor_Ln_1][MeterData.StringValue] = str(pf1_original)
-        self.m_blk_b[Field.Power_Factor_Ln_2][MeterData.StringValue] = str(pf2_original)
-        self.m_blk_b[Field.Power_Factor_Ln_3][MeterData.StringValue] = str(pf3_original)
-
-        self.m_blk_b[Field.Power_Factor_Ln_1][MeterData.NativeValue] = pf1_original
-        self.m_blk_b[Field.Power_Factor_Ln_2][MeterData.NativeValue] = pf2_original
-        self.m_blk_b[Field.Power_Factor_Ln_3][MeterData.NativeValue] = pf3_original
+        self.m_blk_b[Field.Power_Factor_Ln_1][MeterData.NativeValue] = pf1_int
+        self.m_blk_b[Field.Power_Factor_Ln_2][MeterData.NativeValue] = pf2_int
+        self.m_blk_b[Field.Power_Factor_Ln_3][MeterData.NativeValue] = pf2_int
 
         rms_watts_1 = self.m_blk_b[Field.RMS_Watts_Ln_1][MeterData.NativeValue]
         rms_watts_2 = self.m_blk_b[Field.RMS_Watts_Ln_2][MeterData.NativeValue]
@@ -3546,12 +3501,12 @@ class V4Meter(Meter):
 
         self.m_blk_b[Field.Net_Calc_Watts_Ln_1][MeterData.NativeValue] = net_watts_1
         self.m_blk_b[Field.Net_Calc_Watts_Ln_2][MeterData.NativeValue] = net_watts_2
-        self.m_blk_b[Field.Net_Calc_Watts_Ln_3][MeterData.NativeValue] = net_watts_1
+        self.m_blk_b[Field.Net_Calc_Watts_Ln_3][MeterData.NativeValue] = net_watts_3
         self.m_blk_b[Field.Net_Calc_Watts_Tot][MeterData.NativeValue] = net_watts_tot
 
         self.m_blk_b[Field.Net_Calc_Watts_Ln_1][MeterData.StringValue] = str(net_watts_1)
-        self.m_blk_b[Field.Net_Calc_Watts_Ln_2][MeterData.StringValue] = str(net_watts_1)
-        self.m_blk_b[Field.Net_Calc_Watts_Ln_3][MeterData.StringValue] = str(net_watts_1)
+        self.m_blk_b[Field.Net_Calc_Watts_Ln_2][MeterData.StringValue] = str(net_watts_2)
+        self.m_blk_b[Field.Net_Calc_Watts_Ln_3][MeterData.StringValue] = str(net_watts_3)
         self.m_blk_b[Field.Net_Calc_Watts_Tot][MeterData.StringValue] = str(net_watts_tot)
 
         pass
