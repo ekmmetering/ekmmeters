@@ -1600,8 +1600,12 @@ class Meter(object):
         """
         log_str = ""
         count = 0
+        
+        # getting scale does not require a full read.  It does require that the
+        # reads have the scale value in the first block read.  This requirement
+        # is filled by default in V3 and V4 requests
         if kwh_scale == ScaleKWH.EmptyScale:
-            if self.m_kwh_precision <= 0 :
+            if self.m_kwh_precision == ScaleKWH.EmptyScale :
                 scale_offset = int(def_buf.keys().index(Field.kWh_Scale))
                 self.m_kwh_precision = kwh_scale = int(contents[scale_offset])
 
