@@ -49,6 +49,8 @@ global ekmmeters_log_func  #: Module level log or diagnostic print
 ekmmeters_log_func = ekm_no_log
 global ekmmeters_log_level
 ekmmeters_log_level = 3
+global __EKMMETERS_VERSION
+__EKMMETERS_VERSION = "0.2.3"
 
 
 def ekm_set_log(function_name):
@@ -87,7 +89,7 @@ def ekm_set_log_level(level=3):
 
 
 class MeterData():
-    """ Each :class:`~ekmmeters.SerialBlock` value is an array with these offsets.
+    """ Each :class:`~ekmmeters.SerialBlock` value is an array with these offsets. All Omnimeter versions.
 
     =============== =
     SizeValue       0
@@ -111,9 +113,7 @@ class MeterData():
 
 
 class MaxDemandResetInterval():
-    """
-
-    As passed in :func:`~ekmmeters.Meter.setMaxDemandResetInterval`.
+    """ As passed in :func:`~ekmmeters.Meter.setMaxDemandResetInterval`.  V4 Omnimeters.
 
     ======= =
     Off     0
@@ -132,7 +132,7 @@ class MaxDemandResetInterval():
 
 
 class MaxDemandPeriod():
-    """As passed in :func:`~ekmmeters.Meter.setMaxDemandPeriod`.
+    """As passed in :func:`~ekmmeters.Meter.setMaxDemandPeriod`. V3 and V4 Omnimeters.
 
     ============= =
     At_15_Minutes 1
@@ -147,7 +147,7 @@ class MaxDemandPeriod():
 
 
 class LCDItems():
-    """ As passed in :func:`~ekmmeters.V4Meter.addLcdItem`
+    """ As passed in :func:`~ekmmeters.V4Meter.addLcdItem`.  V4 Omnimeters.
 
     =================== ==
     kWh_Tot              1
@@ -240,7 +240,7 @@ class LCDItems():
 
 
 class CTRatio():
-    """ As passed in :func:`~ekmmeters.Meter.setCTRatio`
+    """ As passed in :func:`~ekmmeters.Meter.setCTRatio`.  V3 and V4 Omnimeters.
 
     ========= ====
     Amps_100   100
@@ -424,7 +424,7 @@ class Field():
 
 
 class Seasons():
-    """ As passed to :func:`~ekmmeters.Meter.assignSeasonSchedule`
+    """ As passed to :func:`~ekmmeters.Meter.assignSeasonSchedule`.  V3 and V4 Omnimeters.
 
     assign* methods use a zero based index for seasons.
     You may set a season using one of these constants
@@ -445,7 +445,7 @@ class Seasons():
 
 
 class Months():
-    """ As  passed to :func:`~ekmmeters.Meter.extractMonthTariff`
+    """ As  passed to :func:`~ekmmeters.Meter.extractMonthTariff`.  V3 and V4 Omnimeters.
 
     ======== =
     Month_1  0
@@ -466,7 +466,7 @@ class Months():
 
 
 class Tariffs():
-    """ As passed to :func:`~ekmmeters.Meter.assignScheduleTariff`
+    """ As passed to :func:`~ekmmeters.Meter.assignScheduleTariff`. V3 and V4 Omnimeters.
 
      ========  =
      Tariff_1  0
@@ -483,7 +483,7 @@ class Tariffs():
 
 
 class Extents():
-    """ Traversal extents to use with for range(Extent) idiom.
+    """ Traversal extents to use with for range(Extent) idiom.  V3 and V4 Omnimeters.
 
     Use of range(Extent.Entity) as an iterator insures safe
     assignnment without off by one errors.
@@ -505,7 +505,7 @@ class Extents():
 
 
 class PulseOutput():
-    """ As passed to :func:`~ekmmeters.V4Meter.setPulseOutputRatio`.
+    """ As passed to :func:`~ekmmeters.V4Meter.setPulseOutputRatio`.  V4 Omnimeters.
 
     ========== ==========
     Ratio_1    Ratio_40
@@ -540,7 +540,7 @@ class PulseOutput():
 
 
 class Pulse():
-    """ As passed to :func:`~ekmmeters.V4Meter.setPulseInputRatio`
+    """ As passed to :func:`~ekmmeters.V4Meter.setPulseInputRatio`.  V4 Omnimeters.
 
     Simple constant to clarify call.
 
@@ -557,7 +557,7 @@ class Pulse():
 
 
 class Schedules():
-    """ Allowed schedules.
+    """ Allowed schedules.  V3 and V4 Omnimeters.
 
     Schedules on the meter are zero based, these apply to most passed
     schedule parameters.
@@ -585,7 +585,7 @@ class Schedules():
 
 
 class ReadSchedules():
-    """ As passed to :func:`~ekmmeters.Meter.readScheduleTariffs` and :func:`~ekmmeters.Meter.getSchedulesBuffer`
+    """ For :func:`~ekmmeters.Meter.readScheduleTariffs` and :func:`~ekmmeters.Meter.getSchedulesBuffer`.  V3 and V4.
 
     ================  ==================================
     Schedules_1_To_4  1st 4 blocks tariffs and schedules
@@ -599,7 +599,7 @@ class ReadSchedules():
 
 
 class ReadMonths():
-    """ As passed to :func:`~ekmmeters.Meter.readMonthTariffs` and :func:`~ekmmeters.Meter.getMonthsBuffer`
+    """ As passed to :func:`~ekmmeters.Meter.readMonthTariffs` and :func:`~ekmmeters.Meter.getMonthsBuffer`.  V3 and V4.
 
     Use to select the forward or reverse six month tariff data.
 
@@ -645,7 +645,7 @@ class DirectionFlag():
 
 
 class ScaleKWH():
-    """ Scaling or kWh values controlled by Fields.kWh.
+    """ Scaling or kWh values controlled by Fields.kWh.  V4 Omnimeters.
 
     If MeterData.ScaleValue is ScaleType.KWH, Fields.kWh_Scale one of these.
 
@@ -664,7 +664,7 @@ class ScaleKWH():
 
 
 class ScaleType():
-    """ Scale type defined in SerialBlock.
+    """ Scale type defined in SerialBlock.  V4 Omnimeters.
 
     These values are set when a field is defined a SerialBlock.
     A Div10 or Div100 results in immediate scaling, otherwise
@@ -686,7 +686,7 @@ class ScaleType():
 
 
 class FieldType():
-    """ Every SerialBlock element has a field type.
+    """ Every SerialBlock element has a field type.   V3 and V4 Omnimeters.
 
     Data arrives as ascii.  Field type determines disposition.
     The destination type is Python.
@@ -711,7 +711,7 @@ class FieldType():
 
 
 class Relay():
-    """ Relay specified in :func:`~ekmmeters.V4Meter.setRelay`
+    """ Relay specified in :func:`~ekmmeters.V4Meter.setRelay`.  V4 Omnimeters.
 
     ====== ================
     Relay1 OUT1 on V4 Meter
@@ -724,7 +724,7 @@ class Relay():
 
 
 class RelayState():
-    """ Relay state in :func:`~ekmmeters.V4Meter.setRelay`
+    """ Relay state in :func:`~ekmmeters.V4Meter.setRelay`.  V4 Omnimeters.
 
     =========== =
     RelayOpen   0
@@ -737,7 +737,7 @@ class RelayState():
 
 
 class RelayInterval():
-    """ Relay interval in :func:`~ekmmeters.V4Meter.setRelay`
+    """ Relay interval in :func:`~ekmmeters.V4Meter.setRelay`.  V4 Omnimeters.
 
     ===== ======================
     Max   9999 seconds
@@ -751,7 +751,7 @@ class RelayInterval():
     Hold = Min  #: Hold is just zero
 
 class StateOut():
-    """ Pulse output state at time of read.
+    """ Pulse output state at time of read.  V4 Omnimeters.
 
     =======  =
     OffOff   1
@@ -767,7 +767,7 @@ class StateOut():
     OnOn = 4
 
 class StateIn():
-    """ State of each pulse line at time of read.
+    """ State of each pulse line at time of read.  V4 Omnimeters.
 
     ================= =
     HighHighHigh      0
@@ -791,7 +791,9 @@ class StateIn():
     LowLowLow = 7
 
 class CosTheta():
-    """ Prefix characters returned in power factor. Note a cos of zero has one space"""
+    """ Prefix characters returned in power factor. Note a cos of zero has one space.  V3 and V4 Omnimeters.
+
+    """
     InductiveLag = "L"
     CapacitiveLead = "C"
     NoLeadOrLag = (" ")
@@ -3056,7 +3058,7 @@ class V3Meter(Meter):
         try:
             self.m_serial_port.write("2f3f".decode("hex") +
                                      self.m_meter_address +
-                                     "3030210d0a".decode("hex"))
+                                     "210d0a".decode("hex"))
             self.m_raw_read_a = self.m_serial_port.getResponse(self.getContext())
             unpacked_read_a = self.unpackStruct(self.m_raw_read_a, self.m_blk_a)
             self.convertData(unpacked_read_a, self.m_blk_a, 1)
