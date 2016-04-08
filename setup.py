@@ -2,13 +2,13 @@ from setuptools import setup, find_packages, Extension
 
 setup(
     name = "ekmmeters",
-    version = "0.2.2",
+    version = "0.2.3",
     license='MIT',
     description='Python API for V3 and V4 EKM Omnimeters',
     author = 'EKM Metering',
     author_email = "info@ekmmetering.com",
     url = 'https://github.com/jessicalh/ekmmeters',
-    download_url = 'https://github.com/jessicalh/ekmmeters/tarball/0.2.2',
+    download_url = 'https://github.com/jessicalh/ekmmeters/tarball/0.2.3',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
