@@ -1,4 +1,4 @@
-""" Simple example read
+""" Simple example read getting 2 fields
 (c) 2016 EKM Metering.
 """
 from ekmmeters import *

@@ -53,8 +53,8 @@ default.
 Read
 ****
 
-Meters are read with :func:`~ekmmeters.Meter.request`, which always returns a True or False.  Request takes 
-an optional termination flag which forces a "end this conversation" string to be sent to the meter. This is only
+Both V3 and V4 Omnimeters are read with :func:`~ekmmeters.Meter.request`, which always returns a True or False.  Request takes
+an optional termination flag which forces a "end this conversation" string to be sent to the meter. This flag is only
 used inside other serial calls: you can just ignore it and leave the default value of True.
 
 The reads from your Omnimeter are returned with :func:`~ekmmeters.Meter.request` on 
@@ -76,7 +76,9 @@ both V3 and V4 Omnimeters. Omnimeters return data in 255 byte chunks.  The suppo
 Save to Database
 ****************
 
-A simple wrapper for Sqlite is included in the library.  
+A simple wrapper for Sqlite is included in the library.  It is equally avaliable to
+V3 and V4 meter objects.  The saved fields are a union of the v3 and v4 protocol, so
+additional Omnimeters of either version can be added without changing the table.
 
 If you already have an ORM in place, such as SQLAlchemy, you should define an
 appropriate object and load it by traversing the read buffer.  But for most
@@ -108,7 +110,7 @@ CT Ratio
 ********
 
 The CT ratio tells the meter how to scale the input from an inductive pickup.
-Allowed values are shown under :class:`~ekmmeters.CTRatio`.
+It can be set on both V3 and V4 Omnimeters.  Allowed values are shown under :class:`~ekmmeters.CTRatio`.
 
 The CT ratio is set with the method :func:`~ekmmeters.Meter.setCTRatio`.
 The field CT_Ratio is returned in every read request.
@@ -128,8 +130,9 @@ Max Demand Period
 *****************
 
 The max demand period is a value in the set :class:`~ekmmeters.MaxDemandPeriod`.
-It is written with the method :func:`~ekmmeters.Meter.setMaxDemandPeriod`. The field
-Max_Demand_Period is returned in every read request.
+The value can be set on both V3 and V4 omnimeters, and it is written with the
+method :func:`~ekmmeters.Meter.setMaxDemandPeriod`. The field Max_Demand_Period is
+returned in every read request.
 
 .. code-block:: python
    :emphasize-lines: 1, 3, 4, 6, 8
@@ -145,16 +148,14 @@ Max_Demand_Period is returned in every read request.
            if mdp_str == str(MaxDemandPeriod.At_60_Minutes):
                print "60 Minutes"
 
-Max Demand Reset
-****************
-In addition to setting the period for max demand, on V4 you can set an interval to
-force a reset, or force a reset immediately.
+Max Demand Reset Interval
+*************************
+
+In addition to setting the period for max demand, on V4 Omnimeters you can set an interval to
+force a reset.
 
 Max demand interval is written using :func:`~ekmmeters.Meter.setMaxDemandResetInterval`, which
 can return True or False. It accepts values in the set :class:`~ekmmeters.MaxDemandResetInterval`.
-
-You can force an immediate reset with :func:`~ekmmeters.Meter.setMaxDemandResetNow()`.
-
 
 .. code-block:: python
    :emphasize-lines: 1
@@ -163,14 +164,22 @@ You can force an immediate reset with :func:`~ekmmeters.Meter.setMaxDemandResetN
    if my_meter.setMaxDemandResetInterval(MaxDemandResetInterval.Daily):
         print "Success"
 
-   # or just force reset
-   my_meter.setMaxDemandResetNow()
+Max Demand Reset Now
+********************
 
+On both V3 and V4 Omnimeters, you can force an immediate reset with :func:`~ekmmeters.Meter.setMaxDemandResetNow()`.
+
+.. code-block:: python
+   :emphasize-lines: 1
+   :linenos:
+
+   if my_meter.setMaxDemandResetNow():
+        print "Success"
 
 Pulse Output Ratio
 ******************
 
-The pulse output ratio is set using :func:`~ekmmeters.V4Meter.setPulseOutputRatio`, which
+On V4 Omnimeters, the pulse output ratio is set using :func:`~ekmmeters.V4Meter.setPulseOutputRatio`, which
 can return True or False. The value must be in the set :class:`~ekmmeters.PulseOutput`.
 The field Pulse_Output_Ratio is is returned in every read request.
 
@@ -186,7 +195,7 @@ The field Pulse_Output_Ratio is is returned in every read request.
 Pulse Input Ratio
 *****************
 
-The pulse input ratios is set using :func:`~ekmmeters.V4Meter.setPulseInputRatio`, which
+On V4 Omnimeters, the pulse input ratios is set using :func:`~ekmmeters.V4Meter.setPulseInputRatio`, which
 can return True or False.
 
 Each of the three pulse lines has an integer input ratio (how many times you
@@ -205,7 +214,7 @@ Pulse_Ratio_3 are returned with every read request.  The example below shows lin
 Set Relay
 *********
 
-The relay is toggled using the method :func:`~ekmmeters.V4Meter.setRelay`, which
+On V4 Omnimeters, the relays toggle using the method :func:`~ekmmeters.V4Meter.setRelay`, which
 can return True or False.
 
 The V4 Omnimeter has 2 relays, which can hold permanently or for a requested
@@ -229,7 +238,7 @@ will switch the default state on or off (:class:`~ekmmeters.RelayState`).
 Set Meter Time
 **************
 
-The meter time, which is used by the meter to calculate and store time of use tariffs,
+On both V3 and V4 Omnimeters, meter time, which is used by the meter to calculate and store time of use tariffs,
 is set using the method :func:`~ekmmeters.VMeter.setTime`, and returns True or False.
 The Meter_Time field is returned with every request.  The method :func:`~ekmmeters.VMeter.splitEkmDate` 
 (which takes an integer) will break the date out into constituent parts.
@@ -292,7 +301,7 @@ function :func:`~ekmmeters.V4Meter.setZeroResettableKWH`, which returns True or 
 Season Schedules
 ****************
 
-There are eight schedules, each with four tariff periods.  Schedules can be
+On both V3 and V4 Omnimeters, there are eight schedules, each with four tariff periods.  Schedules can be
 assigned to seasons, with each season defined by a start day and month.
 
 The season definitions are set with :func:`~ekmmeters.Meter.setSeasonSchedules`,
@@ -345,8 +354,8 @@ loading a meter from passed JSON.
 Set Schedule Tariffs
 ********************
 
-A schedule is defined by up to four tariff periods, each with a start hour
-and minute.  The meter will manage up to eight schedules.
+On both V3 and V4 Omnimeters, a schedule is defined by up to four tariff periods, each
+with a start hour and minute.  The meter will manage up to eight schedules.
 
 Schedules are set one at a time via :func:`~ekmmeters.Meter.setScheduleTariffs`, 
 returning True or False.   The simplest way to set up the call is with
@@ -421,9 +430,10 @@ If you are defining a schedule via JSON or XML, you can set the tariffs with a d
 Holiday Dates
 *************
 
-A list of up to 20 holidays can be set to use a single schedule (which applies 
-the relevant time of use tariffs to your holidays).  The list of holiday dates is 
-written with :func:`~ekmmeters.Meter.setHolidayDates`, which returns True or False.
+On both V3 and V4 Omnimeters, a list of up to 20 holidays can be set to use a
+single schedule (which applies the relevant time of use tariffs to your holidays).
+The list of holiday dates is written with :func:`~ekmmeters.Meter.setHolidayDates`, which
+returns True or False.
 
 Because the holiday list is relatively long, it is the only block without a set of
 helper constants: if you use :func:`~ekmmeters.Meter.assignHolidayDate` directly,
@@ -513,11 +523,12 @@ which takes a list of :class:`~ekmmeters.LCDItems` and returns True or False.
    if my_meter.setLCDCmd(lcd_items):
        print "Meter should now show Line 1 Volts and Frequency."
 
-While every other meter command call with more than a couple of parameters uses
-a dictionary to organize the data, the LCD display items are a single list of
-40 integers.  A JSON or XML call populated by integer codes is not a good thing.  You
-can translate the name of any value in :class:`~ekmmeters.LCDItems` to a
-corresponding integer with :func:`~ekmmeters.V4Meter.lcdString`.
+While most meter commands  with more than a few of parameters use
+a dictionary to organize the data (simplifying serialization over the wire),
+the LCD display items are a single list of 40 integers.  A JSON or XML call
+populated by integer codes is not a good thing.  You can translate the name
+of any value in :class:`~ekmmeters.LCDItems` to a corresponding integer
+with :func:`~ekmmeters.V4Meter.lcdString`.
 
 .. code-block:: python
    :emphasize-lines: 1, 2, 4
@@ -532,7 +543,7 @@ corresponding integer with :func:`~ekmmeters.V4Meter.lcdString`.
 Read Settings
 *************
 
-The tariff data used by the Omnimeter amounts to a small relational database, compressed
+The tariff data used by the Omnimeter (both V3 and V4) amounts to a small relational database, compressed
 into fixed length lists.  There are up to eight schedules, each schedule can track up to
 four tariff periods in each day, and schedules can be assigned to holidays, weekends, and 
 seasons.  The running kWh and reverse kWh for each tariff period is returned with every read, 
@@ -699,18 +710,25 @@ notifications can do so simply in the main polling loop.  However, sometimes onl
 This is a very simple implementation and easily learned, but nothing in this example is necessary for mastery of
 the API.
 
-Each meter object has a chain of 0 to n observer objects.  When a request is issued, the meter calls the subclassed update() method of every observer object registered in its chain.  All observer objects descend from MeterObserver, and require an override of the Update method and constructor.
+Each meter object has a chain of 0 to n observer objects.  When a request is issued, the meter calls the
+subclassed update() method of every observer object registered in its chain.  All observer objects descend
+from MeterObserver, and require an override of the Update method and constructor.
 
 Given that most applications will poll tightly on Meter::request(), why would you do it this way? An observer pattern
 might be appropriate if you are planning on doing a lot of work with the data for each read over an array of meters,
 and want to keep the initial and read handling results in a single class  If you are writing a set of utilities, 
-subclassing MeterObserver can be convenient.  The update method is exception wrapped: a failure in your override will not block the next read.
+subclassing MeterObserver can be convenient.  The update method is exception wrapped: a failure in your override
+will not block the next read.
 
 All of that said, the right way is the course the way which is simplest and clearest for your project.
 
-Using the examples set_notify.py and set_summarize.py (from the github source) is the most approachable way to explore the pattern.  All the required code is below, but it may be more rewarding to run from and modify the already typed examples.  
+Using the examples set_notify.py and set_summarize.py (from the github source) is the most approachable
+way to explore the pattern.  All the required code is below, but it may be more rewarding to
+run from and modify the already typed examples.
 
-We start by moddifying the skeleton we set up at the beginning of this page. with a request loop at the *bottom* of the file, right before closing the serial port.  It is a simple count limited request loop, and is useful when building software against this library.
+We start by moddifying the skeleton we set up at the beginning of this page. with a request loop at the *bottom*
+of the file, right before closing the serial port.  It is a simple count limited request loop, and is useful when
+building software against this library.
 
 .. code-block:: python
    :linenos:
@@ -733,7 +751,8 @@ We start by moddifying the skeleton we set up at the beginning of this page. wit
 
 
 The notification observer example requires that your meter have pulse input line one hooked up, if only as two wires
-you can close.  To create a notification observer, start by subclassing MeterObserver immediately before the snippet above.  The constructor sets a startup test condition and initializes the last pulse count used for comparison.
+you can close.  To create a notification observer, start by subclassing MeterObserver immediately before the snippet
+above.  The constructor sets a startup test condition and initializes the last pulse count used for comparison.
 
 .. code-block:: python
    :emphasize-lines: 9
@@ -762,7 +781,10 @@ you can close.  To create a notification observer, start by subclassing MeterObs
     def doNotify(self):
         print "Bells!  Alarms!  Do that again!"
 
-Note that our Update() override gets the numeric value directly, using MeterData.NativeValue.  It could as easily return MeterData.StringValue, and cast.  The first update() sets the initial comparison value.  Subsequent update() calls compare the pulse count and check to see if there is a change.  The doNotify() method is our triggered event, and can of course do anything Python can.
+Note that our Update() override gets the numeric value directly, using MeterData.NativeValue.  It could as easily
+return MeterData.StringValue, and cast.  The first update() sets the initial comparison value.  Subsequent
+update() calls compare the pulse count and check to see if there is a change.  The doNotify() method
+is our triggered event, and can of course do anything Python can.
 
 And finally -- right before dropping into our poll loop, we instantiate our subclassed MeterObserver, and register it in the
 meter's observer chain.  We also put the pulse count on the LCD, and set the input ratio to one so every time we close

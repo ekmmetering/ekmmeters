@@ -48,7 +48,7 @@ Values established when a SerialBlock is initialized.
 Meter
 *****
 
-Values used to select meter object buffers to operate on.
+Values used to select meter object buffers to operate on.  V4 and V3 Omnimeters.
 
 .. autoclass:: ReadSchedules
 
@@ -57,7 +57,7 @@ Values used to select meter object buffers to operate on.
 Data
 ****
 
-Values which only appear in a read.
+Values which only appear in a read.  V4 Omnimeters.
 
 .. autoclass:: DirectionFlag
 
@@ -70,7 +70,8 @@ Values which only appear in a read.
 Traversal
 *********
 
-Values primarily (but not exclusively) used for extraction from or assignment to serial buffers.
+Values primarily (but not exclusively) used for extraction from or assignment
+to serial buffers.  V3 and V4 Omnimeters.
 
 .. autoclass:: Extents
 
