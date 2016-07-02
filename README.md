@@ -6,7 +6,7 @@ The goal of this library is to provide a reliable and flexible interface to vers
 
 To get started, you can 'pip install ekmmeters' or download the single required Python file, ekmmeters.py, to your working directory and include with 'from ekmmeters import *'.  
 
-Adaptable examples for all supported Omnimeter commands can be found at <a href="http://ekmmeters.readthedocs.org/en">
+Adaptable examples for all supported Omnimeter commands can be found at <a href="http://ekmmeters.readthedocs.io/en/latest/">
 readthedocs.org</a>.
 
 
