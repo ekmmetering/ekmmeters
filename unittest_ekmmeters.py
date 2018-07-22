@@ -1,4 +1,4 @@
-'''
+"""
 Simple unit tests for the ekmmeters library.  While it should work
 under any python unittest caller,  it requires attached, named meters,
 and the serial port name to use.  The included sample values are as
@@ -6,8 +6,9 @@ employed in Windows, Linux and OS X release tests.
 (c) 2015, 2016 EKM Metering.
 This software is provided under an MIT license:
     https://opensource.org/licenses/MIT
-'''
-import ConfigParser
+"""
+
+from six.moves import configparser
 import random
 import unittest
 
@@ -15,36 +16,32 @@ from ekmmeters import *
 
 
 class TestObserver(MeterObserver):
-    '''
+    """
     Observer subclass for test
-    '''
+    """
 
     def __init__(self):
-        '''
-        Constructor for test observer
-        '''
+        """Constructor for test observer"""
         super(MeterObserver, self).__init__()
-        pass
 
     def update(self, definition_buffer):
-        '''
+        """
         Required override of update() for this observer
 
         Parameters
         ----------
         definition_buffer : collections.OrderedDict
             Results of last read
-        '''
+        """
         pass
 
 
 def loadparams():
-    '''
+    """
     Helper.  Call at start of any test function which needs the meter and port
     (all of them)
-
-    '''
-    test_ini = ConfigParser.ConfigParser()
+    """
+    test_ini = configparser.ConfigParser()
     test_ini.read('unittest.ini')
     test_port = test_ini.get("PARAMS", 'test_port')
     v3_addr = test_ini.get("PARAMS", 'v3_addr')
@@ -52,11 +49,11 @@ def loadparams():
     dbpath = test_ini.get("PARAMS", 'dbpath')
     user_prompts = test_ini.getboolean("PARAMS", "user_prompts")
     wait = test_ini.getfloat("PARAMS", "force_wait")
-    return (wait, test_port, v3_addr, v4_addr, dbpath, user_prompts)
+    return wait, test_port, v3_addr, v4_addr, dbpath, user_prompts
 
 
 class AcceptanceTest(unittest.TestCase):
-    '''
+    """
     Lightweight traversal of all reads and settings.
     Non schedule settings tests include both read
     and write, with 2 consecutive values.
@@ -77,7 +74,7 @@ class AcceptanceTest(unittest.TestCase):
       as UI.  Ideally a high current pickup
       is avaliable. Modify test calls as appropriate
       for inspection.
-    '''
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -85,10 +82,10 @@ class AcceptanceTest(unittest.TestCase):
 
     def testReadAndDb(self):
         wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
-        print v4_addr
+        print(v4_addr)
         port = SerialPort(test_port, force_wait=wait)
-        print "*****  Read and database tests"
-        print "Manually remove test database to force recreate"
+        print("*****  Read and database tests")
+        print("Manually remove test database to force recreate")
         failed = False
 
         try:
@@ -107,8 +104,8 @@ class AcceptanceTest(unittest.TestCase):
             meterDB.dbDropReads()
             meterDB.dbCreate()
 
-            print "*****************************************************"
-            print "***** Two reads from each meter"
+            print( "*****************************************************")
+            print("***** Two reads from each meter")
             for i in range(2):
                 i += 1
                 try:
@@ -116,49 +113,49 @@ class AcceptanceTest(unittest.TestCase):
                         meterV4.insert(meterDB)
                         test = meterV4.jsonRender(meterV4.getReadBuffer())
                         json_test = json.loads(test)
-                        print "Read meter address (Request and jsonRender): " \
-                              + json_test[Field.Meter_Address]
-                        print json.dumps(json_test, indent=4)
+                        print("Read meter address (Request and jsonRender): " \
+                              + json_test[Field.Meter_Address])
+                        print(json.dumps(json_test, indent=4))
                     else:
-                        print "Fail v4 request\n"
+                        print("Fail v4 request\n")
 
                     if meterV3.request():
                         meterV3.insert(meterDB)
                         test = meterV3.jsonRender(meterV3.getReadBuffer())
                         json_test = json.loads(test)
-                        print "Read meter address (Request and jsonRender): " \
-                              + json_test[Field.Meter_Address]
-                        print json.dumps(json_test, indent=4)
+                        print("Read meter address (Request and jsonRender): " \
+                              + json_test[Field.Meter_Address])
+                        print(json.dumps(json_test, indent=4))
                     else:
-                        print "Fail v3 request\n"
+                        print("Fail v3 request\n")
                 except:
-                    print traceback.format_exc(sys.exc_info())
+                    print(traceback.format_exc(sys.exc_info()))
                     for frame in traceback.extract_tb(sys.exc_info()[2]):
                         fname, lineno, fn, text = frame
                         print("Error in %s on line %d" % (fname, lineno))
                     return False
-            print "***** End Two reads from each meter"
-            print "*****************************************************"
-            print "***** Database reads "
-            print "***** MeterDB.renderJsonReadsSince (v3, v4): "
-            print meterDB.renderJsonReadsSince(0, meterV4.getMeterAddress())
-            print meterDB.renderJsonReadsSince(0, meterV3.getMeterAddress())
-            print "*****************************************************"
-            print "***** MeterDB.renderRaw JsonReadsSince (v3, v4): "
-            print "\nMeterDB.renderRawJsonReadsSince: "
-            print meterDB.renderRawJsonReadsSince(0, meterV4.getMeterAddress())
-            print meterDB.renderRawJsonReadsSince(0, meterV3.getMeterAddress())
-            print "***** End database reads"
-            print "*****************************************************"
-            print "***** Delete table "
-            print "*****Run MeterDB.dbDropReads (clear) "
-            print "***** End delete table"
-            print "*****************************************************"
+            print( "***** End Two reads from each meter")
+            print("*****************************************************")
+            print("***** Database reads ")
+            print("***** MeterDB.renderJsonReadsSince (v3, v4): ")
+            print(meterDB.renderJsonReadsSince(0, meterV4.getMeterAddress()))
+            print(meterDB.renderJsonReadsSince(0, meterV3.getMeterAddress()))
+            print("*****************************************************")
+            print("***** MeterDB.renderRaw JsonReadsSince (v3, v4): ")
+            print("\nMeterDB.renderRawJsonReadsSince: ")
+            print(meterDB.renderRawJsonReadsSince(0, meterV4.getMeterAddress()))
+            print(meterDB.renderRawJsonReadsSince(0, meterV3.getMeterAddress()))
+            print("***** End database reads")
+            print("*****************************************************")
+            print("***** Delete table ")
+            print("*****Run MeterDB.dbDropReads (clear) ")
+            print("***** End delete table")
+            print("*****************************************************")
             self.assertEqual(True, True)
 
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
             for frame in traceback.extract_tb(sys.exc_info()[2]):
                 fname, lineno, fn, text = frame
                 print("Error in %s on line %d" % (fname, lineno))
@@ -173,8 +170,8 @@ class AcceptanceTest(unittest.TestCase):
         wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print "***** password V3 test"
-            print "If this test fails, the meter password may be stuck at 00000001"
+            print("***** password V3 test")
+            print("If this test fails, the meter password may be stuck at 00000001")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -184,7 +181,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         if failed == True:
             self.assertEqual(True, False)
@@ -194,8 +191,8 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print "***** password V3 test"
-            print "If this test fails, the meter password may be stuck at 00000001"
+            print("***** password V3 test")
+            print("If this test fails, the meter password may be stuck at 00000001")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -205,7 +202,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -214,7 +211,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** read  V4 Test"
+            print("***** read  V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -223,7 +220,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -232,7 +229,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** read  periods and times V4 Test"
+            print("***** read  periods and times V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -241,12 +238,12 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV4.readScheduleTariffs(ReadSchedules.Schedules_5_To_8), True)
             pt_buf_1 = meterV4.getSchedulesBuffer(ReadSchedules.Schedules_1_To_4)
             pt_buf_2 = meterV4.getSchedulesBuffer(ReadSchedules.Schedules_5_To_8)
-            print meterV4.jsonRender(pt_buf_1)
-            print meterV4.jsonRender(pt_buf_2)
+            print(meterV4.jsonRender(pt_buf_1))
+            print(meterV4.jsonRender(pt_buf_2))
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -255,7 +252,7 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print"***** read  periods and times V3 Test"
+            print("***** read  periods and times V3 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -264,12 +261,12 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV3.readScheduleTariffs(ReadSchedules.Schedules_5_To_8), True)
             pt_buf_1 = meterV3.getSchedulesBuffer(ReadSchedules.Schedules_1_To_4)
             pt_buf_2 = meterV3.getSchedulesBuffer(ReadSchedules.Schedules_5_To_8)
-            print meterV3.jsonRender(pt_buf_1)
-            print meterV3.jsonRender(pt_buf_2)
+            print(meterV3.jsonRender(pt_buf_1))
+            print(meterV3.jsonRender(pt_buf_2))
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -278,21 +275,21 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print"***** read  months V4 Test"
+            print("***** read  months V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
             meterV4.attachPort(port)
             self.assertEqual(meterV4.readMonthTariffs(ReadMonths.kWh), True)
             mon_buf_kwh = meterV4.getMonthsBuffer(ReadMonths.kWh)
-            print meterV4.jsonRender(mon_buf_kwh)
+            print(meterV4.jsonRender(mon_buf_kwh))
             self.assertEqual(meterV4.readMonthTariffs(ReadMonths.kWhReverse), True)
             mon_buf_rev_kwh = meterV4.getMonthsBuffer(ReadMonths.kWhReverse)
-            print meterV4.jsonRender(mon_buf_rev_kwh)
+            print(meterV4.jsonRender(mon_buf_rev_kwh))
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -301,18 +298,18 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** read  holidays V4 Test"
+            print("***** read  holidays V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
             meterV4.attachPort(port)
             self.assertEqual(meterV4.readHolidayDates(), True)
             hd_buf = meterV4.getHolidayDatesBuffer()
-            print meterV4.jsonRender(hd_buf)
+            print(meterV4.jsonRender(hd_buf))
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -321,18 +318,18 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** read  holidays V3 Test"
+            print("***** read  holidays V3 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
             meterV3.attachPort(port)
             self.assertEqual(meterV3.readHolidayDates(), True)
             hd_buf = meterV3.getHolidayDatesBuffer()
-            print meterV3.jsonRender(hd_buf)
+            print(meterV3.jsonRender(hd_buf))
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -341,21 +338,21 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** read  months V3 Test"
+            print("***** read  months V3 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
             meterV3.attachPort(port)
             self.assertEqual(meterV3.readMonthTariffs(ReadMonths.kWh), True)
             mon_buf_kwh = meterV3.getMonthsBuffer(ReadMonths.kWh)
-            print meterV3.jsonRender(mon_buf_kwh)
+            print(meterV3.jsonRender(mon_buf_kwh))
             self.assertEqual(meterV3.readMonthTariffs(ReadMonths.kWhReverse), True)
             mon_buf_rev_kwh = meterV3.getMonthsBuffer(ReadMonths.kWhReverse)
-            print meterV3.jsonRender(mon_buf_rev_kwh)
+            print(meterV3.jsonRender(mon_buf_rev_kwh))
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -364,7 +361,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** read  V3 Test"
+            print("***** read  V3 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -373,7 +370,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -382,7 +379,7 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print"***** CT V4 Test"
+            print("***** CT V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -390,17 +387,17 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV4.setCTRatio(CTRatio.Amps_200), True)
             self.assertEqual(meterV4.request(), True)
             str_ct = meterV4.getField(Field.CT_Ratio)
-            print "V4 CT after 200 set = " + str_ct
+            print("V4 CT after 200 set = " + str_ct)
             self.assertEqual(str_ct == str(CTRatio.Amps_200), True)
             self.assertEqual(meterV4.setCTRatio(CTRatio.Amps_400), True)
             self.assertEqual(meterV4.request(), True)
             str_ct = meterV4.getField(Field.CT_Ratio)
-            print "V4 CT after 400 set = " + str_ct
+            print("V4 CT after 400 set = " + str_ct)
             self.assertEqual(str_ct == str(CTRatio.Amps_400), True)
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -409,7 +406,7 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print"***** Holiday weekend V4 Test"
+            print("***** Holiday weekend V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -418,7 +415,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -427,7 +424,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Holiday weekend V3 Test"
+            print("***** Holiday weekend V3 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -436,7 +433,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -445,7 +442,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"*****  Max Demand Interval Test"
+            print("*****  Max Demand Interval Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -454,7 +451,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -463,7 +460,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Pulse output V4 Test"
+            print("***** Pulse output V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -479,7 +476,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -489,7 +486,7 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         try:
             ekm_set_log(ekm_print_log)
-            print"***** CT V3 Test"
+            print("***** CT V3 Test")
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
             meterV3.attachPort(port)
@@ -497,18 +494,18 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV3.setCTRatio(CTRatio.Amps_200), True)
             self.assertEqual(meterV3.request(), True)
             str_ct = meterV3.getField(Field.CT_Ratio)
-            print "V3 CT after 200 set = " + str_ct
+            print("V3 CT after 200 set = " + str_ct)
             self.assertEqual(str_ct == str(CTRatio.Amps_200), True)
             self.assertEqual(meterV3.request(), True)
             self.assertEqual(meterV3.setCTRatio(CTRatio.Amps_400), True)
             self.assertEqual(meterV3.request(), True)
             str_ct = meterV3.getField(Field.CT_Ratio)
-            print "V3 CT after 400 set = " + str_ct
+            print("V3 CT after 400 set = " + str_ct)
             self.assertEqual(str_ct == str(CTRatio.Amps_400), True)
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -517,7 +514,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print "*****  Set Meter Time V4"
+            print("*****  Set Meter Time V4")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -532,14 +529,14 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV4.setTime(yy, mm, dd, hh, min, ss), True)
             self.assertEqual(meterV4.request(), True)
             str_time = meterV4.getField(Field.Meter_Time)
-            print str_time
+            print(str_time)
             date_tuple = meterV4.splitEkmDate(int(str_time))
             if (((yy - 2000) == date_tuple.yy) and
                         (mm == date_tuple.mm) and
                         (dd == date_tuple.dd) and
                         (hh == date_tuple.hh) and
                         (min == date_tuple.minutes)):
-                print  "Passed and return time agree pass 1"
+                print( "Passed and return time agree pass 1")
             else:
                 self.assertEqual(True, False)
             yy = 2019
@@ -557,7 +554,7 @@ class AcceptanceTest(unittest.TestCase):
                         (dd == date_tuple.dd) and
                         (hh == date_tuple.hh) and
                         (min == date_tuple.minutes)):
-                print  "Passed and return time agree pass 2"
+                print( "Passed and return time agree pass 2")
             else:
                 self.assertEqual(True, False)
 
@@ -565,7 +562,7 @@ class AcceptanceTest(unittest.TestCase):
 
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -574,7 +571,7 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print "*****  Set Meter Time V3"
+            print("*****  Set Meter Time V3")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -596,7 +593,7 @@ class AcceptanceTest(unittest.TestCase):
                         (dd == date_tuple.dd) and
                         (hh == date_tuple.hh) and
                         (min == date_tuple.minutes)):
-                print  "Passed and return time agree pass 1"
+                print( "Passed and return time agree pass 1")
             else:
                 self.assertEqual(True, False)
 
@@ -616,12 +613,12 @@ class AcceptanceTest(unittest.TestCase):
                         (dd == date_tuple.dd) and
                         (hh == date_tuple.hh) and
                         (min == date_tuple.minutes)):
-                print  "Passed and return time agree pass 2"
+                print( "Passed and return time agree pass 2")
             else:
                 self.assertEqual(True, False)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -630,7 +627,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Max Demand Period V4 Test"
+            print("***** Max Demand Period V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -649,7 +646,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -658,7 +655,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Pulse ratio V4 Test"
+            print("***** Pulse ratio V4 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -694,7 +691,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -703,7 +700,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Test  resettable kwh v4"
+            print("***** Test  resettable kwh v4")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -711,7 +708,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV4.request(), True)
             str_rev_rst = meterV4.getField(Field.Resettable_Rev_kWh_Tot)
             str_rst = meterV4.getField(Field.Resettable_kWh_Tot)
-            print "Inital: Fwd resettable = " + str_rst + "Rev resettable kwh " + str_rev_rst
+            print("Inital: Fwd resettable = " + str_rst + "Rev resettable kwh " + str_rev_rst)
             self.assertEqual(meterV4.setZeroResettableKWH(), True)
             self.assertEqual(meterV4.request(), True)
             str_rev_rst = meterV4.getField(Field.Resettable_Rev_kWh_Tot)
@@ -721,7 +718,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -730,7 +727,7 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print"***** Test  set period times v4"
+            print("***** Test  set period times v4")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -753,7 +750,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -762,7 +759,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Test  set period times v3"
+            print("***** Test  set period times v3")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -785,7 +782,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -794,7 +791,7 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print"***** Test  seasons v4"
+            print("***** Test  seasons v4")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -816,7 +813,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -825,7 +822,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Test  holidays v4"
+            print("***** Test  holidays v4")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -875,7 +872,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -884,7 +881,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Test  holidays v3"
+            print("***** Test  holidays v3")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -934,7 +931,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -943,7 +940,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Test  seasons v3"
+            print("***** Test  seasons v3")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -965,7 +962,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -974,7 +971,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print"***** Max Demand Period V3 Test"
+            print("***** Max Demand Period V3 Test")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
@@ -992,7 +989,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -1001,7 +998,7 @@ class AcceptanceTest(unittest.TestCase):
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
-            print "*****  Set LCD display V4  (manual check only)"
+            print("*****  Set LCD display V4  (manual check only)")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -1025,7 +1022,7 @@ class AcceptanceTest(unittest.TestCase):
 
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -1034,7 +1031,7 @@ class AcceptanceTest(unittest.TestCase):
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
-            print "*****  Set Relay V4"
+            print("*****  Set Relay V4")
             ekm_set_log(ekm_print_log)
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
@@ -1051,7 +1048,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
         port.closePort()
         self.assertEqual(failed, False)
 
@@ -1064,26 +1061,26 @@ class AcceptanceTest(unittest.TestCase):
         try:
             for test_i in range(3):
                 print("***********************************************")
-                print "*****  Read and Write V4 Settings En Suite"
+                print("*****  Read and Write V4 Settings En Suite")
                 # Prologue
 
                 if test_i%2:
                     test_meter = V4Meter(v4_addr)
                 else:
                     test_meter = V3Meter(v3_addr)
-                print "Meter : " + test_meter.getMeterAddress()
+                print("Meter : " + test_meter.getMeterAddress())
                 test_meter.attachPort(port)
                 self.assertEqual(test_meter.request(), True)
                 self.assertEqual(test_meter.readSettings(), True)
                 print("***********************************************")
-                print "Schedule".ljust(15) + "Tariff".ljust(15) + "Date".ljust(10) + "Rate".ljust(15)
+                print("Schedule".ljust(15) + "Tariff".ljust(15) + "Date".ljust(10) + "Rate".ljust(15))
                 for schedule in range(Extents.Schedules):
                     for tariff in range(Extents.Tariffs):
                         schedule_tariff = test_meter.extractScheduleTariff(schedule, tariff)
-                        print (("Schedule_" + schedule_tariff.Schedule).ljust(15) +
+                        print((("Schedule_" + schedule_tariff.Schedule).ljust(15) +
                                 ("kWh_Tariff_" + schedule_tariff.Tariff).ljust(15) +
                                 (schedule_tariff.Hour+":"+schedule_tariff.Min).ljust(10) +
-                                (schedule_tariff.Rate.ljust(15)))
+                                (schedule_tariff.Rate.ljust(15))))
                 print("***********************************************")
                 for schedule in range(Extents.Schedules):
                     min_start = random.randint(0,49)
@@ -1126,13 +1123,13 @@ class AcceptanceTest(unittest.TestCase):
                           (holidaydate.Month + "-" + holidaydate.Day).ljust(20))
                 print("***********************************************")
                 skeds = test_meter.extractHolidayWeekendSchedules()
-                print "extracted holiday schedule = " + skeds.Holiday
-                print "extracted weekend schedule = " + skeds.Weekend
+                print("extracted holiday schedule = " + skeds.Holiday)
+                print("extracted weekend schedule = " + skeds.Weekend)
                 print("***********************************************")
                 self.assertEqual(True, True)
         except:
             failed = True
-            print traceback.format_exc(sys.exc_info())
+            print(traceback.format_exc(sys.exc_info()))
 
         port.closePort()
         self.assertEqual(failed, False)

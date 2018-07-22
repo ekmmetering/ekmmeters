@@ -892,9 +892,8 @@ class SerialPort(object):
         Args:
             output (str): Block to write to port
         """
-        view_str = output.encode('ascii', 'ignore')
-        if (len(view_str) > 0):
-            self.m_ser.write(view_str)
+        if len(output) > 0:
+            self.m_ser.write(output)
             self.m_ser.flush()
             time.sleep(self.m_force_wait)
         pass
@@ -918,15 +917,15 @@ class SerialPort(object):
             string: Response, implict cast from byte array.
         """
         waits = 0  # allowed interval counter
-        response_str = ""  # returned bytes in string default
+        response_str = b""  # returned bytes in string default
         try:
             waits = 0  # allowed interval counter
             while (waits < self.m_max_waits):
                 bytes_to_read = self.m_ser.inWaiting()
                 if bytes_to_read > 0:
-                    next_chunk = str(self.m_ser.read(bytes_to_read)).encode('ascii', 'ignore')
+                    next_chunk = self.m_ser.read(bytes_to_read)
                     response_str += next_chunk
-                    if (len(response_str) == 255):
+                    if len(response_str) == 255:
                         time.sleep(self.m_force_wait)
                         return response_str
                     if (len(response_str) == 1) and (response_str.encode('hex') == '06'):
@@ -935,7 +934,7 @@ class SerialPort(object):
                 else:  # hang out -- half shortest expected interval (50 ms)
                     waits += 1
                     time.sleep(self.m_force_wait)
-            response_str = ""
+            response_str = b""
 
         except:
             ekm_log(traceback.format_exc(sys.exc_info()))
@@ -1427,7 +1426,7 @@ class Meter(object):
 
         crc = 0xffff
         for c in buf:
-            index = (crc ^ ord(c)) & 0xff
+            index = (crc ^ c) & 0xff
             crct = crc_table[index]
             crc = (crc >> 8) ^ crct
         crc = (crc << 8) | (crc >> 8)
@@ -1581,7 +1580,7 @@ class Meter(object):
             if not def_buf[fld][MeterData.CalculatedFlag]:
                 struct_str = struct_str + str(def_buf[fld][MeterData.SizeValue]) + "s"
         if len(data) == 255:
-            contents = struct.unpack(struct_str, str(data))
+            contents = struct.unpack(struct_str, data)
         else:
             self.writeCmdMsg("Length error.  Len() size = " + str(len(data)))
             contents = ()
@@ -1608,7 +1607,7 @@ class Meter(object):
         # is filled by default in V3 and V4 requests
         if kwh_scale == ScaleKWH.EmptyScale:
             if self.m_kwh_precision == ScaleKWH.EmptyScale :
-                scale_offset = int(def_buf.keys().index(Field.kWh_Scale))
+                scale_offset = int(list(def_buf.keys()).index(Field.kWh_Scale))
                 self.m_kwh_precision = kwh_scale = int(contents[scale_offset])
 
         for fld in def_buf:
@@ -1627,7 +1626,7 @@ class Meter(object):
                 fld_scale = def_buf[fld][MeterData.ScaleValue]
 
                 if fld_type == FieldType.Float:
-                    float_data = float(str(raw_data))
+                    float_data = float(raw_data.decode('ascii'))
                     divisor = 1
                     if fld_scale == ScaleType.KWH:
                         divisor = 1
@@ -1649,7 +1648,7 @@ class Meter(object):
                     def_buf[fld][MeterData.NativeValue] = float_data
 
                 elif fld_type == FieldType.Hex:
-                    hex_data = raw_data.encode('hex')
+                    hex_data = binascii.b2a_hex(raw_data).decode('ascii')
                     def_buf[fld][MeterData.StringValue] = hex_data
                     def_buf[fld][MeterData.NativeValue] = hex_data
 
@@ -1662,18 +1661,18 @@ class Meter(object):
                     def_buf[fld][MeterData.NativeValue] = integer_data
 
                 elif fld_type == FieldType.String:
-                    string_data = str(raw_data)
+                    string_data = raw_data.decode('ascii')
                     def_buf[fld][MeterData.StringValue] = string_data
                     def_buf[fld][MeterData.NativeValue] = string_data
 
                 elif fld_type == FieldType.PowerFactor:
-                    def_buf[fld][MeterData.StringValue] = str(raw_data)
+                    def_buf[fld][MeterData.StringValue] = raw_data.decode('ascii')
                     def_buf[fld][MeterData.NativeValue] = str(raw_data)
 
                 else:
                     ekm_log("Unrecognized field type")
 
-                log_str = log_str + '"' + fld + '":  "' + def_buf[fld][MeterData.StringValue] + '"\n'
+                log_str = log_str + '"%s":  "%s"\n' % (fld, def_buf[fld][MeterData.StringValue])
 
             except:
                 ekm_log("Exception on Field:" + str(fld))
@@ -2970,7 +2969,6 @@ class V3Meter(Meter):
             meter_address (str): 12 character meter address from front of meter.
         """
         self.m_serial_port = None
-        self.m_meter_address = ""
         self.m_last_outgoing_queue__time = 0
         self.m_last_incoming_queue_guid = ""
         self.m_raw_read_a = ""
@@ -3056,9 +3054,9 @@ class V3Meter(Meter):
         start_context = self.getContext()
         self.setContext("request[v3A]")
         try:
-            self.m_serial_port.write("2f3f".decode("hex") +
-                                     self.m_meter_address +
-                                     "210d0a".decode("hex"))
+            self.m_serial_port.write(binascii.a2b_hex("2f3f") +
+                                     self.m_meter_address.encode('ascii') +
+                                     binascii.a2b_hex("210d0a"))
             self.m_raw_read_a = self.m_serial_port.getResponse(self.getContext())
             unpacked_read_a = self.unpackStruct(self.m_raw_read_a, self.m_blk_a)
             self.convertData(unpacked_read_a, self.m_blk_a, 1)
@@ -3153,7 +3151,7 @@ class V3Meter(Meter):
     def serialPostEnd(self):
         """ Post termination code to implicitly current meter. """
         ekm_log("Termination string sent (" + self.m_context + ")")
-        self.m_serial_port.write("0142300375".decode("hex"))
+        self.m_serial_port.write(binascii.a2b_hex("0142300375"))
         pass
 
 
@@ -3167,7 +3165,6 @@ class V4Meter(Meter):
             meter_address (str): 12 character meter address.
         """
         self.m_serial_port = None
-        self.m_meter_address = ""
         self.m_raw_read_a = ""
         self.m_raw_read_b = ""
         self.m_a_crc = False
@@ -3378,7 +3375,7 @@ class V4Meter(Meter):
         """
         work_context = self.getContext()
         self.setContext("request[v4A]")
-        self.m_serial_port.write("2f3f".decode("hex") + self.m_meter_address + "3030210d0a".decode("hex"))
+        self.m_serial_port.write(binascii.a2b_hex("2f3f") + self.m_meter_address.encode('ascii') + binascii.a2b_hex("3030210d0a"))
         self.m_raw_read_a = self.m_serial_port.getResponse(self.getContext())
         unpacked_read_a = self.unpackStruct(self.m_raw_read_a, self.m_blk_a)
         self.convertData(unpacked_read_a, self.m_blk_a)
@@ -3395,7 +3392,7 @@ class V4Meter(Meter):
         """
         work_context = self.getContext()
         self.setContext("request[v4B]")
-        self.m_serial_port.write("2f3f".decode("hex") + self.m_meter_address + "3031210d0a".decode("hex"))
+        self.m_serial_port.write(binascii.a2b_hex("2f3f") + self.m_meter_address.encode('ascii') + binascii.a2b_hex("3031210d0a"))
         self.m_raw_read_b = self.m_serial_port.getResponse(self.getContext())
         unpacked_read_b = self.unpackStruct(self.m_raw_read_b, self.m_blk_b)
         self.convertData(unpacked_read_b, self.m_blk_b, self.m_kwh_precision)
@@ -3641,7 +3638,7 @@ class V4Meter(Meter):
         ekm_log("Termination string sent (" + self.m_context + ")")
 
         try:
-            self.m_serial_port.write("0142300375".decode("hex"))
+            self.m_serial_port.write(binascii.a2b_hex("0142300375"))
         except:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
