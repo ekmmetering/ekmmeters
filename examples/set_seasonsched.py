@@ -59,5 +59,5 @@ param_buf["Rate_3"] = 3
 param_buf["Hour_4"] = 4
 param_buf["Min_4"] = 41
 param_buf["Rate_4"] = 4
-if my_meter.setScheduleTariffs(param_buf):
+if my_meter.setSchedule(param_buf):
     print "Success"

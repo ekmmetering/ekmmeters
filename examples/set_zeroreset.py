@@ -4,7 +4,7 @@
 from ekmmeters import *
 
 #port and meter
-my_port_name = "COM3"
+my_port_name = "COM4"
 my_meter_address = "300001162"
 
 #logging to console

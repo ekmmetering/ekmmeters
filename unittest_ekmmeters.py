@@ -45,7 +45,7 @@ def loadparams():
 
     '''
     test_ini = ConfigParser.ConfigParser()
-    test_ini.read('unittest.ini')
+    test_ini.read('/opt/ekmmeters/unittest.ini')
     test_port = test_ini.get("PARAMS", 'test_port')
     v3_addr = test_ini.get("PARAMS", 'v3_addr')
     v4_addr = test_ini.get("PARAMS", 'v4_addr')
@@ -102,6 +102,10 @@ class AcceptanceTest(unittest.TestCase):
             meterV4.registerObserver(my_observer)
             meterV3.attachPort(port)
             meterV4.request()
+            meterV4.request()
+            meterV4.request()
+            meterV3.request()
+            meterV3.request()
             meterV3.request()
             meterDB = SqliteMeterDB("test.db")
             meterDB.dbDropReads()
@@ -237,10 +241,10 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
             meterV4.attachPort(port)
-            self.assertEqual(meterV4.readScheduleTariffs(ReadSchedules.Schedules_1_To_4), True)
-            self.assertEqual(meterV4.readScheduleTariffs(ReadSchedules.Schedules_5_To_8), True)
+            self.assertEqual(meterV4.readSchedules(ReadSchedules.Schedules_1_To_4), True)
+            self.assertEqual(meterV4.readSchedules(ReadSchedules.Schedules_5_To_6), True)
             pt_buf_1 = meterV4.getSchedulesBuffer(ReadSchedules.Schedules_1_To_4)
-            pt_buf_2 = meterV4.getSchedulesBuffer(ReadSchedules.Schedules_5_To_8)
+            pt_buf_2 = meterV4.getSchedulesBuffer(ReadSchedules.Schedules_5_To_6)
             print meterV4.jsonRender(pt_buf_1)
             print meterV4.jsonRender(pt_buf_2)
             self.assertEqual(True, True)
@@ -260,10 +264,10 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
             meterV3.attachPort(port)
-            self.assertEqual(meterV3.readScheduleTariffs(ReadSchedules.Schedules_1_To_4), True)
-            self.assertEqual(meterV3.readScheduleTariffs(ReadSchedules.Schedules_5_To_8), True)
+            self.assertEqual(meterV3.readSchedules(ReadSchedules.Schedules_1_To_4), True)
+            self.assertEqual(meterV3.readSchedules(ReadSchedules.Schedules_5_To_6), True)
             pt_buf_1 = meterV3.getSchedulesBuffer(ReadSchedules.Schedules_1_To_4)
-            pt_buf_2 = meterV3.getSchedulesBuffer(ReadSchedules.Schedules_5_To_8)
+            pt_buf_2 = meterV3.getSchedulesBuffer(ReadSchedules.Schedules_5_To_6)
             print meterV3.jsonRender(pt_buf_1)
             print meterV3.jsonRender(pt_buf_2)
             self.assertEqual(True, True)
@@ -739,17 +743,17 @@ class AcceptanceTest(unittest.TestCase):
             param_buf["Schedule"] = 0
             param_buf["Hour_1"] = 1
             param_buf["Min_1"] = 11
-            param_buf["Rate_1"] = 1
+            param_buf["Tariff_1"] = 1
             param_buf["Hour_2"] = 2
             param_buf["Min_2"] = 21
-            param_buf["Rate_2"] = 2
+            param_buf["Tariff_2"] = 2
             param_buf["Hour_3"] = 3
             param_buf["Min_3"] = 31
-            param_buf["Rate_3"] = 3
+            param_buf["Tariff_3"] = 3
             param_buf["Hour_4"] = 4
             param_buf["Min_4"] = 41
-            param_buf["Rate_4"] = 4
-            self.assertEqual(meterV4.setScheduleTariffs(param_buf), True)
+            param_buf["Tariff_4"] = 0
+            self.assertEqual(meterV4.setSchedule(param_buf), True)
             self.assertEqual(True, True)
         except:
             failed = True
@@ -771,17 +775,17 @@ class AcceptanceTest(unittest.TestCase):
             param_buf["Schedule"] = 0
             param_buf["Hour_1"] = 1
             param_buf["Min_1"] = 11
-            param_buf["Rate_1"] = 1
+            param_buf["Tariff_1"] = 1
             param_buf["Hour_2"] = 2
             param_buf["Min_2"] = 21
-            param_buf["Rate_2"] = 2
+            param_buf["Tariff_2"] = 2
             param_buf["Hour_3"] = 3
             param_buf["Min_3"] = 31
-            param_buf["Rate_3"] = 3
+            param_buf["Tariff_3"] = 3
             param_buf["Hour_4"] = 4
             param_buf["Min_4"] = 41
-            param_buf["Rate_4"] = 4
-            self.assertEqual(meterV3.setScheduleTariffs(param_buf), True)
+            param_buf["Tariff_4"] = 3
+            self.assertEqual(meterV3.setSchedule(param_buf), True)
             self.assertEqual(True, True)
         except:
             failed = True
@@ -1079,22 +1083,22 @@ class AcceptanceTest(unittest.TestCase):
                 print "Schedule".ljust(15) + "Tariff".ljust(15) + "Date".ljust(10) + "Rate".ljust(15)
                 for schedule in range(Extents.Schedules):
                     for tariff in range(Extents.Tariffs):
-                        schedule_tariff = test_meter.extractScheduleTariff(schedule, tariff)
+                        schedule_tariff = test_meter.extractSchedule(schedule, tariff)
                         print (("Schedule_" + schedule_tariff.Schedule).ljust(15) +
                                 ("kWh_Tariff_" + schedule_tariff.Tariff).ljust(15) +
                                 (schedule_tariff.Hour+":"+schedule_tariff.Min).ljust(10) +
-                                (schedule_tariff.Rate.ljust(15)))
+                                (schedule_tariff.Tariff.ljust(15)))
                 print("***********************************************")
                 for schedule in range(Extents.Schedules):
                     min_start = random.randint(0,49)
                     hr_start = random.randint(0,19)
-                    rate_start = random.randint(1,7)
-                    for tariff in range(Extents.Tariffs):
-                        test_meter.assignScheduleTariff(schedule, tariff,
-                                                     hr_start + tariff,
-                                                     min_start + tariff,
-                                                     rate_start + tariff)
-                    test_meter.setScheduleTariffs()
+                    tariff_start = random.randint(1,3)
+                    for period in range(Extents.Periods):
+                        test_meter.assignSchedule(schedule, period,
+                                                  hr_start + period,
+                                                  min_start + period,
+                                                  tariff_start + period)
+                    test_meter.setSchedule()
                 print("***********************************************")
                 print("Month".ljust(7) + "kWh_Tariff_1".ljust(14) + "kWh_Tariff_2".ljust(14) + "kWh_Tariff_3".ljust(14) +
                         "kWh_Tariff_4".ljust(14) + "kWh_Tot".ljust(10) + "Rev_kWh_Tariff_1".ljust(18) +
@@ -1110,7 +1114,7 @@ class AcceptanceTest(unittest.TestCase):
                 test_meter.assignSeasonSchedule(Seasons.Season_1, 1, 1, Schedules.Schedule_1)
                 test_meter.assignSeasonSchedule(Seasons.Season_2, 3, 21, Schedules.Schedule_2)
                 test_meter.assignSeasonSchedule(Seasons.Season_3, 6, 20, Schedules.Schedule_3)
-                test_meter.assignSeasonSchedule(Seasons.Season_4, 9, 21, Schedules.Schedule_8)
+                test_meter.assignSeasonSchedule(Seasons.Season_4, 9, 21, Schedules.Schedule_6)
                 test_meter.setSeasonSchedules()
                 print("***********************************************")
                 for holiday in range(Extents.Holidays):

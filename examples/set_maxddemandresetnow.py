@@ -4,8 +4,8 @@
 from ekmmeters import *
 
 # port and meter to use
-my_port_name = "COM3"
-my_meter_address = "10001438"
+my_port_name = "COM4"
+my_meter_address = "300001162"
 
 #log to console
 ekm_set_log(ekm_print_log)

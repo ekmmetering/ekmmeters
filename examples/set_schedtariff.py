@@ -22,11 +22,11 @@ else:
     exit()
 
 
-my_meter.assignScheduleTariff(Schedules.Schedule_1, Tariffs.Tariff_1, 0,0,1)
-my_meter.assignScheduleTariff(Schedules.Schedule_1, Tariffs.Tariff_2, 5,30,2)
-my_meter.assignScheduleTariff(Schedules.Schedule_1, Tariffs.Tariff_3, 12,0,3)
-my_meter.assignScheduleTariff(Schedules.Schedule_1, Tariffs.Tariff_3, 17,30,3)
-if (my_meter.setScheduleTariffs()):
+my_meter.assignSchedule(Schedules.Schedule_1, Tariffs.Tariff_1, 0, 0, 1)
+my_meter.assignSchedule(Schedules.Schedule_1, Tariffs.Tariff_2, 5, 30, 2)
+my_meter.assignSchedule(Schedules.Schedule_1, Tariffs.Tariff_3, 12, 0, 3)
+my_meter.assignSchedule(Schedules.Schedule_1, Tariffs.Tariff_3, 17, 30, 3)
+if (my_meter.setSchedule()):
     print "Success"
 
 
@@ -39,13 +39,13 @@ for schedule in range(Extents.Schedules):
     increment = 0
     for tariff in range(Extents.Tariffs):
         increment += 1
-        if (not my_meter.assignScheduleTariff(schedule, tariff,
+        if (not my_meter.assignSchedule(schedule, tariff,
                                       hr_start + increment,
                                       min_start + increment,
                                       rate_start + increment)):
             print "Assignment failed."
 
-    my_meter.setScheduleTariffs()
+    my_meter.setSchedule()
 
 
 

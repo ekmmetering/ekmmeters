@@ -50,7 +50,7 @@ ekmmeters_log_func = ekm_no_log
 global ekmmeters_log_level
 ekmmeters_log_level = 3
 global __EKMMETERS_VERSION
-__EKMMETERS_VERSION = "0.2.4"
+__EKMMETERS_VERSION = "0.2.6"
 
 
 def ekm_set_log(function_name):
@@ -103,6 +103,10 @@ class MeterData():
 
 
     """
+
+    def __init__(self):
+        pass
+
     SizeValue = 0
     TypeValue = 1
     ScaleValue = 2
@@ -110,6 +114,9 @@ class MeterData():
     NativeValue = 4
     CalculatedFlag = 5
     EventFlag = 6
+
+
+
 
 
 class MaxDemandResetInterval():
@@ -124,6 +131,10 @@ class MaxDemandResetInterval():
     ======= =
 
     """
+
+    def __init__(self):
+        pass
+
     Off = 0
     Monthly = 1
     Weekly = 2
@@ -141,9 +152,13 @@ class MaxDemandPeriod():
     ============= =
 
     """
+
+    def __init__(self):
+        pass
+
     At_15_Minutes = 1
     At_30_Minutes = 2
-    At_60_Minutes = 3
+    At_60_Minutes = 4
 
 
 class LCDItems():
@@ -192,9 +207,16 @@ class LCDItems():
     Rev_kWh_Rst         40
     State_Inputs        41
     Max_Demand          42
+    Raw_Pulse_1         43
+    Raw_Pulse_2         44
+    Raw_Pulse_3         45
     =================== ==
 
     """
+
+    def __init__(self):
+        pass
+
     kWh_Tot = 1
     Rev_kWh_Tot = 2
     RMS_Volts_Ln_1 = 3
@@ -237,7 +259,9 @@ class LCDItems():
     Rev_kWh_Rst = 40
     State_Inputs = 41
     Max_Demand = 42
-
+    Raw_Pulse_1  = 43
+    Raw_Pulse_2  = 44
+    Raw_Pulse_3  = 45
 
 class CTRatio():
     """ As passed in :func:`~ekmmeters.Meter.setCTRatio`.  V3 and V4 Omnimeters.
@@ -258,7 +282,11 @@ class CTRatio():
     ========= ====
 
     """
-    Amps_100 = 200
+
+    def __init__(self):
+        pass
+
+    Amps_100 = 100
     Amps_200 = 200
     Amps_400 = 400
     Amps_600 = 600
@@ -317,7 +345,7 @@ class Field():
     Pulse_Ratio_1             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
     Pulse_Ratio_2             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
     Pulse_Ratio_3             :func:`~ekmmeters.V4Meter.setPulseInputRatio`
-    State_Inputs'             :class:`~ekmmeters.StateIn`
+    State_Inputs             :class:`~ekmmeters.StateIn`
     Power_Factor_Ln_1         EKM Power Factor
     Power_Factor_Ln_2         EKM Power Factor
     Power_Factor_Ln_3         EKM Power Factor
@@ -340,6 +368,7 @@ class Field():
     kWh_Scale                 :class:`~ekmmeters.ScaleKWH`
     RMS_Watts_Max_Demand      Power peak in period
     Pulse_Output_Ratio        :class:`~ekmmeters.PulseOutput`
+    Max_Demand_Interval_Reset Forced reset interval period
     Net_Calc_Watts_Ln_1       RMS_Watts with Direction
     Net_Calc_Watts_Ln_2       RMS_Watts with Direction
     Net_Calc_Watts_Ln_3       RMS_Watts with Direction
@@ -354,6 +383,10 @@ class Field():
     is provided as an API-only feature.
 
     """
+
+    def __init__(self):
+        pass
+
     Meter_Address = 'Meter_Address'
     Time_Stamp = 'Time_Stamp'
     Model = 'Model'
@@ -413,6 +446,7 @@ class Field():
     State_Out = 'State_Out'
     kWh_Scale = 'kWh_Scale'
     RMS_Watts_Max_Demand = 'RMS_Watts_Max_Demand'
+    Max_Demand_Interval_Reset = 'Max_Demand_Interval_Reset'
     Pulse_Output_Ratio = 'Pulse_Output_Ratio'
     Net_Calc_Watts_Ln_1 = 'Net_Calc_Watts_Ln_1'
     Net_Calc_Watts_Ln_2 = 'Net_Calc_Watts_Ln_2'
@@ -438,6 +472,10 @@ class Seasons():
     ======== =
 
     """
+
+    def __init__(self):
+        pass
+
     Season_1 = 0
     Season_2 = 1
     Season_3 = 2
@@ -452,21 +490,24 @@ class Months():
     Month_2  1
     Month_3  2
     Month_4  3
-    Month_5  4
-    Month_6  5
+    Month_3  4
+    Month_4  5
     ======== =
 
     """
+
+    def __init__(self):
+        pass
+
     Month_1 = 0
     Month_2 = 1
     Month_3 = 2
     Month_4 = 3
-    Month_5 = 4
-    Month_6 = 5
-
+    Month_4 = 4
+    Month_5 = 5
 
 class Tariffs():
-    """ As passed to :func:`~ekmmeters.Meter.assignScheduleTariff`. V3 and V4 Omnimeters.
+    """ As passed to :func:`~ekmmeters.Meter.assignSchedule`. V3 and V4 Omnimeters.
 
      ========  =
      Tariff_1  0
@@ -476,6 +517,10 @@ class Tariffs():
      ========  =
 
     """
+
+    def __init__(self):
+        pass
+
     Tariff_1 = 0
     Tariff_2 = 1
     Tariff_3 = 2
@@ -486,21 +531,29 @@ class Extents():
     """ Traversal extents to use with for range(Extent) idiom.  V3 and V4 Omnimeters.
 
     Use of range(Extent.Entity) as an iterator insures safe
-    assignnment without off by one errors.
+    assignnment without off by one errors.  Note that the meter serial api and
+    the actual supported month tariffs and schedules differ.  Use of more than 4
+    month tariffs or six schedules results in onboard meter issues, so these are limited
+    in the extents.
 
     ========== ==
     Seasons     4
     Holidays   20
-    Tariffs     4
-    Schedules   8
-    Months      6
+    Periods     4
+    Schedules   6
+    Months      4
     ========== ==
 
     """
+
+    def __init__(self):
+        pass
+
     Seasons = 4
     Holidays = 20
+    Periods = 4
     Tariffs = 4
-    Schedules = 8
+    Schedules = 6
     Months = 6
 
 
@@ -520,6 +573,10 @@ class PulseOutput():
     ========== ==========
 
     """
+
+    def __init__(self):
+        pass
+
     Ratio_1 = 1
     Ratio_2 = 2
     Ratio_4 = 4
@@ -551,6 +608,10 @@ class Pulse():
     === =
 
     """
+
+    def __init__(self):
+        pass
+
     In1 = 1
     In2 = 2
     In3 = 3
@@ -569,33 +630,36 @@ class Schedules():
     Schedule_4 3
     Schedule_5 4
     Schedule_6 5
-    Schedule_7 6
-    Schedule_8 7
     ========== =
 
     """
+
+    def __init__(self):
+        pass
+
     Schedule_1 = 0
     Schedule_2 = 1
     Schedule_3 = 2
     Schedule_4 = 3
     Schedule_5 = 4
     Schedule_6 = 5
-    Schedule_7 = 6
-    Schedule_8 = 7
 
 
 class ReadSchedules():
-    """ For :func:`~ekmmeters.Meter.readScheduleTariffs` and :func:`~ekmmeters.Meter.getSchedulesBuffer`.  V3 and V4.
+    """ For :func:`~ekmmeters.Meter.readSchedules` and :func:`~ekmmeters.Meter.getSchedulesBuffer`.  V3 and V4.
 
     ================  ==================================
     Schedules_1_To_4  1st 4 blocks tariffs and schedules
-    Schedules_5_To_8  2nd 4 blocks tariffs and schedules
+    Schedules_5_To_6  2nd 4 blocks tariffs and schedules
     ================  ==================================
 
     """
 
+    def __init__(self):
+        pass
+
     Schedules_1_To_4 = 0
-    Schedules_5_To_8 = 1
+    Schedules_5_To_6 = 1
 
 
 class ReadMonths():
@@ -609,6 +673,10 @@ class ReadMonths():
     ========== ================================
 
     """
+
+    def __init__(self):
+        pass
+
     kWh = 1
     kWhReverse = 2
 
@@ -634,6 +702,10 @@ class DirectionFlag():
     =====================  =
 
     """
+
+    def __init__(self):
+        pass
+
     ForwardForwardForward = 1
     ForwardForwardReverse = 2
     ForwardReverseForward = 3
@@ -657,6 +729,10 @@ class ScaleKWH():
     =========== == ===========
 
     """
+
+    def __init__(self):
+        pass
+
     NoScale = 0
     Scale10 = 1
     Scale100 = 2
@@ -679,6 +755,10 @@ class ScaleType():
     ======  ==============================
 
     """
+
+    def __init__(self):
+        pass
+
     KWH = "kwh"
     No = "None"
     Div10 = "10"
@@ -702,6 +782,10 @@ class FieldType():
 
 
     """
+
+    def __init__(self):
+        pass
+
     NoType = "None"     #: no type assigned
     Hex = "hex"         #: leave as hexified string
     Int = "int"         #: int in python
@@ -719,6 +803,10 @@ class Relay():
     ====== ================
 
     """
+
+    def __init__(self):
+        pass
+
     Relay1 = 1  #: Relay 1 Selection code for v4 meter
     Relay2 = 2  #: Relay 2 Selection code for v4 meter
 
@@ -732,6 +820,10 @@ class RelayState():
     =========== =
 
     """
+
+    def __init__(self):
+        pass
+
     RelayOpen = 0   #: Relay Open command code for v4 meter
     RelayClose =  1  #: Relay Close command code for v4 meter
 
@@ -746,6 +838,10 @@ class RelayInterval():
     ===== ======================
 
     """
+
+    def __init__(self):
+        pass
+
     Max = 9999  #: Maximum wait
     Min = 0     #: Lowest legal value
     Hold = Min  #: Hold is just zero
@@ -761,6 +857,10 @@ class StateOut():
     =======  =
 
     """
+
+    def __init__(self):
+        pass
+
     OffOff = 1
     OffOn = 2
     OnOff = 3
@@ -781,6 +881,10 @@ class StateIn():
     ================= =
 
     """
+
+    def __init__(self):
+        pass
+
     HighHighHigh = 0
     HighHighLow = 1
     HighLowHigh = 2
@@ -794,6 +898,10 @@ class CosTheta():
     """ Prefix characters returned in power factor. Note a cos of zero has one space.  V3 and V4 Omnimeters.
 
     """
+
+    def __init__(self):
+        pass
+
     InductiveLag = "L"
     CapacitiveLead = "C"
     NoLeadOrLag = (" ")
@@ -847,8 +955,8 @@ class SerialPort(object):
         self.m_baudrate = baudrate
         self.m_ser = None
         self.m_fd = None
-        self.m_max_waits = 60
-        self.m_wait_sleep = 0.05
+        self.m_max_waits = 100
+        self.m_wait_sleep = 0.10
         self.m_force_wait = force_wait
         self.m_init_wait = 0.2
         pass
@@ -896,6 +1004,7 @@ class SerialPort(object):
         if (len(view_str) > 0):
             self.m_ser.write(view_str)
             self.m_ser.flush()
+            self.m_ser.reset_input_buffer()
             time.sleep(self.m_force_wait)
         pass
 
@@ -987,7 +1096,8 @@ class MeterDB(object):
                     self.m_all_fields[fld] = defv4[fld]
         pass
 
-    def mapTypeToSql(self, fld_type=FieldType.NoType, fld_len=0):
+    @staticmethod
+    def mapTypeToSql(fld_type=FieldType.NoType, fld_len=0):
         """ Translate FieldType to portable SQL Type.  Override if needful.
         Args:
             fld_type (int): :class:`~ekmmeters.FieldType` in serial block.
@@ -1045,7 +1155,8 @@ class MeterDB(object):
         ekm_log(qry_str, 4)
         return qry_str
 
-    def sqlInsert(self, def_buf, raw_a, raw_b):
+    @staticmethod
+    def sqlInsert(def_buf, raw_a, raw_b):
         """ Reasonably portable SQL INSERT for from combined read buffer.
         Args:
             def_buf (SerialBlock): Database only serial block of all fields.
@@ -1086,7 +1197,8 @@ class MeterDB(object):
         ekm_log(qry_str, 4)
         return qry_str
 
-    def sqlIdxMeterTime(self):
+    @staticmethod
+    def sqlIdxMeterTime():
         """ Reasonably portable Meter_Address and Time_Stamp index SQL create.
         Returns:
             str: SQL CREATE INDEX statement.
@@ -1095,7 +1207,8 @@ class MeterDB(object):
                 "ON Meter_Reads('" + Field.Meter_Address + "', '" +
                 Field.Time_Stamp + "')")
 
-    def sqlIdxMeter(self):
+    @staticmethod
+    def sqlIdxMeter():
         """ Reasonably portable Meter_Address index SQL create.
         Returns:
             str: SQL CREATE INDEX statement.
@@ -1103,7 +1216,8 @@ class MeterDB(object):
         return ("CREATE INDEX idx_meter " +
                 "ON Meter_Reads('" + Field.Meter_Address + "')")
 
-    def sqlDrop(self):
+    @staticmethod
+    def sqlDrop():
         """ Reasonably portable drop of reads table.
         Returns:
             str: SQL DROP TABLE statement.
@@ -1191,7 +1305,8 @@ class SqliteMeterDB(MeterDB):
                 d[name] = str(val)
         return d
 
-    def raw_dict_factory(self, cursor, row):
+    @staticmethod
+    def raw_dict_factory(cursor, row):
         """ Sqlite callback accepting the cursor and the original row as a tuple.
 
         Simple return of JSON safe types, including raw read hex strings.
@@ -1288,8 +1403,8 @@ class Meter(object):
         self.m_schd_1_to_4 = SerialBlock()
         self.initSchd_1_to_4()
 
-        self.m_schd_5_to_8 = SerialBlock()
-        self.initSchd_5_to_8()
+        self.m_schd_5_to_6 = SerialBlock()
+        self.initSchd_5_to_6()
 
         self.m_hldy = SerialBlock()
         self.initHldyDates()
@@ -1302,7 +1417,7 @@ class Meter(object):
 
         self.m_seasons_sched_params = {}
         self.m_holiday_date_params = {}
-        self.m_sched_tariff_params = {}
+        self.m_schedule_params = {}
         self.initParamLists()
 
         pass
@@ -1332,9 +1447,9 @@ class Meter(object):
                                       "Holiday_19_Month": 0, "Holiday_19_Day": 0, "Holiday_20_Month": 0,
                                       "Holiday_20_Day": 0}
 
-        self.m_sched_tariff_params = {"Schedule": 0, "Hour_1": 0, "Min_1": 0, "Rate_1": 0, "Hour_2": 0,
-                                      "Min_2": 0, "Rate_2": 0, "Hour_3": 0, "Min_3": 0, "Rate_3": 0,
-                                      "Hour_4": 0, "Min_4": 0, "Rate_4": 0}
+        self.m_schedule_params = {"Schedule": 0, "Hour_1": 0, "Min_1": 0, "Tariff_1": 0, "Hour_2": 0,
+                                      "Min_2": 0, "Tariff_2": 0, "Hour_3": 0, "Min_3": 0, "Tariff_3": 0,
+                                      "Hour_4": 0, "Min_4": 0, "Tariff_4": 0}
         pass
 
     def getReadBuffer(self):
@@ -1383,7 +1498,8 @@ class Meter(object):
         """
         return self.m_context
 
-    def calc_crc16(self, buf):
+    @staticmethod
+    def calc_crc16(buf):
         """ Drop in pure python replacement for ekmcrc.c extension.
 
         Args:
@@ -1435,7 +1551,8 @@ class Meter(object):
 
         return "%04x" % crc
 
-    def calcPF(self, pf):
+    @staticmethod
+    def calcPF(pf):
         """ Simple wrap to calc legacy PF value
 
         Args:
@@ -1607,9 +1724,8 @@ class Meter(object):
         # reads have the scale value in the first block read.  This requirement
         # is filled by default in V3 and V4 requests
         if kwh_scale == ScaleKWH.EmptyScale:
-            if self.m_kwh_precision == ScaleKWH.EmptyScale :
-                scale_offset = int(def_buf.keys().index(Field.kWh_Scale))
-                self.m_kwh_precision = kwh_scale = int(contents[scale_offset])
+            scale_offset = int(def_buf.keys().index(Field.kWh_Scale))
+            self.m_kwh_precision = kwh_scale = int(contents[scale_offset])
 
         for fld in def_buf:
 
@@ -1755,7 +1871,8 @@ class Meter(object):
 
         return False
 
-    def splitEkmDate(self, dateint):
+    @staticmethod
+    def splitEkmDate(dateint):
         """Break out a date from Omnimeter read.
 
         Note a corrupt date will raise an exception when you
@@ -1824,117 +1941,95 @@ class Meter(object):
     def initSchd_1_to_4(self):
         """ Initialize first tariff schedule :class:`~ekmmeters.SerialBlock`. """
         self.m_schd_1_to_4["reserved_40"] = [6, FieldType.Hex, ScaleType.No, "", 0, False, False]
-        self.m_schd_1_to_4["Schd_1_Tariff_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_1_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_2_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_3_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_1_Tariff_4_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_1_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_2_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_3_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_1_Period_4_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_schd_1_to_4["reserved_41"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_1_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_2_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_3_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_2_Tariff_4_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_1_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_2_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_3_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_2_Period_4_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_schd_1_to_4["reserved_42"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_1_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_2_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_3_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_3_Tariff_4_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_1_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_2_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_3_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_3_Period_4_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_schd_1_to_4["reserved_43"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_1_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_2_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_3_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_1_to_4["Schd_4_Tariff_4_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_1_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_2_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_3_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_1_to_4["Schedule_4_Period_4_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_schd_1_to_4["reserved_44"] = [79, FieldType.Hex, ScaleType.No, "", 0, False, True]
         self.m_schd_1_to_4["crc16"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
         pass
 
-    def initSchd_5_to_8(self):
+    def initSchd_5_to_6(self):
         """ Initialize second(and last) tariff schedule :class:`~ekmmeters.SerialBlock`. """
-        self.m_schd_5_to_8["reserved_30"] = [6, FieldType.Hex, ScaleType.No, "", 0, False, False]
-        self.m_schd_5_to_8["Schd_5_Tariff_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_1_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_2_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_3_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_5_Tariff_4_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["reserved_31"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_1_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_2_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_3_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_6_Tariff_4_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["reserved_32"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_1_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_2_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_3_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_7_Tariff_4_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["reserved_33"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_1_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_2_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_3_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["Schd_8_Tariff_4_Rate"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["reserved_34"] = [79, FieldType.Hex, ScaleType.No, "", 0, False, True]
-        self.m_schd_5_to_8["crc16"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
+        self.m_schd_5_to_6["reserved_30"] = [6, FieldType.Hex, ScaleType.No, "", 0, False, False]
+        self.m_schd_5_to_6["Schedule_5_Period_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_1_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_2_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_3_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_5_Period_4_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["reserved_31"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_1_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_1_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_1_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_2_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_2_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_2_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_3_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_3_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_3_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_4_Hour"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_4_Min"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["Schedule_6_Period_4_Tariff"] = [2, FieldType.Int, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["reserved_32"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["reserved_33"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["reserved_34"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["reserved_35"] = [24, FieldType.Hex, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["reserved_36"] = [79, FieldType.Hex, ScaleType.No, "", 0, False, True]
+        self.m_schd_5_to_6["crc16"] = [2, FieldType.Hex, ScaleType.No, "", 0, False, False]
         pass
 
     def getSchedulesBuffer(self, period_group):
@@ -1949,8 +2044,8 @@ class Meter(object):
         empty_return = SerialBlock()
         if period_group == ReadSchedules.Schedules_1_To_4:
             return self.m_schd_1_to_4
-        elif period_group == ReadSchedules.Schedules_5_To_8:
-            return self.m_schd_5_to_8
+        elif period_group == ReadSchedules.Schedules_5_To_6:
+            return self.m_schd_5_to_6
         else:
             return empty_return
 
@@ -2263,7 +2358,7 @@ class Meter(object):
         self.setContext("")
         return ret
 
-    def assignScheduleTariff(self, schedule, tariff, hour, minute, rate):
+    def assignSchedule(self, schedule, period, hour, minute, tariff):
         """ Assign one schedule tariff period to meter bufffer.
 
         Args:
@@ -2271,39 +2366,39 @@ class Meter(object):
             tariff (int): :class:`~ekmmeters.Tariffs` value or in range(Extents.Tariffs).
             hour (int): Hour from 0-23.
             minute (int): Minute from 0-59.
-            rate (int): Rate value.
+            tariff (int): Rate value.
 
         Returns:
             bool: True on completed assignment.
         """
         if ((schedule not in range(Extents.Schedules)) or
-                (tariff not in range(Extents.Tariffs)) or
+                (period not in range(Extents.Tariffs)) or
                 (hour < 0) or (hour > 23) or (minute < 0) or
-                (minute > 59) or (rate < 0)):
+                (minute > 59) or (tariff < 0)):
             ekm_log("Out of bounds in Schedule_" + str(schedule + 1))
             return False
 
-        tariff += 1
-        idx_min = "Min_" + str(tariff)
-        idx_hour = "Hour_" + str(tariff)
-        idx_rate = "Rate_" + str(tariff)
-        if idx_min not in self.m_sched_tariff_params:
+        period += 1
+        idx_min = "Min_" + str(period)
+        idx_hour = "Hour_" + str(period)
+        idx_rate = "Tariff_" + str(period)
+        if idx_min not in self.m_schedule_params:
             ekm_log("Incorrect index: " + idx_min)
             return False
-        if idx_hour not in self.m_sched_tariff_params:
+        if idx_hour not in self.m_schedule_params:
             ekm_log("Incorrect index: " + idx_hour)
             return False
-        if idx_rate not in self.m_sched_tariff_params:
+        if idx_rate not in self.m_schedule_params:
             ekm_log("Incorrect index: " + idx_rate)
             return False
 
-        self.m_sched_tariff_params[idx_rate] = rate
-        self.m_sched_tariff_params[idx_hour] = hour
-        self.m_sched_tariff_params[idx_min] = minute
-        self.m_sched_tariff_params['Schedule'] = schedule
+        self.m_schedule_params[idx_rate] = tariff
+        self.m_schedule_params[idx_hour] = hour
+        self.m_schedule_params[idx_min] = minute
+        self.m_schedule_params['Schedule'] = schedule
         return True
 
-    def setScheduleTariffs(self, cmd_dict=None, password="00000000"):
+    def setSchedule(self, cmd_dict=None, password="00000000"):
         """ Serial call to set tariff periodds for a schedule.
 
         Args:
@@ -2314,10 +2409,10 @@ class Meter(object):
             bool: True on completion and ACK.
         """
         result = False
-        self.setContext("setScheduleTariffs")
+        self.setContext("setSchedule")
 
         if not cmd_dict:
-            cmd_dict = self.m_sched_tariff_params
+            cmd_dict = self.m_schedule_params
 
         try:
             if not self.request(False):
@@ -2329,16 +2424,16 @@ class Meter(object):
                     req_table = ""
                     req_table += binascii.hexlify(str(cmd_dict["Hour_1"]).zfill(2))
                     req_table += binascii.hexlify(str(cmd_dict["Min_1"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Rate_1"]).zfill(2))
+                    req_table += binascii.hexlify(str(cmd_dict["Tariff_1"]).zfill(2))
                     req_table += binascii.hexlify(str(cmd_dict["Hour_2"]).zfill(2))
                     req_table += binascii.hexlify(str(cmd_dict["Min_2"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Rate_2"]).zfill(2))
+                    req_table += binascii.hexlify(str(cmd_dict["Tariff_2"]).zfill(2))
                     req_table += binascii.hexlify(str(cmd_dict["Hour_3"]).zfill(2))
                     req_table += binascii.hexlify(str(cmd_dict["Min_3"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Rate_3"]).zfill(2))
+                    req_table += binascii.hexlify(str(cmd_dict["Tariff_3"]).zfill(2))
                     req_table += binascii.hexlify(str(cmd_dict["Hour_4"]).zfill(2))
                     req_table += binascii.hexlify(str(cmd_dict["Min_4"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Rate_4"]).zfill(2))
+                    req_table += binascii.hexlify(str(cmd_dict["Tariff_4"]).zfill(2))
                     req_table += binascii.hexlify(str(0).zfill(24))
 
                     table = binascii.hexlify(str(cmd_dict["Schedule"]).zfill(1))
@@ -2347,7 +2442,7 @@ class Meter(object):
                     req_str += self.calc_crc16(req_str[2:].decode("hex"))
                     self.m_serial_port.write(req_str.decode("hex"))
                     if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
-                        self.writeCmdMsg("Success(setScheduleTariffs): 06 returned.")
+                        self.writeCmdMsg("Success(setSchedule): 06 returned.")
                         result = True
 
             self.serialPostEnd()
@@ -2592,7 +2687,7 @@ class Meter(object):
         self.setContext("")
         return result
 
-    def readScheduleTariffs(self, tableset):
+    def readSchedules(self, tableset):
         """ Serial call to read schedule tariffs buffer
 
         Args:
@@ -2601,7 +2696,7 @@ class Meter(object):
         Returns:
             bool: True on completion and ACK.
         """
-        self.setContext("readScheduleTariffs")
+        self.setContext("readSchedules")
         try:
             req_table = binascii.hexlify(str(tableset).zfill(1))
             req_str = "01523102303037" + req_table + "282903"
@@ -2622,10 +2717,10 @@ class Meter(object):
                     self.setContext("")
                     return True
 
-            elif tableset == ReadSchedules.Schedules_5_To_8:
-                unpacked_read = self.unpackStruct(raw_ret, self.m_schd_5_to_8)
-                self.convertData(unpacked_read, self.m_schd_5_to_8, self.m_kwh_precision)
-                if str(return_crc) == str(self.m_schd_5_to_8["crc16"][MeterData.StringValue]):
+            elif tableset == ReadSchedules.Schedules_5_To_6:
+                unpacked_read = self.unpackStruct(raw_ret, self.m_schd_5_to_6)
+                self.convertData(unpacked_read, self.m_schd_5_to_6, self.m_kwh_precision)
+                if str(return_crc) == str(self.m_schd_5_to_6["crc16"][MeterData.StringValue]):
                     ekm_log("Schedules 5 to 8 CRC success (06 return)")
                     self.setContext("")
                     return True
@@ -2635,7 +2730,7 @@ class Meter(object):
         self.setContext("")
         return False
 
-    def extractScheduleTariff(self, schedule, tariff):
+    def extractSchedule(self, schedule, period):
         """ Read a single schedule tariff from meter object buffer.
 
         Args:
@@ -2645,41 +2740,41 @@ class Meter(object):
         Returns:
             bool: True on completion.
         """
-        ret = namedtuple("ret", ["Hour", "Min", "Rate", "Tariff", "Schedule"])
+        ret = namedtuple("ret", ["Hour", "Min", "Tariff", "Period", "Schedule"])
         work_table = self.m_schd_1_to_4
-        if Schedules.Schedule_5 <= schedule <= Schedules.Schedule_8:
-            work_table = self.m_schd_5_to_8
-        tariff += 1
+        if Schedules.Schedule_5 <= schedule <= Schedules.Schedule_6:
+            work_table = self.m_schd_5_to_6
+        period += 1
         schedule += 1
-        ret.Tariff = str(tariff)
+        ret.Period = str(period)
         ret.Schedule = str(schedule)
-        if (schedule < 1) or (schedule > Extents.Schedules) or (tariff < 0) or (tariff > Extents.Tariffs):
-            ekm_log("Out of bounds: tariff " + str(tariff) + " for schedule " + str(schedule))
-            ret.Hour = ret.Min = ret.Rate = str(0)
+        if (schedule < 1) or (schedule > Extents.Schedules) or (period < 0) or (period > Extents.Periods):
+            ekm_log("Out of bounds: tariff " + str(period) + " for schedule " + str(schedule))
+            ret.Hour = ret.Min = ret.Tariff = str(0)
             return ret
 
-        idxhr = "Schd_" + str(schedule) + "_Tariff_" + str(tariff) + "_Hour"
-        idxmin = "Schd_" + str(schedule) + "_Tariff_" + str(tariff) + "_Min"
-        idxrate = "Schd_" + str(schedule) + "_Tariff_" + str(tariff) + "_Rate"
+        idxhr = "Schedule_" + str(schedule) + "_Period_" + str(period) + "_Hour"
+        idxmin = "Schedule_" + str(schedule) + "_Period_" + str(period) + "_Min"
+        idxrate = "Schedule_" + str(schedule) + "_Period_" + str(period) + "_Tariff"
 
         if idxhr not in work_table:
             ekm_log("Incorrect index: " + idxhr)
-            ret.Hour = ret.Min = ret.Rate = str(0)
+            ret.Hour = ret.Min = ret.Tariff = str(0)
             return ret
 
         if idxmin not in work_table:
             ekm_log("Incorrect index: " + idxmin)
-            ret.Hour = ret.Min = ret.Rate = str(0)
+            ret.Hour = ret.Min = ret.Tariff = str(0)
             return ret
 
         if idxrate not in work_table:
             ekm_log("Incorrect index: " + idxrate)
-            ret.Hour = ret.Min = ret.Rate = str(0)
+            ret.Hour = ret.Min = ret.Tariff = str(0)
             return ret
 
         ret.Hour = work_table[idxhr][MeterData.StringValue]
         ret.Min = work_table[idxmin][MeterData.StringValue].zfill(2)
-        ret.Rate = work_table[idxrate][MeterData.StringValue]
+        ret.Tariff = work_table[idxrate][MeterData.StringValue]
         return ret
 
     def readMonthTariffs(self, months_type):
@@ -2859,8 +2954,8 @@ class Meter(object):
         success = (self.readHolidayDates() and
                    self.readMonthTariffs(ReadMonths.kWh) and
                    self.readMonthTariffs(ReadMonths.kWhReverse) and
-                   self.readScheduleTariffs(ReadSchedules.Schedules_1_To_4) and
-                   self.readScheduleTariffs(ReadSchedules.Schedules_5_To_8))
+                   self.readSchedules(ReadSchedules.Schedules_1_To_4) and
+                   self.readSchedules(ReadSchedules.Schedules_5_To_6))
         return success
 
     def writeCmdMsg(self, msg):
@@ -3286,7 +3381,7 @@ class V4Meter(Meter):
         self.m_blk_b[Field.Pulse_Ratio_2] = [4, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_blk_b[Field.Pulse_Ratio_3] = [4, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_blk_b[Field.CT_Ratio] = [4, FieldType.Int, ScaleType.No, "", 0, False, True]
-        self.m_blk_b["reserved_6"] = [1, FieldType.Hex, ScaleType.No, "", 0, False, False]
+        self.m_blk_b[Field.Max_Demand_Interval_Reset] = [1, FieldType.Int, ScaleType.No, "", 0, False, False]
         self.m_blk_b[Field.Pulse_Output_Ratio] = [4, FieldType.Int, ScaleType.No, "", 0, False, True]
         self.m_blk_b["reserved_7"] = [53, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_blk_b[Field.Status_A] = [1, FieldType.Hex, ScaleType.No, "", 0, False, True]
@@ -3313,7 +3408,7 @@ class V4Meter(Meter):
         self.m_lcd_lookup["RMS_Volts_Ln_2"] = LCDItems.RMS_Volts_Ln_2
         self.m_lcd_lookup["RMS_Volts_Ln_3"] = LCDItems.RMS_Volts_Ln_3
         self.m_lcd_lookup["Amps_Ln_1"] = LCDItems.Amps_Ln_1
-        self.m_lcd_lookup["Amps_Ln_2"] = LCDItems.Amps_Ln_1
+        self.m_lcd_lookup["Amps_Ln_2"] = LCDItems.Amps_Ln_2
         self.m_lcd_lookup["Amps_Ln_3"] = LCDItems.Amps_Ln_3
         self.m_lcd_lookup["RMS_Watts_Ln_1"] = LCDItems.RMS_Watts_Ln_1
         self.m_lcd_lookup["RMS_Watts_Ln_2"] = LCDItems.RMS_Watts_Ln_2
@@ -3360,7 +3455,9 @@ class V4Meter(Meter):
             bool: True on completion.
         """
         try:
-            if self.requestA() and self.requestB():
+            retA = self.requestA()
+            retB = self.requestB()
+            if retA and retB:
                 self.makeAB()
                 self.calculateFields()
                 self.updateObservers()
@@ -3573,7 +3670,7 @@ class V4Meter(Meter):
         try:
             self.initLcd()
             item_cnt = len(display_list)
-            if (item_cnt > 40) or (item_cnt <= 0):
+            if (item_cnt > 45) or (item_cnt <= 0):
                 ekm_log("LCD item list must have between 1 and 40 items")
                 return False
 

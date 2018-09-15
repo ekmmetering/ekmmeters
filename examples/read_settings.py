@@ -28,7 +28,7 @@ if my_meter.readSettings():
     print "Schedule".ljust(15) + "Tariff".ljust(15) + "Date".ljust(10) + "Rate".ljust(15)
     for schedule in range(Extents.Schedules):
         for tariff in range(Extents.Tariffs):
-            schedule_tariff = my_meter.extractScheduleTariff(schedule, tariff)
+            schedule_tariff = my_meter.extractSchedule(schedule, tariff)
             print (("Schedule_" + schedule_tariff.Schedule).ljust(15) +
                    ("kWh_Tariff_" + schedule_tariff.Tariff).ljust(15) +
                    (schedule_tariff.Hour+":"+schedule_tariff.Min).ljust(10) +
@@ -61,7 +61,7 @@ if my_meter.readSettings():
     months_fwd_blk = my_meter.getMonthsBuffer(ReadMonths.kWh)
     months_rev_blk = my_meter.getMonthsBuffer(ReadMonths.kWhReverse)
     sched_blk_1 = my_meter.getSchedulesBuffer(ReadSchedules.Schedules_1_To_4)
-    sched_blk_2 = my_meter.getSchedulesBuffer(ReadSchedules.Schedules_5_To_8)
+    sched_blk_2 = my_meter.getSchedulesBuffer(ReadSchedules.Schedules_5_To_6)
     holiday_blk = my_meter.getHolidayDatesBuffer()
 
     print my_meter.jsonRender(months_fwd_blk)
