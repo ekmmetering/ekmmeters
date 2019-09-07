@@ -3,9 +3,6 @@
 
 The ekmmeters library API for v3 and v4 EKM Omnimeters.
 
-Tested and released under Python 2.6 (tested Centos 6.x only)
-and Python 2.7x (Python and Iron Python).
-
 This software is provided under an MIT license:
     https://opensource.org/licenses/MIT
 """
