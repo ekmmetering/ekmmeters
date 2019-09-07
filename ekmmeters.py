@@ -1,5 +1,5 @@
 """ ekmmeters.py
-(c) 2015, 2016 EKM Metering.
+(c) 2015, 2016. 2017, 2018, 2019 EKM Metering.
 
 The ekmmeters library API for v3 and v4 EKM Omnimeters.
 
@@ -21,7 +21,13 @@ import traceback
 import sys
 import json
 import datetime
+import codecs
 
+def hex2str(string):
+    return codecs.decode(codecs.decode(string,"hex"),"ascii")
+
+def str2hex(string):
+    return codecs.decode(codecs.encode(string.encode(),"hex"),"ascii")
 
 def ekm_no_log(output_string):
     """ No-op predefined module level logging callback.
@@ -158,7 +164,7 @@ class MaxDemandPeriod():
 
     At_15_Minutes = 1
     At_30_Minutes = 2
-    At_60_Minutes = 4
+    At_60_Minutes = 3
 
 
 class LCDItems():
@@ -313,15 +319,15 @@ class Field():
     Model                     Meter model
     Firmware                  Meter firmware
     kWh_Tot                   Meter power total
-    kWh_Tariff_1              Power in timeslot 1
-    kWh_Tariff_2              Power in timeslot 2
-    kWh_Tariff_3              Power in timeslot 3
-    kWh_Tariff_4              Power in timeslot 4
+    kWh_Tariff_1              kWh for Tariff 1
+    kWh_Tariff_2              kWh for Tariff 2
+    kWh_Tariff_3              kWh for Tariff 3
+    kWh_Tariff_4              kWh for Tariff 4
     Rev_kWh_Tot               Meter rev. total
-    Rev_kWh_Tariff_1          Rev power in timeslot 1
-    Rev_kWh_Tariff_2          Rev power in timeslot 2
-    Rev_kWh_Tariff_3          Rev power in timeslot 3
-    Rev_kWh_Tariff_4          Rev power in timeslot 4
+    Rev_kWh_Tariff_1          Rev kWh for Tariff 1
+    Rev_kWh_Tariff_2          Rev kWh for Tariff 2
+    Rev_kWh_Tariff_3          Rev kWh for Tariff 3
+    Rev_kWh_Tariff_4          Rev kWh for Tariff 4
     RMS_Volts_Ln_1            Volts line 1
     RMS_Volts_Ln_2            Volts line 2
     RMS_Volts_Ln_3            Volts line 3
@@ -649,8 +655,8 @@ class ReadSchedules():
     """ For :func:`~ekmmeters.Meter.readSchedules` and :func:`~ekmmeters.Meter.getSchedulesBuffer`.  V3 and V4.
 
     ================  ==================================
-    Schedules_1_To_4  1st 4 blocks tariffs and schedules
-    Schedules_5_To_6  2nd 4 blocks tariffs and schedules
+    Schedules_1_To_4  1st 4 blocks of tariff schedules
+    Schedules_5_To_6  2nd 4 blocks of tariff schedules
     ================  ==================================
 
     """
@@ -944,7 +950,7 @@ class SerialPort(object):
     be changed.
     """
 
-    def __init__(self, ttyport, baudrate=9600, force_wait = 0.1):
+    def __init__(self, ttyport, baudrate=9600, force_wait = 0.2):
         """
         Args:
             ttyport (str): port name, ex 'COM3' '/dev/ttyUSB0'
@@ -955,10 +961,10 @@ class SerialPort(object):
         self.m_baudrate = baudrate
         self.m_ser = None
         self.m_fd = None
-        self.m_max_waits = 100
-        self.m_wait_sleep = 0.10
+        self.m_max_waits = 20
+        self.m_wait_sleep = 0.02
         self.m_force_wait = force_wait
-        self.m_init_wait = 0.2
+        self.m_init_wait = 0.1
         pass
 
     def initPort(self):
@@ -1033,17 +1039,17 @@ class SerialPort(object):
             while (waits < self.m_max_waits):
                 bytes_to_read = self.m_ser.inWaiting()
                 if bytes_to_read > 0:
-                    next_chunk = str(self.m_ser.read(bytes_to_read)).encode('ascii', 'ignore')
+                    next_chunk = codecs.decode(self.m_ser.read(bytes_to_read),"ascii")
                     response_str += next_chunk
                     if (len(response_str) == 255):
                         time.sleep(self.m_force_wait)
                         return response_str
-                    if (len(response_str) == 1) and (response_str.encode('hex') == '06'):
+                    if (len(response_str) == 1) and (str2hex(response_str) == '06'):
                         time.sleep(self.m_force_wait)
                         return response_str
                 else:  # hang out -- half shortest expected interval (50 ms)
                     waits += 1
-                    time.sleep(self.m_force_wait)
+                    time.sleep(self.m_wait_sleep)
             response_str = ""
 
         except:
@@ -1192,8 +1198,8 @@ class MeterDB(object):
             count += 1
         time_val = int(time.time() * 1000)
         qry_str = (qry_str + ",\n\t" + str(time_val) + ",\n\t'" +
-                   binascii.b2a_hex(raw_a) + "'" + ",\n\t'" +
-                   binascii.b2a_hex(raw_b) + "'\n);")
+                   str2hex(raw_a) + "'" + ",\n\t'" +
+                   str2hex(raw_b) + "'\n);")
         ekm_log(qry_str, 4)
         return qry_str
 
@@ -1301,7 +1307,7 @@ class SqliteMeterDB(MeterDB):
                 continue
             if name not in self.m_all_fields:
                 continue
-            if (str(val) != "None") and ((val > 0) or (val < 0)):
+            if (str(val) != "None"):
                 d[name] = str(val)
         return d
 
@@ -1460,7 +1466,7 @@ class Meter(object):
         """
         ekm_log("Meter::getReadBuffer called in superclass.")
         empty  = SerialBlock()
-        return empty;
+        return empty
 
     def request(self, send_terminator=False):
         """ Required override, issue A or A+B reads and square up buffers.
@@ -1595,10 +1601,10 @@ class Meter(object):
                 if not self.serialCmdPwdAuth(password):
                     self.writeCmdMsg("Password failure")
                 else:
-                    req_str = "015731023030353028" + binascii.hexlify(str(period)).zfill(2) + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str = "015731023030353028" + str2hex(str(period)).zfill(2) + "2903"
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setMaxDemandPeriod): 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -1632,10 +1638,10 @@ class Meter(object):
                 if not self.serialCmdPwdAuth(password):
                     self.writeCmdMsg("Password failure")
                 else:
-                    req_str = "015731023030443528" + binascii.hexlify(str(interval).zfill(1)) + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str = "015731023030443528" + str2hex(str(interval).zfill(1)) + "2903"
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success (setMaxDemandResetInterval): 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -1669,11 +1675,11 @@ class Meter(object):
                 if not self.serialCmdPwdAuth(pwd):
                     self.writeCmdMsg("Password failure")
                 else:
-                    req_pwd = binascii.hexlify(new_pwd.zfill(8))
+                    req_pwd = str2hex(new_pwd.zfill(8))
                     req_str = "015731023030323028" + req_pwd + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setMeterPassword): 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -1698,7 +1704,7 @@ class Meter(object):
             if not def_buf[fld][MeterData.CalculatedFlag]:
                 struct_str = struct_str + str(def_buf[fld][MeterData.SizeValue]) + "s"
         if len(data) == 255:
-            contents = struct.unpack(struct_str, str(data))
+            contents = struct.unpack(struct_str, str(data).encode())
         else:
             self.writeCmdMsg("Length error.  Len() size = " + str(len(data)))
             contents = ()
@@ -1719,12 +1725,12 @@ class Meter(object):
         """
         log_str = ""
         count = 0
-        
+
         # getting scale does not require a full read.  It does require that the
         # reads have the scale value in the first block read.  This requirement
         # is filled by default in V3 and V4 requests
         if kwh_scale == ScaleKWH.EmptyScale:
-            scale_offset = int(def_buf.keys().index(Field.kWh_Scale))
+            scale_offset = int(list(def_buf.keys()).index(Field.kWh_Scale))
             self.m_kwh_precision = kwh_scale = int(contents[scale_offset])
 
         for fld in def_buf:
@@ -1738,7 +1744,7 @@ class Meter(object):
                 continue
 
             try:  # scrub up messes on a field by field basis
-                raw_data = contents[count]
+                raw_data = contents[count].decode()
                 fld_type = def_buf[fld][MeterData.TypeValue]
                 fld_scale = def_buf[fld][MeterData.ScaleValue]
 
@@ -1765,7 +1771,7 @@ class Meter(object):
                     def_buf[fld][MeterData.NativeValue] = float_data
 
                 elif fld_type == FieldType.Hex:
-                    hex_data = raw_data.encode('hex')
+                    hex_data = str2hex(raw_data)
                     def_buf[fld][MeterData.StringValue] = hex_data
                     def_buf[fld][MeterData.NativeValue] = hex_data
 
@@ -2215,10 +2221,10 @@ class Meter(object):
                 if not self.serialCmdPwdAuth(password):
                     self.writeCmdMsg("Password failure")
                 else:
-                    req_str = "015731023030343028" + binascii.hexlify(str(0).zfill(6)) + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str = "015731023030343028" + str2hex(str(0).zfill(6)) + "2903"
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setMaxDemandResetNow): 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -2288,17 +2294,17 @@ class Meter(object):
                     ekm_log("Calculated weekday " + str(dayofweek))
 
                     req_str = "015731023030363028"
-                    req_str += binascii.hexlify(str(yy)[-2:])
-                    req_str += binascii.hexlify(str(mm).zfill(2))
-                    req_str += binascii.hexlify(str(dd).zfill(2))
-                    req_str += binascii.hexlify(str(dayofweek).zfill(2))
-                    req_str += binascii.hexlify(str(hh).zfill(2))
-                    req_str += binascii.hexlify(str(minutes).zfill(2))
-                    req_str += binascii.hexlify(str(ss).zfill(2))
+                    req_str += str2hex(str(yy)[-2:])
+                    req_str += str2hex(str(mm).zfill(2))
+                    req_str += str2hex(str(dd).zfill(2))
+                    req_str += str2hex(str(dayofweek).zfill(2))
+                    req_str += str2hex(str(hh).zfill(2))
+                    req_str += str2hex(str(minutes).zfill(2))
+                    req_str += str2hex(str(ss).zfill(2))
                     req_str += "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setTime): 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -2344,10 +2350,10 @@ class Meter(object):
                 if not self.serialCmdPwdAuth(password):
                     self.writeCmdMsg("Password failure")
                 else:
-                    req_str = "015731023030443028" + binascii.hexlify(str(new_ct).zfill(4)) + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str = "015731023030443028" + str2hex(str(new_ct).zfill(4)) + "2903"
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setCTRatio): 06 returned.")
                         ret = True
             self.serialPostEnd()
@@ -2422,26 +2428,26 @@ class Meter(object):
                     self.writeCmdMsg("Password failure")
                 else:
                     req_table = ""
-                    req_table += binascii.hexlify(str(cmd_dict["Hour_1"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Min_1"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Tariff_1"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Hour_2"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Min_2"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Tariff_2"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Hour_3"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Min_3"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Tariff_3"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Hour_4"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Min_4"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Tariff_4"]).zfill(2))
-                    req_table += binascii.hexlify(str(0).zfill(24))
+                    req_table += str2hex(str(cmd_dict["Hour_1"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Min_1"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Tariff_1"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Hour_2"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Min_2"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Tariff_2"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Hour_3"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Min_3"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Tariff_3"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Hour_4"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Min_4"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Tariff_4"]).zfill(2))
+                    req_table += str2hex(str(0).zfill(24))
 
-                    table = binascii.hexlify(str(cmd_dict["Schedule"]).zfill(1))
+                    table = str2hex(str(cmd_dict["Schedule"]).zfill(1))
 
                     req_str = "01573102303037" + table + "28" + req_table + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setSchedule): 06 returned.")
                         result = True
 
@@ -2517,23 +2523,23 @@ class Meter(object):
                     self.writeCmdMsg("Password failure")
                 else:
                     req_table = ""
-                    req_table += binascii.hexlify(str(cmd_dict["Season_1_Start_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_1_Start_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_1_Schedule"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_2_Start_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_2_Start_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_2_Schedule"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_3_Start_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_3_Start_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_3_Schedule"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_4_Start_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_4_Start_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Season_4_Schedule"]).zfill(2))
-                    req_table += binascii.hexlify(str(0).zfill(24))
+                    req_table += str2hex(str(cmd_dict["Season_1_Start_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_1_Start_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_1_Schedule"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_2_Start_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_2_Start_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_2_Schedule"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_3_Start_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_3_Start_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_3_Schedule"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_4_Start_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_4_Start_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Season_4_Schedule"]).zfill(2))
+                    req_table += str2hex(str(0).zfill(24))
                     req_str = "015731023030383028" + req_table + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setSeasonSchedules): 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -2599,50 +2605,50 @@ class Meter(object):
                     self.writeCmdMsg("Password failure")
                 else:
                     req_table = ""
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_1_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_1_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_2_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_2_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_3_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_3_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_4_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_4_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_5_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_5_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_6_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_6_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_7_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_7_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_8_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_8_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_9_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_9_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_10_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_10_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_11_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_11_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_12_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_12_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_13_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_13_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_14_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_14_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_15_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_15_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_16_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_16_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_17_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_17_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_18_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_18_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_19_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_19_Day"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_20_Month"]).zfill(2))
-                    req_table += binascii.hexlify(str(cmd_dict["Holiday_20_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_1_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_1_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_2_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_2_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_3_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_3_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_4_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_4_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_5_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_5_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_6_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_6_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_7_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_7_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_8_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_8_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_9_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_9_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_10_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_10_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_11_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_11_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_12_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_12_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_13_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_13_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_14_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_14_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_15_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_15_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_16_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_16_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_17_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_17_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_18_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_18_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_19_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_19_Day"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_20_Month"]).zfill(2))
+                    req_table += str2hex(str(cmd_dict["Holiday_20_Day"]).zfill(2))
                     req_str = "015731023030423028" + req_table + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setHolidayDates: 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -2672,12 +2678,12 @@ class Meter(object):
                 if not self.serialCmdPwdAuth(password):
                     self.writeCmdMsg("Password failure")
                 else:
-                    req_wkd = binascii.hexlify(str(new_wknd).zfill(2))
-                    req_hldy = binascii.hexlify(str(new_hldy).zfill(2))
+                    req_wkd = str2hex(str(new_wknd).zfill(2))
+                    req_hldy = str2hex(str(new_hldy).zfill(2))
                     req_str = "015731023030433028" + req_wkd + req_hldy + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success(setWeekendHolidaySchedules): 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -2698,13 +2704,13 @@ class Meter(object):
         """
         self.setContext("readSchedules")
         try:
-            req_table = binascii.hexlify(str(tableset).zfill(1))
+            req_table = str2hex(str(tableset).zfill(1))
             req_str = "01523102303037" + req_table + "282903"
 
             self.request(False)
-            req_crc = self.calc_crc16(req_str[2:].decode("hex"))
+            req_crc = self.calc_crc16(hex2str(req_str[2:]))
             req_str += req_crc
-            self.m_serial_port.write(req_str.decode("hex"))
+            self.m_serial_port.write(hex2str(req_str))
             raw_ret = self.m_serial_port.getResponse(self.getContext())
             self.serialPostEnd()
             return_crc = self.calc_crc16(raw_ret[1:-2])
@@ -2789,16 +2795,16 @@ class Meter(object):
         self.setContext("readMonthTariffs")
         try:
 
-            req_type = binascii.hexlify(str(months_type).zfill(1))
+            req_type = str2hex(str(months_type).zfill(1))
             req_str = "01523102303031" + req_type + "282903"
             work_table = self.m_mons
             if months_type == ReadMonths.kWhReverse:
                 work_table = self.m_rev_mons
 
             self.request(False)
-            req_crc = self.calc_crc16(req_str[2:].decode("hex"))
+            req_crc = self.calc_crc16(hex2str(req_str[2:]))
             req_str += req_crc
-            self.m_serial_port.write(req_str.decode("hex"))
+            self.m_serial_port.write(hex2str(req_str))
             raw_ret = self.m_serial_port.getResponse(self.getContext())
             self.serialPostEnd()
             unpacked_read = self.unpackStruct(raw_ret, work_table)
@@ -2824,15 +2830,15 @@ class Meter(object):
             tuple: The eight tariff period totals for month. The return tuple breaks out as follows:
 
             ================= ======================================
-            kWh_Tariff_1      kWh for tariff period 1 over month.
-            kWh_Tariff_2      kWh for tariff period 2 over month
-            kWh_Tariff_3      kWh for tariff period 3 over month
-            kWh_Tariff_4      kWh for tariff period 4 over month
+            kWh_Tariff_1      kWh for tariff 1 over month.
+            kWh_Tariff_2      kWh for tariff 2 over month
+            kWh_Tariff_3      kWh for tariff 3 over month
+            kWh_Tariff_4      kWh for tariff 4 over month
             kWh_Tot           Total kWh over requested month
-            Rev_kWh_Tariff_1  Rev kWh for tariff period 1 over month
-            Rev_kWh_Tariff_3  Rev kWh for tariff period 2 over month
-            Rev_kWh_Tariff_3  Rev kWh for tariff period 3 over month
-            Rev_kWh_Tariff_4  Rev kWh for tariff period 4 over month
+            Rev_kWh_Tariff_1  Rev kWh for tariff 1 over month
+            Rev_kWh_Tariff_3  Rev kWh for tariff 2 over month
+            Rev_kWh_Tariff_3  Rev kWh for tariff 3 over month
+            Rev_kWh_Tariff_4  Rev kWh for tariff 4 over month
             Rev_kWh_Tot       Total Rev kWh over requested month
             ================= ======================================
 
@@ -2873,9 +2879,9 @@ class Meter(object):
         try:
             req_str = "0152310230304230282903"
             self.request(False)
-            req_crc = self.calc_crc16(req_str[2:].decode("hex"))
+            req_crc = self.calc_crc16(hex2str(req_str[2:]))
             req_str += req_crc
-            self.m_serial_port.write(req_str.decode("hex"))
+            self.m_serial_port.write(hex2str(req_str))
             raw_ret = self.m_serial_port.getResponse(self.getContext())
             self.serialPostEnd()
             unpacked_read = self.unpackStruct(raw_ret, self.m_hldy)
@@ -2994,11 +3000,11 @@ class Meter(object):
         """
         result = False
         try:
-            req_start = "0150310228" + binascii.hexlify(password_str) + "2903"
-            req_crc = self.calc_crc16(req_start[2:].decode("hex"))
+            req_start = "0150310228" + str2hex(password_str) + "2903"
+            req_crc = self.calc_crc16(hex2str(req_start[2:]))
             req_str = req_start + req_crc
-            self.m_serial_port.write(req_str.decode("hex"))
-            if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+            self.m_serial_port.write(hex2str(req_str))
+            if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                 ekm_log("Password accepted (" + self.getContext() + ")")
                 result = True
             else:
@@ -3151,9 +3157,9 @@ class V3Meter(Meter):
         start_context = self.getContext()
         self.setContext("request[v3A]")
         try:
-            self.m_serial_port.write("2f3f".decode("hex") +
+            self.m_serial_port.write(hex2str("2f3f") +
                                      self.m_meter_address +
-                                     "210d0a".decode("hex"))
+                                     hex2str("210d0a"))
             self.m_raw_read_a = self.m_serial_port.getResponse(self.getContext())
             unpacked_read_a = self.unpackStruct(self.m_raw_read_a, self.m_blk_a)
             self.convertData(unpacked_read_a, self.m_blk_a, 1)
@@ -3248,7 +3254,7 @@ class V3Meter(Meter):
     def serialPostEnd(self):
         """ Post termination code to implicitly current meter. """
         ekm_log("Termination string sent (" + self.m_context + ")")
-        self.m_serial_port.write("0142300375".decode("hex"))
+        self.m_serial_port.write(hex2str("0142300375"))
         pass
 
 
@@ -3475,7 +3481,7 @@ class V4Meter(Meter):
         """
         work_context = self.getContext()
         self.setContext("request[v4A]")
-        self.m_serial_port.write("2f3f".decode("hex") + self.m_meter_address + "3030210d0a".decode("hex"))
+        self.m_serial_port.write(hex2str("2f3f") + self.m_meter_address + hex2str("3030210d0a"))
         self.m_raw_read_a = self.m_serial_port.getResponse(self.getContext())
         unpacked_read_a = self.unpackStruct(self.m_raw_read_a, self.m_blk_a)
         self.convertData(unpacked_read_a, self.m_blk_a)
@@ -3492,7 +3498,7 @@ class V4Meter(Meter):
         """
         work_context = self.getContext()
         self.setContext("request[v4B]")
-        self.m_serial_port.write("2f3f".decode("hex") + self.m_meter_address + "3031210d0a".decode("hex"))
+        self.m_serial_port.write(hex2str("2f3f") + self.m_meter_address + hex2str("3031210d0a"))
         self.m_raw_read_b = self.m_serial_port.getResponse(self.getContext())
         unpacked_read_b = self.unpackStruct(self.m_raw_read_b, self.m_blk_b)
         self.convertData(unpacked_read_b, self.m_blk_b, self.m_kwh_precision)
@@ -3717,13 +3723,13 @@ class V4Meter(Meter):
                 else:
                     req_str = ""
                     req_str = ("01573102303038" +
-                               binascii.hexlify(str(relay)).zfill(2) +
+                               str2hex(str(relay)).zfill(2) +
                                "28" +
-                               binascii.hexlify(str(status)).zfill(2) +
-                               binascii.hexlify(str(seconds).zfill(4)) + "2903")
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                               str2hex(str(status)).zfill(2) +
+                               str2hex(str(seconds).zfill(4)) + "2903")
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -3738,7 +3744,7 @@ class V4Meter(Meter):
         ekm_log("Termination string sent (" + self.m_context + ")")
 
         try:
-            self.m_serial_port.write("0142300375".decode("hex"))
+            self.m_serial_port.write(hex2str("0142300375"))
         except:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
@@ -3765,12 +3771,12 @@ class V4Meter(Meter):
                 if not self.serialCmdPwdAuth(password):
                     self.writeCmdMsg("Password failure")
                 else:
-                    req_const = binascii.hexlify(str(new_cnst).zfill(4))
-                    line_const = binascii.hexlify(str(line_in - 1))
+                    req_const = str2hex(str(new_cnst).zfill(4))
+                    line_const = str2hex(str(line_in - 1))
                     req_str = "01573102303041" + line_const + "28" + req_const + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
 
@@ -3800,9 +3806,9 @@ class V4Meter(Meter):
                     self.writeCmdMsg("Password failure")
                 else:
                     req_str = "0157310230304433282903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -3832,10 +3838,10 @@ class V4Meter(Meter):
                 if not self.serialCmdPwdAuth(password):
                     self.writeCmdMsg("Password failure")
                 else:
-                    req_str = "015731023030443428" + binascii.hexlify(str(new_pout).zfill(4)) + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str = "015731023030443428" + str2hex(str(new_pout).zfill(4)) + "2903"
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
             self.serialPostEnd()
@@ -3897,17 +3903,17 @@ class V4Meter(Meter):
                     fill_len = 40 - len(self.m_lcd_items)
 
                     for lcdid in self.m_lcd_items:
-                        append_val = binascii.hexlify(str(lcdid).zfill(2))
+                        append_val = str2hex(str(lcdid).zfill(2))
                         req_table += append_val
 
                     for i in range(0, fill_len):
-                        append_val = binascii.hexlify(str(0).zfill(2))
+                        append_val = str2hex(str(0).zfill(2))
                         req_table += append_val
 
                     req_str = "015731023030443228" + req_table + "2903"
-                    req_str += self.calc_crc16(req_str[2:].decode("hex"))
-                    self.m_serial_port.write(req_str.decode("hex"))
-                    if self.m_serial_port.getResponse(self.getContext()).encode("hex") == "06":
+                    req_str += self.calc_crc16(hex2str(req_str[2:]))
+                    self.m_serial_port.write(hex2str(req_str))
+                    if str2hex(self.m_serial_port.getResponse(self.getContext())) == "06":
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
             self.serialPostEnd()
