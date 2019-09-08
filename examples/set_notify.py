@@ -4,9 +4,8 @@
 from ekmmeters import *
 
 #port and meter
-my_port_name = "COM3"
-my_meter_address = "300001162"
-
+my_port_name = "/dev/ttyO4"
+my_meter_address = "000300001463"
 #logging to console
 ekm_set_log(ekm_print_log)
 
@@ -17,7 +16,7 @@ if (port.initPort() == True):
     my_meter.attachPort(port)
 else:
     # no port no meter
-    print "Cannot open port"
+    print("Cannot open port")
     exit()
 
 
@@ -43,7 +42,7 @@ class ANotifyObserver(MeterObserver):
                 self.m_last_pulse_cnt = pulse_cnt
 
     def doNotify(self):
-        print "Bells!  Alarms!  Do that again!"
+        print("Bells!  Alarms!  Do that again!")
 
 ekm_set_log(ekm_no_log)
 my_observer = ANotifyObserver()
@@ -51,10 +50,10 @@ my_meter.registerObserver(my_observer)
 
 
 my_meter.setLCDCmd([LCDItems.Pulse_Cnt_1])
-my_meter.setPulseRatio(Pulse.Ln1, 1)
+my_meter.setPulseInputRatio(Pulse.In1, 1)
 
 poll_reads = 120
-print "Starting " + str(poll_reads) + " read poll."
+print("Starting " + str(poll_reads) + " read poll.")
 read_cnt = 0
 fail_cnt = 0
 while(read_cnt < poll_reads):
@@ -62,7 +61,7 @@ while(read_cnt < poll_reads):
     if not my_meter.request():
         fail_cnt += 1
         if fail_cnt > 3:
-            print ">3 consecutive fails. Please check connection and restart"
+            print(">3 consecutive fails. Please check connection and restart")
             exit()
     else:
         fail_cnt = 0

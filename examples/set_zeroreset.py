@@ -4,9 +4,8 @@
 from ekmmeters import *
 
 #port and meter
-my_port_name = "COM4"
-my_meter_address = "300001162"
-
+my_port_name = "/dev/ttyO4"
+my_meter_address = "000300001463"
 #logging to console
 ekm_set_log(ekm_print_log)
 
@@ -17,13 +16,13 @@ if (port.initPort() == True):
     my_meter.attachPort(port)
 else:
     # no port no meter
-    print "Cannot open port"
+    print("Cannot open port")
     exit()
 
 
 if my_meter.setZeroResettableKWH():
     if my_meter.request():
-        print my_meter.getField(Field.Resettable_Rev_kWh_Tot)
-        print my_meter.getField(Field.Resettable_kWh_Tot)
+        print(my_meter.getField(Field.Resettable_Rev_kWh_Tot))
+        print(my_meter.getField(Field.Resettable_kWh_Tot))
 
 port.closePort()

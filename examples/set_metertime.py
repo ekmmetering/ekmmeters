@@ -4,9 +4,8 @@
 from ekmmeters import *
 
 #port and meter
-my_port_name = "COM3"
-my_meter_address = "300001162"
-
+my_port_name = "/dev/ttyO4"
+my_meter_address = "000300001463"
 #logging to console
 ekm_set_log(ekm_print_log)
 
@@ -17,7 +16,7 @@ if (port.initPort() == True):
     my_meter.attachPort(port)
 else:
     # no port no meter
-    print "Cannot open port"
+    print("Cannot open port")
     exit()
 
 
@@ -32,11 +31,11 @@ if (my_meter.setTime(yy, mm, dd, hh, min, ss)):
     if my_meter.request():
         time_str = my_meter.getField(Field.Meter_Time)
         dt = my_meter.splitEkmDate(int(time_str))
-        print (str(dt.mm) + "-" + str(dt.dd) + "-" + str(dt.yy) + " " +
-               str(dt.hh).zfill(2) + ":" + str(dt.minutes).zfill(2) + ":" + str(dt.ss).zfill(2))
+        print((str(dt.mm) + "-" + str(dt.dd) + "-" + str(dt.yy) + " " +
+               str(dt.hh).zfill(2) + ":" + str(dt.minutes).zfill(2) + ":" + str(dt.ss).zfill(2)))
     else:
-        print "Request failed."
+        print("Request failed.")
 else:
-    print "Set time failed."
+    print("Set time failed.")
 
 port.closePort()

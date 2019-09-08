@@ -5,9 +5,8 @@ import random
 from ekmmeters import *
 
 #port and meter
-my_port_name = "COM3"
-my_meter_address = "300001162"
-
+my_port_name = "/dev/ttyO4"
+my_meter_address = "000300001463"
 #logging to console
 ekm_set_log(ekm_print_log)
 
@@ -18,7 +17,7 @@ if (port.initPort() == True):
     my_meter.attachPort(port)
 else:
     # no port no meter
-    print "Cannot open port"
+    print("Cannot open port")
     exit()
 
 
@@ -27,7 +26,7 @@ my_meter.assignSchedule(Schedules.Schedule_1, Tariffs.Tariff_2, 5, 30, 2)
 my_meter.assignSchedule(Schedules.Schedule_1, Tariffs.Tariff_3, 12, 0, 3)
 my_meter.assignSchedule(Schedules.Schedule_1, Tariffs.Tariff_3, 17, 30, 3)
 if (my_meter.setSchedule()):
-    print "Success"
+    print("Success")
 
 
 
@@ -43,7 +42,7 @@ for schedule in range(Extents.Schedules):
                                       hr_start + increment,
                                       min_start + increment,
                                       rate_start + increment)):
-            print "Assignment failed."
+            print("Assignment failed.")
 
     my_meter.setSchedule()
 

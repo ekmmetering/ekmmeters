@@ -4,9 +4,8 @@
 from ekmmeters import *
 
 #port and meter
-my_port_name = "COM3"
-my_meter_address = "300001162"
-
+my_port_name = "/dev/ttyO4"
+my_meter_address = "000300001463"
 #logging to console
 ekm_set_log(ekm_print_log)
 
@@ -17,7 +16,7 @@ if (port.initPort() == True):
     my_meter.attachPort(port)
 else:
     # no port no meter
-    print "Cannot open port"
+    print ("Cannot open port")
     exit()
 
 
@@ -25,14 +24,13 @@ else:
 
 if my_meter.readSettings():
 
-    print "Schedule".ljust(15) + "Tariff".ljust(15) + "Date".ljust(10) + "Rate".ljust(15)
+    print ("Schedule".ljust(15) + "Tariff".ljust(15) + "Date".ljust(10))
     for schedule in range(Extents.Schedules):
         for tariff in range(Extents.Tariffs):
             schedule_tariff = my_meter.extractSchedule(schedule, tariff)
             print (("Schedule_" + schedule_tariff.Schedule).ljust(15) +
-                   ("kWh_Tariff_" + schedule_tariff.Tariff).ljust(15) +
-                   (schedule_tariff.Hour+":"+schedule_tariff.Min).ljust(10) +
-                   (schedule_tariff.Rate.ljust(15)))
+                   ("Tariff_" + schedule_tariff.Tariff).ljust(15) +
+                   (schedule_tariff.Hour+":"+schedule_tariff.Min).ljust(10))
 
     print("Month".ljust(7) + "kWh_Tariff_1".ljust(14) + "kWh_Tariff_2".ljust(14) +
            "kWh_Tariff_3".ljust(14) + "kWh_Tariff_4".ljust(14) + "kWh_Tot".ljust(10) +
@@ -53,8 +51,8 @@ if my_meter.readSettings():
         print(("Holiday_" + holidaydate.Holiday).ljust(12) +
               (holidaydate.Month + "-" + holidaydate.Day).ljust(20))
     holiday_weekend_schedules = my_meter.extractHolidayWeekendSchedules()
-    print "Holiday schedule = " + holiday_weekend_schedules.Holiday
-    print "Weekend schedule = " + holiday_weekend_schedules.Weekend
+    print ("Holiday schedule = " + holiday_weekend_schedules.Holiday)
+    print ("Weekend schedule = " + holiday_weekend_schedules.Weekend)
 
 # readthedocs individual example, complete.
 if my_meter.readSettings():
@@ -64,11 +62,11 @@ if my_meter.readSettings():
     sched_blk_2 = my_meter.getSchedulesBuffer(ReadSchedules.Schedules_5_To_6)
     holiday_blk = my_meter.getHolidayDatesBuffer()
 
-    print my_meter.jsonRender(months_fwd_blk)
-    print my_meter.jsonRender(months_rev_blk)
-    print my_meter.jsonRender(sched_blk_1)
-    print my_meter.jsonRender(sched_blk_2)
-    print my_meter.jsonRender(holiday_blk)
+    print (my_meter.jsonRender(months_fwd_blk))
+    print (my_meter.jsonRender(months_rev_blk))
+    print (my_meter.jsonRender(sched_blk_1))
+    print (my_meter.jsonRender(sched_blk_2))
+    print (my_meter.jsonRender(holiday_blk))
 
 
 

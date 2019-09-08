@@ -5,9 +5,8 @@ from ekmmeters import *
 
 
 #set your port and meter
-my_port_name = "COM3"
-my_meter_address = "300001162"
-
+my_port_name = "/dev/ttyO4"
+my_meter_address = "000300001463"
 #just print the log
 ekm_set_log(ekm_print_log)
 
@@ -18,12 +17,12 @@ if (port.initPort() == True):
     my_meter.attachPort(port)
 else:
     # not happening
-    print "Cannot open port"
+    print("Cannot open port")
     exit()
 
 
 if my_meter.setRelay(RelayInterval.Hold, Relay.Relay1, RelayState.RelayOpen):
     if my_meter.setRelay(2, Relay.Relay1, RelayState.RelayClose):
-        print "Complete"
+        print("Complete")
 
 port.closePort()
