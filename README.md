@@ -1,10 +1,10 @@
-# ekmmeters 0.2.4
+# ekmmeters 0.2.5
 
 Python API for the EKM Omnimeter Serial Interface
 
-The goal of this library is to provide a reliable and flexible interface to version 3 and version 4 EKM Omnnimeters.
+The goal of this library is to provide a reliable and flexible interface to the EKM Omnimeter v.3, EKM Omnimeter, v.4, and EKM Omnimeter v.5
 
-To get started, you can 'pip install ekmmeters' or download the single required Python file, ekmmeters.py, to your working directory and include with 'from ekmmeters import *'.  
+To get started, you can 'pip install ekmmeters', 'pip3 install ekmmeters' or download the single required Python file, ekmmeters.py, to your working directory and include with 'from ekmmeters import *'.  
 
 Adaptable examples for all supported Omnimeter commands can be found at <a href="http://ekmmeters.readthedocs.io/en/latest/">
 readthedocs.org</a>.
@@ -16,7 +16,7 @@ More experienced Python users will find appropriate methods to support agents ag
 
 #Fine Print
 
-The library is a single file and pure Python.  You can install with "pip ekmmeters" or download ekmmeters.py and place it in your project directory.  There are no external dependencies for ekmmeters.py beyond the pypi packages json, collections, importlib and pyserial.  
+The library is a single file and pure Python.  You can install with 'pip ekmmeters', 'pip3 install ekmmeters' or download ekmmeters.py and place it in your project directory.  There are no external dependencies for ekmmeters.py beyond the pypi packages json, collections, importlib and pyserial.  
 
 Unit tests require the unittests2 pypi package, along with random and ConfigParser.  The unit tests are not included
 in the pypi release, and additional packages may be required for unit tests in the future.  The documentation for readthedocs.org was built under Sphinx 1.35. Google style docstrings are used exclusively, and read via the Sphinx napoleon extension.  Docs can be built locally with the sphinx_rtd_theme pypi package installed.
@@ -27,4 +27,4 @@ There is no required third party tool set for editing the library.  However, Pyc
 
 The software is provided under an MIT License.  The MIT license allows you to use this library for any personal or commercial project, without an obligation to release any of your work as open source.   
 
-(c) 2015, 2016 EKM Metering, as appropriate.
+(c) 2015-2019 EKM Metering, Inc. as appropriate.
