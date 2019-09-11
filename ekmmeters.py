@@ -10,9 +10,7 @@ import struct
 import time
 from collections import OrderedDict
 from collections import namedtuple
-from datetime import date
 import sqlite3
-import binascii
 import serial
 import traceback
 import sys
