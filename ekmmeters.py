@@ -306,8 +306,8 @@ class CTRatio():
 class Field():
     """ Union of all V3A and V4AB Fields Returned.
 
-    Use these values to directy get read data with
-    Meter::getField() or in directy traversal of
+    Use these values to directly get read data with
+    Meter::getField() or in direct traversal of
     :class:`~ekmmeters.SerialBlock`.
 
     ========================= =======================
@@ -382,7 +382,7 @@ class Field():
     ========================= =======================
 
     Power_Factor is the only power factor measurement supported by
-    upstring EKM products.  The original Cos Theta value
+    upstream EKM products.  The original Cos Theta value
     is provided as an API-only feature.
 
     """
@@ -465,7 +465,7 @@ class Seasons():
 
     assign* methods use a zero based index for seasons.
     You may set a season using one of these constants
-    or fill and iterate over range(Extents.Seaons).
+    or fill and iterate over range(Extents.Seasons).
 
     ======== =
     Season_1 0
@@ -534,7 +534,7 @@ class Extents():
     """ Traversal extents to use with for range(Extent) idiom.  V3 and V4 Omnimeters.
 
     Use of range(Extent.Entity) as an iterator insures safe
-    assignnment without off by one errors.  Note that the meter serial api and
+    assignment without off by one errors.  Note that the meter serial api and
     the actual supported month tariffs and schedules differ.  Use of more than 4
     month tariffs or six schedules results in onboard meter issues, so these are limited
     in the extents.
@@ -690,7 +690,7 @@ class DirectionFlag():
     The Direction flag is used to generate Calc_Net_Watts field on every
     read. Each word in constant is the direction of the corresponding at
     the moment of read.  Ex ForwardReverseForward means RMS_Watts lines one
-    and three are positive, and line two is negtive.
+    and three are positive, and line two is negative.
 
 
     =====================  =
@@ -747,7 +747,7 @@ class ScaleType():
 
     These values are set when a field is defined a SerialBlock.
     A Div10 or Div100 results in immediate scaling, otherwise
-    the scaling is perfformed per the value in Field.kWh_Scale
+    the scaling is performed per the value in Field.kWh_Scale
     as described in ScaleKWH.
 
     ======  ==============================
@@ -952,7 +952,7 @@ class SerialPort(object):
         Args:
             ttyport (str): port name, ex 'COM3' '/dev/ttyUSB0'
             baudrate (int): optional, 9600 default and recommended
-            force_wait(float) : optional post commnd sleep, if required
+            force_wait(float) : optional post command sleep, if required
         """
         self.m_ttyport = ttyport
         self.m_baudrate = baudrate
@@ -1027,7 +1027,7 @@ class SerialPort(object):
             context (str): internal serial call context.
 
         Returns:
-            string: Response, implict cast from byte array.
+            string: Response, implicit cast from byte array.
         """
         waits = 0  # allowed interval counter
         response_str = ""  # returned bytes in string default
@@ -1387,7 +1387,7 @@ class SqliteMeterDB(MeterDB):
 
 
 class Meter(object):
-    """ Abstract base class.  Encapuslates serial operations and buffers. """
+    """ Abstract base class.  Encapsulates serial operations and buffers. """
 
     def __init__(self, meter_address="000000000000"):
         """
@@ -1687,7 +1687,7 @@ class Meter(object):
         return result
 
     def unpackStruct(self, data, def_buf):
-        """ Wrapper for struct.unpack with SerialBlock buffer definitionns.
+        """ Wrapper for struct.unpack with SerialBlock buffer definitions.
 
         Args:
             data (str): Implicit cast bytes to str, serial port return.
@@ -1710,7 +1710,7 @@ class Meter(object):
 
 
     def convertData(self, contents, def_buf, kwh_scale=ScaleKWH.EmptyScale):
-        """ Move data from raw tuple into scaled and conveted values.
+        """ Move data from raw tuple into scaled and converted values.
 
         Args:
             contents (tuple): Breakout of passed block from unpackStruct().
@@ -1885,7 +1885,7 @@ class Meter(object):
             dateint (int):  Omnimeter datetime as int.
 
         Returns:
-            tuple: Named tuple which breaks out as followws:
+            tuple: Named tuple which breaks out as follows:
 
             ========== =====================
             yy         Last 2 digits of year
@@ -1926,7 +1926,7 @@ class Meter(object):
         """ Place an observer in the meter update() chain.
 
         Args:
-            observer (MeterObserver): Subclassed MeterObserver.
+            observer (MeterObserver): Sub-classed MeterObserver.
         """
         self.m_observers.append(observer)
         pass
@@ -1935,7 +1935,7 @@ class Meter(object):
         """ Remove an observer from the meter update() chain.
 
         Args:
-            observer (MeterObserver): Subclassed MeterObserver.
+            observer (MeterObserver): Sub-classed MeterObserver.
         """
         if observer in self.m_observers:
             self.m_observers.remove(observer)
@@ -2143,7 +2143,7 @@ class Meter(object):
         pass
 
     def initRevMons(self):
-        """ Initialize second (and last) month tarifff :class:`~ekmmeters.SerialBlock` for meter. """
+        """ Initialize second (and last) month tariff :class:`~ekmmeters.SerialBlock` for meter. """
         self.m_rev_mons["reserved_echo_cmd"] = [6, FieldType.Hex, ScaleType.No, "", 0, False, False]
         self.m_rev_mons["Month_1_Tot"] = [8, FieldType.Float, ScaleType.KWH, "", 0, False, False]
         self.m_rev_mons["Month_1_Tariff_1"] = [8, FieldType.Float, ScaleType.KWH, "", 0, False, False]
@@ -2362,7 +2362,7 @@ class Meter(object):
         return ret
 
     def assignSchedule(self, schedule, period, hour, minute, tariff):
-        """ Assign one schedule tariff period to meter bufffer.
+        """ Assign one schedule tariff period to meter buffer.
 
         Args:
             schedule (int): A :class:`~ekmmeters.Schedules` value or in range(Extents.Schedules).
@@ -2402,7 +2402,7 @@ class Meter(object):
         return True
 
     def setSchedule(self, cmd_dict=None, password="00000000"):
-        """ Serial call to set tariff periodds for a schedule.
+        """ Serial call to set tariff periods for a schedule.
 
         Args:
             cmd_dict (dict): Optional passed command dictionary.
@@ -3192,7 +3192,7 @@ class V3Meter(Meter):
     def insert(self, meter_db):
         """ Insert to :class:`~ekmmeters.MeterDB`  subclass.
 
-        Please note MeterDB subclassing is only for simplest-case.
+        Please note MeterDB sub-classing is only for simplest-case.
 
         Args:
             meter_db (MeterDB): Instance of subclass of MeterDB.
@@ -3256,7 +3256,7 @@ class V3Meter(Meter):
 
 
 class V4Meter(Meter):
-    """ Commands and buffers for V4 Omnnimeter. """
+    """ Commands and buffers for V4 Omnimeter. """
 
     def __init__(self, meter_address="000000000000"):
         """
@@ -3629,7 +3629,7 @@ class V4Meter(Meter):
     def insert(self, meter_db):
         """ Insert to :class:`~ekmmeters.MeterDB`  subclass.
 
-        Please note MeterDB subclassing is only for simplest-case.
+        Please note MeterDB sub-classing is only for simplest-case.
 
         Args:
             meter_db (MeterDB): Instance of subclass of MeterDB.
@@ -3689,7 +3689,7 @@ class V4Meter(Meter):
         """Serial call to set relay.
 
         Args:
-            seconds (int): Seconds to hold, ero is hold forever. See :class:`~ekmmeters.RelayInterval`.
+            seconds (int): Seconds to hold, zero is hold forever. See :class:`~ekmmeters.RelayInterval`.
             relay (int): Selected relay, see :class:`~ekmmeters.Relay`.
             status (int): Status to set, see :class:`~ekmmeters.RelayState`
             password (str): Optional password
@@ -3869,7 +3869,7 @@ class V4Meter(Meter):
         pass
 
     def setLCD(self, password="00000000"):
-        """ Serial call to set LCD using meter object bufer.
+        """ Serial call to set LCD using meter object buffer.
 
         Used with :func:`~ekmmeters.V4Meter.addLcdItem`.
 
