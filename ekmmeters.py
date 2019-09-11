@@ -51,7 +51,7 @@ ekmmeters_log_func = ekm_no_log
 global ekmmeters_log_level
 ekmmeters_log_level = 3
 global __EKMMETERS_VERSION
-__EKMMETERS_VERSION = "0.2.6"
+__EKMMETERS_VERSION = "0.2.7"
 
 
 def ekm_set_log(function_name):
