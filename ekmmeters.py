@@ -89,7 +89,7 @@ def ekm_set_log_level(level=3):
     pass
 
 
-class MeterData():
+class MeterData:
     """ Each :class:`~ekmmeters.SerialBlock` value is an array with these offsets. All Omnimeter versions.
 
     =============== =
@@ -120,7 +120,7 @@ class MeterData():
 
 
 
-class MaxDemandResetInterval():
+class MaxDemandResetInterval:
     """ As passed in :func:`~ekmmeters.Meter.setMaxDemandResetInterval`.  V4 Omnimeters.
 
     ======= =
@@ -143,7 +143,7 @@ class MaxDemandResetInterval():
     Hourly = 4
 
 
-class MaxDemandPeriod():
+class MaxDemandPeriod:
     """As passed in :func:`~ekmmeters.Meter.setMaxDemandPeriod`. V3 and V4 Omnimeters.
 
     ============= =
@@ -162,7 +162,7 @@ class MaxDemandPeriod():
     At_60_Minutes = 3
 
 
-class LCDItems():
+class LCDItems:
     """ As passed in :func:`~ekmmeters.V4Meter.addLcdItem`.  V4 Omnimeters.
 
     =================== ==
@@ -264,7 +264,7 @@ class LCDItems():
     Raw_Pulse_2  = 44
     Raw_Pulse_3  = 45
 
-class CTRatio():
+class CTRatio:
     """ As passed in :func:`~ekmmeters.Meter.setCTRatio`.  V3 and V4 Omnimeters.
 
     ========= ====
@@ -301,7 +301,7 @@ class CTRatio():
     Amps_5000 = 5000
 
 
-class Field():
+class Field:
     """ Union of all V3A and V4AB Fields Returned.
 
     Use these values to directly get read data with
@@ -458,7 +458,7 @@ class Field():
     Status_C = 'Status_C'
 
 
-class Seasons():
+class Seasons:
     """ As passed to :func:`~ekmmeters.Meter.assignSeasonSchedule`.  V3 and V4 Omnimeters.
 
     assign* methods use a zero based index for seasons.
@@ -483,7 +483,7 @@ class Seasons():
     Season_4 = 3
 
 
-class Months():
+class Months:
     """ As  passed to :func:`~ekmmeters.Meter.extractMonthTariff`.  V3 and V4 Omnimeters.
 
     ======== =
@@ -507,7 +507,7 @@ class Months():
     Month_4 = 4
     Month_5 = 5
 
-class Tariffs():
+class Tariffs:
     """ As passed to :func:`~ekmmeters.Meter.assignSchedule`. V3 and V4 Omnimeters.
 
      ========  =
@@ -528,7 +528,7 @@ class Tariffs():
     Tariff_4 = 3
 
 
-class Extents():
+class Extents:
     """ Traversal extents to use with for range(Extent) idiom.  V3 and V4 Omnimeters.
 
     Use of range(Extent.Entity) as an iterator insures safe
@@ -558,7 +558,7 @@ class Extents():
     Months = 6
 
 
-class PulseOutput():
+class PulseOutput:
     """ As passed to :func:`~ekmmeters.V4Meter.setPulseOutputRatio`.  V4 Omnimeters.
 
     ========== ==========
@@ -597,7 +597,7 @@ class PulseOutput():
     Ratio_1600 = 1600
 
 
-class Pulse():
+class Pulse:
     """ As passed to :func:`~ekmmeters.V4Meter.setPulseInputRatio`.  V4 Omnimeters.
 
     Simple constant to clarify call.
@@ -618,7 +618,7 @@ class Pulse():
     In3 = 3
 
 
-class Schedules():
+class Schedules:
     """ Allowed schedules.  V3 and V4 Omnimeters.
 
     Schedules on the meter are zero based, these apply to most passed
@@ -646,7 +646,7 @@ class Schedules():
     Schedule_6 = 5
 
 
-class ReadSchedules():
+class ReadSchedules:
     """ For :func:`~ekmmeters.Meter.readSchedules` and :func:`~ekmmeters.Meter.getSchedulesBuffer`.  V3 and V4.
 
     ================  ==================================
@@ -663,7 +663,7 @@ class ReadSchedules():
     Schedules_5_To_6 = 1
 
 
-class ReadMonths():
+class ReadMonths:
     """ As passed to :func:`~ekmmeters.Meter.readMonthTariffs` and :func:`~ekmmeters.Meter.getMonthsBuffer`.  V3 and V4.
 
     Use to select the forward or reverse six month tariff data.
@@ -682,7 +682,7 @@ class ReadMonths():
     kWhReverse = 2
 
 
-class DirectionFlag():
+class DirectionFlag:
     """ On V4, State_Watts_Dir mask shows RMS_Watts direction on line 1-3.
 
     The Direction flag is used to generate Calc_Net_Watts field on every
@@ -717,7 +717,7 @@ class DirectionFlag():
     ReverseReverseReverse = 8
 
 
-class ScaleKWH():
+class ScaleKWH:
     """ Scaling or kWh values controlled by Fields.kWh.  V4 Omnimeters.
 
     If MeterData.ScaleValue is ScaleType.KWH, Fields.kWh_Scale one of these.
@@ -740,7 +740,7 @@ class ScaleKWH():
     EmptyScale = -1
 
 
-class ScaleType():
+class ScaleType:
     """ Scale type defined in SerialBlock.  V4 Omnimeters.
 
     These values are set when a field is defined a SerialBlock.
@@ -766,7 +766,7 @@ class ScaleType():
     Div100 = "100"
 
 
-class FieldType():
+class FieldType:
     """ Every SerialBlock element has a field type.   V3 and V4 Omnimeters.
 
     Data arrives as ascii.  Field type determines disposition.
@@ -795,7 +795,7 @@ class FieldType():
     PowerFactor = "pf"  #: do power factor conversion
 
 
-class Relay():
+class Relay:
     """ Relay specified in :func:`~ekmmeters.V4Meter.setRelay`.  V4 Omnimeters.
 
     ====== ================
@@ -812,7 +812,7 @@ class Relay():
     Relay2 = 2  #: Relay 2 Selection code for v4 meter
 
 
-class RelayState():
+class RelayState:
     """ Relay state in :func:`~ekmmeters.V4Meter.setRelay`.  V4 Omnimeters.
 
     =========== =
@@ -829,7 +829,7 @@ class RelayState():
     RelayClose =  1  #: Relay Close command code for v4 meter
 
 
-class RelayInterval():
+class RelayInterval:
     """ Relay interval in :func:`~ekmmeters.V4Meter.setRelay`.  V4 Omnimeters.
 
     ===== ======================
@@ -847,7 +847,7 @@ class RelayInterval():
     Min = 0     #: Lowest legal value
     Hold = Min  #: Hold is just zero
 
-class StateOut():
+class StateOut:
     """ Pulse output state at time of read.  V4 Omnimeters.
 
     =======  =
@@ -867,7 +867,7 @@ class StateOut():
     OnOff = 3
     OnOn = 4
 
-class StateIn():
+class StateIn:
     """ State of each pulse line at time of read.  V4 Omnimeters.
 
     ================= =
@@ -895,7 +895,7 @@ class StateIn():
     LowLowHigh = 6
     LowLowLow = 7
 
-class CosTheta():
+class CosTheta:
     """ Prefix characters returned in power factor. Note a cos of zero has one space.  V3 and V4 Omnimeters.
 
     """
@@ -931,7 +931,7 @@ class SerialBlock(OrderedDict):
         super(SerialBlock, self).__init__()
 
 
-class SerialPort(object):
+class SerialPort:
     """ Wrapper for serial port commands.
 
     It should only be necessary to create one SerialPort per real port.
@@ -1053,7 +1053,7 @@ class SerialPort(object):
         return response_str
 
 
-class MeterDB(object):
+class MeterDB:
     """ Base class for single-table reads database abstraction."""
 
     def __init__(self, connection_string):
@@ -1384,7 +1384,7 @@ class SqliteMeterDB(MeterDB):
         return result
 
 
-class Meter(object):
+class Meter:
     """ Abstract base class.  Encapsulates serial operations and buffers. """
 
     def __init__(self, meter_address="000000000000"):
@@ -3012,7 +3012,7 @@ class Meter(object):
         return result
 
 
-class MeterObserver(object):
+class MeterObserver:
     """ Unenforced abstract base class for implementations of the observer pattern.
 
     To use, you must override the constructor and update().
