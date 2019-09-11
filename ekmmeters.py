@@ -1002,7 +1002,7 @@ class SerialPort:
             output (str): Block to write to port
         """
         view_str = output.encode('ascii', 'ignore')
-        if (len(view_str) > 0):
+        if view_str:
             self.m_ser.write(view_str)
             self.m_ser.flush()
             self.m_ser.reset_input_buffer()
@@ -1486,7 +1486,7 @@ class Meter:
         Args:
             context_str (str): Command specific string.
         """
-        if (len(self.m_context) == 0) and (len(context_str) >= 7):
+        if not self.m_context and (len(context_str) >= 7):
             if context_str[0:7] != "request":
                 ekm_log("Context: " + context_str)
         self.m_context = context_str
@@ -1734,7 +1734,7 @@ class Meter:
                 count += 1
                 continue
 
-            if len(contents) == 0:
+            if not contents:
                 ekm_log("No contents to convert")
                 return False
 
@@ -1773,7 +1773,7 @@ class Meter:
                 elif fld_type == FieldType.Int:
                     integer_data = int(raw_data)
                     integer_data_str = str(integer_data)
-                    if len(integer_data_str) == 0:
+                    if not integer_data_str:
                         integer_data_str = str(0)
                     def_buf[fld][MeterData.StringValue] = integer_data_str
                     def_buf[fld][MeterData.NativeValue] = integer_data
@@ -1833,7 +1833,7 @@ class Meter:
             bool:  True if passed CRC equals calculated CRC.
         """
         try:
-            if len(raw_read) == 0:
+            if not raw_read:
                 ekm_log("(" + self.m_context + ") Empty return read.")
                 return False
             sent_crc = self.calc_crc16(raw_read[1:-2])
