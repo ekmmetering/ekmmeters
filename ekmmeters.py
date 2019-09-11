@@ -1796,6 +1796,7 @@ class Meter:
                 ekm_log("Exception on Field:" + str(fld))
                 ekm_log(traceback.format_exc(sys.exc_info()))
                 self.writeCmdMsg("Exception on Field:" + str(fld))
+                return False
 
             count += 1
 
@@ -2886,7 +2887,7 @@ class Meter:
                 ekm_log("Holidays and Schedules CRC success")
                 self.setContext("")
                 return True
-        except serial.SerialException as e:
+        except (serial.SerialException, struct.Error) as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -3679,18 +3680,15 @@ class V4Meter(Meter):
             bool: Passthrough from :func:`~ekmmeters.V4Meter.setLcd`
         """
         result = False
-        try:
-            self.initLcd()
-            item_cnt = len(display_list)
-            if (item_cnt > 45) or (item_cnt <= 0):
-                ekm_log("LCD item list must have between 1 and 40 items")
-                return False
+        self.initLcd()
+        item_cnt = len(display_list)
+        if (item_cnt > 45) or (item_cnt <= 0):
+            ekm_log("LCD item list must have between 1 and 40 items")
+            return False
 
-            for display_item in display_list:
-                self.addLcdItem(int(display_item))
-            result = self.setLCD(password)
-        except Exception as e:
-            ekm_log(traceback.format_exc(sys.exc_info()))
+        for display_item in display_list:
+            self.addLcdItem(int(display_item))
+        result = self.setLCD(password)
 
         return result
 
