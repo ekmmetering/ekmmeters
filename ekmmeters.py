@@ -977,7 +977,7 @@ class SerialPort:
             ekm_log("Rate = " + str(self.m_baudrate))
             time.sleep(self.m_init_wait)
             return True
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         return False
@@ -1047,7 +1047,7 @@ class SerialPort:
                     time.sleep(self.m_wait_sleep)
             response_str = ""
 
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         return response_str
@@ -1274,7 +1274,7 @@ class SqliteMeterDB(MeterDB):
             cursor.close()
             connection.close()
             return True
-        except:
+        except sqlite3.Error as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
             return False
         pass
@@ -1353,7 +1353,7 @@ class SqliteMeterDB(MeterDB):
             reads = select_cursor.fetchall()
             result = json.dumps(reads, indent=4)
 
-        except:
+        except sqlite3.Error as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
         return result
 
@@ -1379,7 +1379,7 @@ class SqliteMeterDB(MeterDB):
                                   Field.Meter_Address + " = '" + meter + "';")
             reads = select_cursor.fetchall()
             result = json.dumps(reads, indent=4)
-        except:
+        except sqlite3.Error as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
         return result
 
@@ -1603,7 +1603,7 @@ class Meter:
                         self.writeCmdMsg("Success(setMaxDemandPeriod): 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -1640,7 +1640,7 @@ class Meter:
                         self.writeCmdMsg("Success (setMaxDemandResetInterval): 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -1678,7 +1678,7 @@ class Meter:
                         self.writeCmdMsg("Success(setMeterPassword): 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -1792,7 +1792,7 @@ class Meter:
 
                 log_str = log_str + '"' + fld + '":  "' + def_buf[fld][MeterData.StringValue] + '"\n'
 
-            except:
+            except (ArithmeticError, ValueError, IndexError) as e:
                 ekm_log("Exception on Field:" + str(fld))
                 ekm_log(traceback.format_exc(sys.exc_info()))
                 self.writeCmdMsg("Exception on Field:" + str(fld))
@@ -1817,7 +1817,7 @@ class Meter:
                 compare_fld = fld.upper()
                 if not "RESERVED" in compare_fld and not "CRC" in compare_fld:
                     ret_dict[str(fld)] = def_buf[fld][MeterData.StringValue]
-        except:
+        except (IndexError, ValueError) as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
             return ""
         return json.dumps(ret_dict, indent=4)
@@ -2223,7 +2223,7 @@ class Meter:
                         self.writeCmdMsg("Success(setMaxDemandResetNow): 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2303,7 +2303,7 @@ class Meter:
                         self.writeCmdMsg("Success(setTime): 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2353,7 +2353,7 @@ class Meter:
                         ret = True
             self.serialPostEnd()
 
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2447,7 +2447,7 @@ class Meter:
                         result = True
 
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2538,7 +2538,7 @@ class Meter:
                         self.writeCmdMsg("Success(setSeasonSchedules): 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2647,7 +2647,7 @@ class Meter:
                         self.writeCmdMsg("Success(setHolidayDates: 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2682,7 +2682,7 @@ class Meter:
                         self.writeCmdMsg("Success(setWeekendHolidaySchedules): 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2725,7 +2725,7 @@ class Meter:
                     ekm_log("Schedules 5 to 8 CRC success (06 return)")
                     self.setContext("")
                     return True
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2809,7 +2809,7 @@ class Meter:
                 ekm_log("Months CRC success, type = " + str(req_type))
                 self.setContext("")
                 return True
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -2886,7 +2886,7 @@ class Meter:
                 ekm_log("Holidays and Schedules CRC success")
                 self.setContext("")
                 return True
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -3004,7 +3004,7 @@ class Meter:
                 result = True
             else:
                 ekm_log("Password call failure no 06(" + self.getContext() + ")")
-        except:
+        except serial.SerialException as e:
             ekm_log("Password call failure by exception(" + self.getContext() + ")")
 
             ekm_log(traceback.format_exc(sys.exc_info()))
@@ -3163,7 +3163,7 @@ class V3Meter(Meter):
                 self.serialPostEnd()
             self.calculateFields()
             self.makeReturnFormat()
-        except:
+        except (serial.SerialException, struct.error) as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext(start_context)
@@ -3204,10 +3204,7 @@ class V3Meter(Meter):
     def updateObservers(self):
         """ Fire update method in all attached observers in order of attachment. """
         for observer in self.m_observers:
-            try:
-                observer.update(self.m_req)
-            except:
-                ekm_log(traceback.format_exc(sys.exc_info()))
+            observer.update(self.m_req)
 
     def getField(self, fld_name):
         """ Return :class:`~ekmmeters.Field` content, scaled and formatted.
@@ -3249,7 +3246,11 @@ class V3Meter(Meter):
     def serialPostEnd(self):
         """ Post termination code to implicitly current meter. """
         ekm_log("Termination string sent (" + self.m_context + ")")
-        self.m_serial_port.write(hex2str("0142300375"))
+        try:
+            self.m_serial_port.write(hex2str("0142300375"))
+        except serial.SerialException as e:
+            ekm_log(traceback.format_exc(sys.exc_info()))
+
         pass
 
 
@@ -3463,7 +3464,7 @@ class V4Meter(Meter):
                 self.calculateFields()
                 self.updateObservers()
                 return True
-        except:
+        except (serial.SerialException, struct.error) as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         return False
@@ -3678,7 +3679,7 @@ class V4Meter(Meter):
             for display_item in display_list:
                 self.addLcdItem(int(display_item))
             result = self.setLCD(password)
-        except:
+        except Exception as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         return result
@@ -3728,7 +3729,7 @@ class V4Meter(Meter):
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -3740,7 +3741,7 @@ class V4Meter(Meter):
 
         try:
             self.m_serial_port.write(hex2str("0142300375"))
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         pass
@@ -3776,7 +3777,7 @@ class V4Meter(Meter):
                         result = True
 
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -3807,7 +3808,7 @@ class V4Meter(Meter):
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -3840,7 +3841,7 @@ class V4Meter(Meter):
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
@@ -3912,7 +3913,7 @@ class V4Meter(Meter):
                         self.writeCmdMsg("Success: 06 returned.")
                         result = True
             self.serialPostEnd()
-        except:
+        except serial.SerialException as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
         self.setContext("")
