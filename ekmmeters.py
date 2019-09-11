@@ -1725,7 +1725,7 @@ class Meter:
         # reads have the scale value in the first block read.  This requirement
         # is filled by default in V3 and V4 requests
         if kwh_scale == ScaleKWH.EmptyScale:
-            scale_offset = int(list(def_buf.keys()).index(Field.kWh_Scale))
+            scale_offset = int(list(def_buf).index(Field.kWh_Scale))
             self.m_kwh_precision = kwh_scale = int(contents[scale_offset])
 
         for fld in def_buf:
@@ -1735,8 +1735,8 @@ class Meter:
                 continue
 
             if len(contents) == 0:
-                count += 1
-                continue
+                ekm_log("No contents to convert")
+                return False
 
             try:  # scrub up messes on a field by field basis
                 raw_data = contents[count].decode()
@@ -3143,7 +3143,7 @@ class V3Meter(Meter):
         """Required request() override for v3 and standard method to read meter.
 
         Args:
-            send_terminator (bool): Send termination string at end of read.
+            send_terminator (bool): Send termination string at end of read && data conversion output
 
         Returns:
             bool: CRC request flag result from most recent read
@@ -3157,12 +3157,16 @@ class V3Meter(Meter):
                                      hex2str("210d0a"))
             self.m_raw_read_a = self.m_serial_port.getResponse(self.getContext())
             unpacked_read_a = self.unpackStruct(self.m_raw_read_a, self.m_blk_a)
-            self.convertData(unpacked_read_a, self.m_blk_a, 1)
-            self.m_a_crc = self.crcMeterRead(self.m_raw_read_a, self.m_blk_a)
-            if send_terminator:
-                self.serialPostEnd()
-            self.calculateFields()
-            self.makeReturnFormat()
+            if self.convertData(unpacked_read_a, self.m_blk_a, 1):
+                self.m_a_crc = self.crcMeterRead(self.m_raw_read_a, self.m_blk_a)
+                if send_terminator:
+                    self.serialPostEnd()
+                self.calculateFields()
+                self.makeReturnFormat()
+            else:
+                ekm_log("Meter data conversion failed due to malformed packet")
+                return False
+
         except (serial.SerialException, struct.error) as e:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
@@ -3473,34 +3477,40 @@ class V4Meter(Meter):
         """Issue an A read on V4 meter.
 
         Returns:
-            bool: True if CRC match at end of call.
+            bool: True if CRC match at end of call && data conversion succeeds
         """
         work_context = self.getContext()
         self.setContext("request[v4A]")
         self.m_serial_port.write(hex2str("2f3f") + self.m_meter_address + hex2str("3030210d0a"))
         self.m_raw_read_a = self.m_serial_port.getResponse(self.getContext())
         unpacked_read_a = self.unpackStruct(self.m_raw_read_a, self.m_blk_a)
-        self.convertData(unpacked_read_a, self.m_blk_a)
-        self.m_kwh_precision = int(self.m_blk_a[Field.kWh_Scale][MeterData.NativeValue])
-        self.m_a_crc = self.crcMeterRead(self.m_raw_read_a, self.m_blk_a)
-        self.setContext(work_context)
-        return self.m_a_crc
+        if self.convertData(unpacked_read_a, self.m_blk_a):
+            self.m_kwh_precision = int(self.m_blk_a[Field.kWh_Scale][MeterData.NativeValue])
+            self.m_a_crc = self.crcMeterRead(self.m_raw_read_a, self.m_blk_a)
+            self.setContext(work_context)
+            return self.m_a_crc
+        else:
+            ekm_log("Meter data conversion A failed due to malformed packet")
+            return False
 
     def requestB(self):
         """ Issue a B read on V4 meter.
 
         Returns:
-            bool: True if CRC match at end of call.
+            bool: True if CRC match at end of call && data conversion succeeds
         """
         work_context = self.getContext()
         self.setContext("request[v4B]")
         self.m_serial_port.write(hex2str("2f3f") + self.m_meter_address + hex2str("3031210d0a"))
         self.m_raw_read_b = self.m_serial_port.getResponse(self.getContext())
         unpacked_read_b = self.unpackStruct(self.m_raw_read_b, self.m_blk_b)
-        self.convertData(unpacked_read_b, self.m_blk_b, self.m_kwh_precision)
-        self.m_b_crc = self.crcMeterRead(self.m_raw_read_b, self.m_blk_b)
-        self.setContext(work_context)
-        return self.m_b_crc
+        if self.convertData(unpacked_read_b, self.m_blk_b, self.m_kwh_precision):
+            self.m_b_crc = self.crcMeterRead(self.m_raw_read_b, self.m_blk_b)
+            self.setContext(work_context)
+            return self.m_b_crc
+        else:
+            ekm_log("Meter data conversion B failed due to malformed packet")
+            return False
 
     def makeAB(self):
         """ Munge A and B reads into single serial block with only unique fields."""
