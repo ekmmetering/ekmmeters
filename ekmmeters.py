@@ -3165,6 +3165,7 @@ class V3Meter(Meter):
                 self.serialPostEnd()
             self.calculateFields()
             self.makeReturnFormat()
+            self.updateObservers()
         except:
             ekm_log(traceback.format_exc(sys.exc_info()))
 
