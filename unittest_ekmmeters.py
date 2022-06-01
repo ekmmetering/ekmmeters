@@ -84,7 +84,7 @@ class AcceptanceTest(unittest.TestCase):
         super(AcceptanceTest, cls).setUpClass()
 
     def testReadAndDb(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         print(v4_addr)
         port = SerialPort(test_port, force_wait=wait)
         print("*****  Read and database tests")
@@ -141,7 +141,7 @@ class AcceptanceTest(unittest.TestCase):
                         fname, lineno, fn, text = frame
                         print(("Error in %s on line %d" % (fname, lineno)))
                     return False
- 
+
             print(meterV4.getMeterAddress())
             print("***** End Two reads from each meter")
             print("*****************************************************")
@@ -175,7 +175,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(True, False)
 
     def testReadV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -193,7 +193,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadScheduleTariffsV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -216,7 +216,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadScheduleTariffsV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
@@ -239,7 +239,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadMonthsTariffsV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
@@ -262,7 +262,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadHolidayDatesV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -282,7 +282,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadHolidayDatesV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -302,7 +302,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadMonthTariffsV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -325,7 +325,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -343,7 +343,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetCtV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
@@ -353,12 +353,16 @@ class AcceptanceTest(unittest.TestCase):
             meterV4 = V4Meter(v4_addr)
             meterV4.attachPort(port)
             self.assertEqual(meterV4.setCTRatio(CTRatio.Amps_200), True)
+            port.closePort()
+            self.assertEqual(port.initPort(), True)
+            meterV4 = V4Meter(v4_addr)
+            meterV4.attachPort(port)
             self.assertEqual(meterV4.request(), True)
             str_ct = meterV4.getField(Field.CT_Ratio)
             print("V4 CT after 200 set = " + str_ct)
             self.assertEqual(str_ct == str(CTRatio.Amps_200), True)
             self.assertEqual(meterV4.setCTRatio(CTRatio.Amps_400), True)
-            self.assertEqual(meterV4.request(), True)
+            self.assertEqual(meterV4.requestB(), True)
             str_ct = meterV4.getField(Field.CT_Ratio)
             print("V4 CT after 400 set = " + str_ct)
             self.assertEqual(str_ct == str(CTRatio.Amps_400), True)
@@ -370,7 +374,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetHoldayWeekendV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
@@ -388,7 +392,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetHolidayWeekendV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -406,7 +410,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetMaxDemandIntervalV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -424,7 +428,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetPulseOuputRatioV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -435,11 +439,11 @@ class AcceptanceTest(unittest.TestCase):
             meterV4.attachPort(port)
             self.assertEqual(meterV4.setPulseOutputRatio(PulseOutput.Ratio_5), True)
             self.assertEqual(meterV4.request(), True)
-            str_out = meterV4.getField(Field.Pulse_Output_Ratio)
+            str_out = meterV4.getField(Field.CF_Ratio)
             self.assertEqual(str(str_out) == str(PulseOutput.Ratio_5), True)
             self.assertEqual(meterV4.setPulseOutputRatio(PulseOutput.Ratio_16), True)
-            self.assertEqual(meterV4.request(), True)
-            str_out = meterV4.getField(Field.Pulse_Output_Ratio)
+            self.assertEqual(meterV4.requestB(), True)
+            str_out = meterV4.getField(Field.CF_Ratio)
             self.assertEqual(str(str_out) == str(PulseOutput.Ratio_16), True)
             self.assertEqual(True, True)
         except:
@@ -449,7 +453,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetCtV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -478,7 +482,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetTimeV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -500,10 +504,10 @@ class AcceptanceTest(unittest.TestCase):
             print(str_time)
             date_tuple = meterV4.splitEkmDate(int(str_time))
             if (((yy - 2000) == date_tuple.yy) and
-                        (mm == date_tuple.mm) and
-                        (dd == date_tuple.dd) and
-                        (hh == date_tuple.hh) and
-                        (min == date_tuple.minutes)):
+                    (mm == date_tuple.mm) and
+                    (dd == date_tuple.dd) and
+                    (hh == date_tuple.hh) and
+                    (min == date_tuple.minutes)):
                 print("Passed and return time agree pass 1")
             else:
                 self.assertEqual(True, False)
@@ -518,10 +522,10 @@ class AcceptanceTest(unittest.TestCase):
             str_time = meterV4.getField(Field.Meter_Time)
             date_tuple = meterV4.splitEkmDate(int(str_time))
             if (((yy - 2000) == date_tuple.yy) and
-                        (mm == date_tuple.mm) and
-                        (dd == date_tuple.dd) and
-                        (hh == date_tuple.hh) and
-                        (min == date_tuple.minutes)):
+                    (mm == date_tuple.mm) and
+                    (dd == date_tuple.dd) and
+                    (hh == date_tuple.hh) and
+                    (min == date_tuple.minutes)):
                 print("Passed and return time agree pass 2")
             else:
                 self.assertEqual(True, False)
@@ -535,7 +539,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetTimeV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
@@ -557,10 +561,10 @@ class AcceptanceTest(unittest.TestCase):
             str_time = meterV3.getField(Field.Meter_Time)
             date_tuple = meterV3.splitEkmDate(int(str_time))
             if (((yy - 2000) == date_tuple.yy) and
-                        (mm == date_tuple.mm) and
-                        (dd == date_tuple.dd) and
-                        (hh == date_tuple.hh) and
-                        (min == date_tuple.minutes)):
+                    (mm == date_tuple.mm) and
+                    (dd == date_tuple.dd) and
+                    (hh == date_tuple.hh) and
+                    (min == date_tuple.minutes)):
                 print("Passed and return time agree pass 1")
             else:
                 self.assertEqual(True, False)
@@ -577,10 +581,10 @@ class AcceptanceTest(unittest.TestCase):
             str_time = meterV3.getField(Field.Meter_Time)
             date_tuple = meterV3.splitEkmDate(int(str_time))
             if (((yy - 2000) == date_tuple.yy) and
-                        (mm == date_tuple.mm) and
-                        (dd == date_tuple.dd) and
-                        (hh == date_tuple.hh) and
-                        (min == date_tuple.minutes)):
+                    (mm == date_tuple.mm) and
+                    (dd == date_tuple.dd) and
+                    (hh == date_tuple.hh) and
+                    (min == date_tuple.minutes)):
                 print("Passed and return time agree pass 2")
             else:
                 self.assertEqual(True, False)
@@ -591,7 +595,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetMaxDemandPeriodV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -602,12 +606,12 @@ class AcceptanceTest(unittest.TestCase):
             meterV4.attachPort(port)
             self.assertEqual(meterV4.setMaxDemandPeriod(MaxDemandPeriod.At_15_Minutes), True)
 
-            self.assertEqual(meterV4.request(), True)
+            self.assertEqual(meterV4.requestB(), True)
             str_mdp = meterV4.getField(Field.Max_Demand_Period)
             if int(str_mdp) != MaxDemandPeriod.At_15_Minutes:
                 self.assertEqual(False, True)
             self.assertEqual(meterV4.setMaxDemandPeriod(MaxDemandPeriod.At_30_Minutes), True)
-            self.assertEqual(meterV4.request(), True)
+            self.assertEqual(meterV4.requestB(), True)
             str_mdp = meterV4.getField(Field.Max_Demand_Period)
             if int(str_mdp) != MaxDemandPeriod.At_30_Minutes:
                 self.assertEqual(False, True)
@@ -619,7 +623,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetPulseInputRatioV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -636,7 +640,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV4.setPulseInputRatio(Pulse.In1, p1new), True)
             self.assertEqual(meterV4.setPulseInputRatio(Pulse.In2, p2new), True)
             self.assertEqual(meterV4.setPulseInputRatio(Pulse.In3, p3new), True)
-            self.assertEqual(meterV4.request(), True)
+            self.assertEqual(meterV4.requestB(), True)
             str_pulse_1 = meterV4.getField(Field.Pulse_Ratio_1)
             str_pulse_2 = meterV4.getField(Field.Pulse_Ratio_2)
             str_pulse_3 = meterV4.getField(Field.Pulse_Ratio_3)
@@ -649,7 +653,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV4.setPulseInputRatio(Pulse.In1, p1new), True)
             self.assertEqual(meterV4.setPulseInputRatio(Pulse.In2, p2new), True)
             self.assertEqual(meterV4.setPulseInputRatio(Pulse.In3, p3new), True)
-            self.assertEqual(meterV4.request(), True)
+            self.assertEqual(meterV4.requestB(), True)
             str_pulse_1 = meterV4.getField(Field.Pulse_Ratio_1)
             str_pulse_2 = meterV4.getField(Field.Pulse_Ratio_2)
             str_pulse_3 = meterV4.getField(Field.Pulse_Ratio_3)
@@ -664,7 +668,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetZeroResetV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -674,13 +678,17 @@ class AcceptanceTest(unittest.TestCase):
             meterV4 = V4Meter(v4_addr)
             meterV4.attachPort(port)
             self.assertEqual(meterV4.request(), True)
-            str_rev_rst = meterV4.getField(Field.Resettable_Rev_kWh_Tot)
-            str_rst = meterV4.getField(Field.Resettable_kWh_Tot)
+            port.closePort()
+            self.assertEqual(port.initPort(), True)
+            meterV4 = V4Meter(v4_addr)
+            meterV4.attachPort(port)
+            str_rev_rst = meterV4.getField(Field.Rev_kWh_Rst)
+            str_rst = meterV4.getField(Field.kWh_Rst)
             print("Inital: Fwd resettable = " + str_rst + "Rev resettable kwh " + str_rev_rst)
             self.assertEqual(meterV4.setZeroResettableKWH(), True)
             self.assertEqual(meterV4.request(), True)
-            str_rev_rst = meterV4.getField(Field.Resettable_Rev_kWh_Tot)
-            str_rst = meterV4.getField(Field.Resettable_kWh_Tot)
+            str_rev_rst = meterV4.getField(Field.Rev_kWh_Rst)
+            str_rst = meterV4.getField(Field.kWh_Rst)
             self.assertEqual(str_rev_rst == str(float(0)), True)
             self.assertEqual(str_rst == str(float(0)), True)
             self.assertEqual(True, True)
@@ -691,7 +699,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetScheduleTariffsV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
@@ -700,7 +708,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(port.initPort(), True)
             meterV4 = V4Meter(v4_addr)
             meterV4.attachPort(port)
-            param_buf =OrderedDict()
+            param_buf = OrderedDict()
             param_buf["Schedule"] = 0
             param_buf["Hour_1"] = 1
             param_buf["Min_1"] = 11
@@ -723,7 +731,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetScheduleTariffsV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -732,7 +740,7 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(port.initPort(), True)
             meterV3 = V3Meter(v3_addr)
             meterV3.attachPort(port)
-            param_buf =OrderedDict()
+            param_buf = OrderedDict()
             param_buf["Schedule"] = 0
             param_buf["Hour_1"] = 1
             param_buf["Min_1"] = 11
@@ -755,7 +763,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetSeasonSchedulesV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
@@ -786,7 +794,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetHolidayDatesV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -845,7 +853,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetHolidayDatesV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -904,7 +912,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetSeasonSchedulesV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -935,7 +943,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetMaxDemandPeriodV3(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -962,7 +970,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetLcdV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         port = SerialPort(test_port, force_wait=wait)
         failed = False
         try:
@@ -977,15 +985,15 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(meterV4.setLCDCmd(lcd_items), True)
             if user_prompts:
                 input("*---------------------------------------------------*\n" +
-                          "* Check Display, should be line 1 volts and line frequency. Press any key to continue." +
-                          "\n*---------------------------------------------------*")
+                      "* Check Display, should be line 1 volts and line frequency. Press any key to continue." +
+                      "\n*---------------------------------------------------*")
 
             lcd_items = [LCDItems.kWh_Ln_1]
             self.assertEqual(meterV4.setLCDCmd(lcd_items), True)
             if user_prompts:
                 input("*---------------------------------------------------*\n" +
-                          " * Check Display, should be kwh line 1. Press any key to continue." +
-                          "\n*---------------------------------------------------*")
+                      " * Check Display, should be kwh line 1. Press any key to continue." +
+                      "\n*---------------------------------------------------*")
             self.assertEqual(True, True)
 
         except:
@@ -995,7 +1003,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testSetRelayV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         try:
@@ -1021,7 +1029,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(failed, False)
 
     def testReadWriteSettingsV4(self):
-        wait, test_port , v3_addr, v4_addr, dbpath, user_prompts = loadparams()
+        wait, test_port, v3_addr, v4_addr, dbpath, user_prompts = loadparams()
         failed = False
         port = SerialPort(test_port, force_wait=wait)
         ekm_set_log(ekm_print_log)
@@ -1032,7 +1040,7 @@ class AcceptanceTest(unittest.TestCase):
                 print("*****  Read and Write V4 Settings En Suite")
                 # Prologue
 
-                if test_i%2:
+                if test_i % 2:
                     test_meter = V4Meter(v4_addr)
                 else:
                     test_meter = V3Meter(v3_addr)
@@ -1046,14 +1054,14 @@ class AcceptanceTest(unittest.TestCase):
                     for tariff in range(Extents.Tariffs):
                         schedule_tariff = test_meter.extractSchedule(schedule, tariff)
                         print((("Schedule_" + schedule_tariff.Schedule).ljust(15) +
-                                ("kWh_Tariff_" + schedule_tariff.Tariff).ljust(15) +
-                                (schedule_tariff.Hour+":"+schedule_tariff.Min).ljust(10) +
-                                (schedule_tariff.Tariff.ljust(15))))
+                               ("kWh_Tariff_" + schedule_tariff.Tariff).ljust(15) +
+                               (schedule_tariff.Hour + ":" + schedule_tariff.Min).ljust(10) +
+                               (schedule_tariff.Tariff.ljust(15))))
                 print("***********************************************")
                 for schedule in range(Extents.Schedules):
-                    min_start = random.randint(0,49)
-                    hr_start = random.randint(0,19)
-                    tariff_start = random.randint(1,3)
+                    min_start = random.randint(0, 49)
+                    hr_start = random.randint(0, 19)
+                    tariff_start = random.randint(1, 3)
                     for period in range(Extents.Periods):
                         test_meter.assignSchedule(schedule, period,
                                                   hr_start + period,
@@ -1061,16 +1069,17 @@ class AcceptanceTest(unittest.TestCase):
                                                   tariff_start + period)
                     test_meter.setSchedule()
                 print("***********************************************")
-                print(("Month".ljust(7) + "kWh_Tariff_1".ljust(14) + "kWh_Tariff_2".ljust(14) + "kWh_Tariff_3".ljust(14) +
-                        "kWh_Tariff_4".ljust(14) + "kWh_Tot".ljust(10) + "Rev_kWh_Tariff_1".ljust(18) +
-                        "Rev_kWh_Tariff_2".ljust(18) + "Rev_kWh_Tariff_3".ljust(18) +
-                        "Rev_kWh_Tariff_4".ljust(18) + "Rev_kWh_Tot".ljust(11)))
+                print(
+                    ("Month".ljust(7) + "kWh_Tariff_1".ljust(14) + "kWh_Tariff_2".ljust(14) + "kWh_Tariff_3".ljust(14) +
+                     "kWh_Tariff_4".ljust(14) + "kWh_Tot".ljust(10) + "Rev_kWh_Tariff_1".ljust(18) +
+                     "Rev_kWh_Tariff_2".ljust(18) + "Rev_kWh_Tariff_3".ljust(18) +
+                     "Rev_kWh_Tariff_4".ljust(18) + "Rev_kWh_Tot".ljust(11)))
                 for month in range(Extents.Months):
                     md = test_meter.extractMonthTariff(month)
                     print((md.Month.ljust(7) + md.kWh_Tariff_1.ljust(14) + md.kWh_Tariff_2.ljust(14) +
-                            md.kWh_Tariff_3.ljust(14) +  md.kWh_Tariff_4.ljust(14) + md.kWh_Tot.ljust(10) +
-                            md.Rev_kWh_Tariff_1.ljust(18) + md.Rev_kWh_Tariff_2.ljust(18) +
-                            md.Rev_kWh_Tariff_3.ljust(18) + md.Rev_kWh_Tariff_4.ljust(18) + md.Rev_kWh_Tot.ljust(10)))
+                           md.kWh_Tariff_3.ljust(14) + md.kWh_Tariff_4.ljust(14) + md.kWh_Tot.ljust(10) +
+                           md.Rev_kWh_Tariff_1.ljust(18) + md.Rev_kWh_Tariff_2.ljust(18) +
+                           md.Rev_kWh_Tariff_3.ljust(18) + md.Rev_kWh_Tariff_4.ljust(18) + md.Rev_kWh_Tot.ljust(10)))
                 print("***********************************************")
                 test_meter.assignSeasonSchedule(Seasons.Season_1, 1, 1, Schedules.Schedule_1)
                 test_meter.assignSeasonSchedule(Seasons.Season_2, 3, 21, Schedules.Schedule_2)
@@ -1079,8 +1088,8 @@ class AcceptanceTest(unittest.TestCase):
                 test_meter.setSeasonSchedules()
                 print("***********************************************")
                 for holiday in range(Extents.Holidays):
-                    day = random.randint(1,28)
-                    mon = random.randint(1,12)
+                    day = random.randint(1, 28)
+                    mon = random.randint(1, 12)
                     test_meter.assignHolidayDate(holiday, mon, day)
                 test_meter.setHolidayDates()
                 print("***********************************************")
@@ -1088,7 +1097,7 @@ class AcceptanceTest(unittest.TestCase):
                 for holiday in range(Extents.Holidays):
                     holidaydate = test_meter.extractHolidayDate(holiday)
                     print((("Holiday_" + holidaydate.Holiday).ljust(12) +
-                          (holidaydate.Month + "-" + holidaydate.Day).ljust(20)))
+                           (holidaydate.Month + "-" + holidaydate.Day).ljust(20)))
                 print("***********************************************")
                 skeds = test_meter.extractHolidayWeekendSchedules()
                 print("extracted holiday schedule = " + skeds.Holiday)
