@@ -1,10 +1,10 @@
-# ekmmeters 0.2.5
+# ekmmeters 0.3
 
 Python API for the EKM Omnimeter Serial Interface
 
 The goal of this library is to provide a reliable and flexible interface to the EKM Omnimeter v.3, EKM Omnimeter, v.4, and EKM Omnimeter v.5
 
-To get started, you can 'pip install ekmmeters', 'pip3 install ekmmeters' or download the single required Python file, ekmmeters.py, to your working directory and include with 'from ekmmeters import *'.  
+To get started, you can clone the repo: 'git clone https://github.com/ekmmetering/ekmmeters' in your working directory and include with 'from ekmmeters import *'.
 
 Adaptable examples for all supported Omnimeter commands can be found at <a href="http://ekmmeters.readthedocs.io/en/latest/">
 readthedocs.org</a>.
