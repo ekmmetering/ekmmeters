@@ -501,8 +501,8 @@ class Months():
     Month_2  1
     Month_3  2
     Month_4  3
-    Month_3  4
-    Month_4  5
+    Month_5  4
+    Month_6  5
     ======== =
 
     """
@@ -514,8 +514,8 @@ class Months():
     Month_2 = 1
     Month_3 = 2
     Month_4 = 3
-    Month_4 = 4
-    Month_5 = 5
+    Month_5 = 4
+    Month_6 = 5
 
 
 class Tariffs():
