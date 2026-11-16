@@ -1,5 +1,9 @@
 # ekmmeters 0.3
 
+## AI project notes
+
+Project-specific AI context and handoffs live in [`ai_share/`](ai_share/README.md). Read its instructions and relevant notes before working on this project.
+
 Python API for the EKM Omnimeter Serial Interface
 
 The goal of this library is to provide a reliable and flexible interface to the EKM Omnimeter v.3, EKM Omnimeter, v.4, and EKM Omnimeter v.5
